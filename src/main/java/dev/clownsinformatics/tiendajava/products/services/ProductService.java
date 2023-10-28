@@ -1,12 +1,15 @@
 package dev.clownsinformatics.tiendajava.products.services;
 
+import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
+import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
+import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    List<Product> findAll(String category, String name);
+    List<Product> findAll(Categories category, String name);
 
     Product findById(Long id);
 
@@ -14,9 +17,9 @@ public interface ProductService {
 
     Product findByUUID(UUID uuid);
 
-    Product save(Product product);
+    Product save(ProductCreateDto productCreateDto);
 
-    Product update(Product product);
+    Product update(Long id, ProductUpdateDto productUpdateDto);
 
     void deleteById(Long id);
 }
