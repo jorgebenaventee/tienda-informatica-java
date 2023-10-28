@@ -6,7 +6,6 @@ import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ProductService {
     List<Product> findAll(Categories category, String name);
@@ -15,7 +14,7 @@ public interface ProductService {
 
     Product findByIdCategory(Long idCategory);
 
-    Product findByUUID(UUID uuid);
+    Product findByUUID(String uuid);
 
     Product save(ProductCreateDto productCreateDto);
 
