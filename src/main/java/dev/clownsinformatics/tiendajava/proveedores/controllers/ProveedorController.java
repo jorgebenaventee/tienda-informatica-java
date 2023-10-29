@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.objenesis.instantiator.util.UnsafeUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Slf4j
@@ -39,9 +41,9 @@ public class ProveedorController {
     }
 
     @GetMapping
-    public Proveedor getProveedorById(@PathVariable Long idProveedor) {
+    public Proveedor getProveedorByUUID(@PathVariable UUID idProveedor) {
         log.info("Buscando proveedor con ID: " + idProveedor);
-        return proveedorService.findById(idProveedor);
+        return proveedorService.findByUUID(idProveedor.toString());
     }
 
     @NonNull
@@ -53,22 +55,22 @@ public class ProveedorController {
 
     @NonNull
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedor(@PathVariable Long idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+    public ResponseEntity<Proveedor> updateProveedor(@PathVariable UUID idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
         log.info("Actualizando proveedor con ID: " + idProveedor);
         return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
     }
 
     @NonNull
     @PatchMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable Long idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable UUID idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
         log.info("Actualizando proveedor con ID: " + idProveedor);
         return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProveedor(@PathVariable Long idProveedor) {
-        proveedorService.deleteById(idProveedor);
+    public ResponseEntity<Void> deleteProveedor(@PathVariable UUID idProveedor) {
+        proveedorService.deleteByUUID(idProveedor);
         return ResponseEntity.noContent().build();
     }
 

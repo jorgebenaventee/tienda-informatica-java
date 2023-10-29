@@ -9,36 +9,20 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class ProveedorRepositoryImpl implements ProveedorRepository {
 
-    HashMap<Long, Proveedor> proveedores = new LinkedHashMap<>();
-    public final AtomicLong idProveedores = new AtomicLong(1);
+    HashMap<UUID, Proveedor> proveedores = new LinkedHashMap<>();
 
     public ProveedorRepositoryImpl() {
-        proveedores.put(idProveedores.get(), Proveedor.builder()
-                .idEmpresa(UUID.randomUUID())
-                .idProveedor(idProveedores.get())
-                .nombre("Proveedor 1")
-                .contacto(1)
-                .direccion("Calle 1")
-                .build());
-        proveedores.put(idProveedores.get(), Proveedor.builder()
-                .idEmpresa(UUID.randomUUID())
-                .idProveedor(idProveedores.get())
-                .nombre("Proveedor 2")
-                .contacto(2)
-                .direccion("Calle 2")
-                .build());
-        proveedores.put(idProveedores.get(), Proveedor.builder()
-                .idEmpresa(UUID.randomUUID())
-                .idProveedor(idProveedores.get())
-                .nombre("Proveedor 3")
-                .contacto(3)
-                .direccion("Calle 3")
-                .build());
+        for (int i = 0; i < 20; i++) {
+            UUID id = UUID.randomUUID();
+            proveedores.put(id, Proveedor.builder()
+                    .idProveedor(id)
+                    .nombre("Proveedor " + i)
+                    .contacto(i)
+                    .direccion("Calle " + i)
+                    .build());
+        }
     }
 
-    public Long incrementId() {
-        return idProveedores.getAndIncrement();
-    }
 
     @Override
     public List<Proveedor> getAll() {
@@ -46,8 +30,9 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
-    public Optional<Proveedor> getById(Long idProveedor) {
-        return Optional.ofNullable(proveedores.get(idProveedor));
+    public Optional<Proveedor> getByUUID(UUID idProveedor) {
+        return proveedores.values().stream()
+                .filter(proveedor -> proveedor.getIdProveedor().equals(idProveedor)).findFirst();
     }
 
     @Override
@@ -70,12 +55,6 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
-    public Optional<Proveedor> getByUUID(UUID idEmpresa) {
-        return proveedores.values().stream()
-                .filter(proveedor -> proveedor.getIdEmpresa().equals(idEmpresa)).findFirst();
-    }
-
-    @Override
     public Proveedor save(Proveedor proveedor) {
         return proveedores.put(proveedor.getIdProveedor(), proveedor);
 
@@ -87,7 +66,7 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
-    public void deleteById(Long idProveedor) {
+    public void deleteByUUID(UUID idProveedor) {
         proveedores.remove(idProveedor);
     }
 

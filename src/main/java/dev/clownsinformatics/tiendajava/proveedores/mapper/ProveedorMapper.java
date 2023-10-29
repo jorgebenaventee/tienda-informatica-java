@@ -5,9 +5,11 @@ import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class ProveedorMapper {
-    public Proveedor toProveedor(ProveedorCreateDto proveedorCreateDto, Long idProveedor) {
+    public Proveedor toProveedor(ProveedorCreateDto proveedorCreateDto, UUID idProveedor) {
         return Proveedor.builder()
                 .idProveedor(idProveedor)
                 .nombre(proveedorCreateDto.nombre())

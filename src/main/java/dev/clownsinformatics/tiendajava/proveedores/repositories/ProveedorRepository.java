@@ -10,7 +10,7 @@ public interface ProveedorRepository {
 
     List<Proveedor> getAll();
 
-    Optional<Proveedor> getById(Long idProveedor);
+    Optional<Proveedor> getByUUID(UUID idProveedor);
 
     List<Proveedor> getByNombre(String nombre);
 
@@ -18,13 +18,11 @@ public interface ProveedorRepository {
 
     List<Proveedor> getByNombreAndDireccion(String nombre, String direccion);
 
-    Optional<Proveedor> getByUUID(UUID idEmpresa);
-
     Proveedor save(Proveedor proveedores);
 
     Proveedor update(Proveedor proveedores);
 
-    void deleteById(Long idProveedor);
+    void deleteByUUID(UUID idProveedor);
 
 
 }

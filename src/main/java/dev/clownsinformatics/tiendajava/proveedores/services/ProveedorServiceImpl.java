@@ -43,42 +43,34 @@ public class ProveedorServiceImpl implements ProveedorService {
         return proveedorRepository.getByNombreAndDireccion(nombre, direccion);
     }
 
-    @Override
-    @Cacheable(key = "#id")
-    public Proveedor findById(Long idProveedor) {
-        return proveedorRepository.getById(idProveedor).orElseThrow(
-                () -> new ProveedorNotFound(idProveedor)
-        );
-    }
 
     @Override
-    @Cacheable(key = "#idEmpresa")
-    public Proveedor findByUUID(String idEmpresa) {
-        var uuid = UUID.fromString(idEmpresa);
+    @Cacheable(key = "#idProveedor")
+    public Proveedor findByUUID(String idProveedor) {
+        var uuid = UUID.fromString(idProveedor);
         return proveedorRepository.getByUUID(uuid).orElseThrow(
                 () -> new ProveedorNotFound(uuid)
-
                 );
     }
 
     @Override
-    @CachePut(key = "#result.id")
+    @CachePut(key = "#result.idProveedor")
     public Proveedor save(ProveedorCreateDto proveedorCreateDto) {
-        return proveedorRepository.save(proveedorMapper.toProveedor(proveedorCreateDto, proveedorRepository.incrementId()));
+        return proveedorRepository.save(proveedorMapper.toProveedor(proveedorCreateDto, UUID.randomUUID()));
     }
 
     @Override
-    @CachePut(key = "#id")
-    public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, Long idProveedor) {
-        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorRepository.getById(idProveedor).orElseThrow(
+    @CachePut(key = "#idProveedor")
+    public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, UUID idProveedor) {
+        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorRepository.getByUUID(idProveedor).orElseThrow(
                 () -> new ProveedorNotFound(idProveedor)
         )));
     }
 
     @Override
-    @CacheEvict(key = "#id")
-    public void deleteById(Long idProveedor) {
-        proveedorRepository.deleteById(idProveedor);
+    @CacheEvict(key = "#idProveedor")
+    public void deleteByUUID(UUID idProveedor) {
+        proveedorRepository.deleteByUUID(idProveedor);
 
     }
 }

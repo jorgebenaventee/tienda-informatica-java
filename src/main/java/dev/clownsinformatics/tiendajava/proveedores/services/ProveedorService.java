@@ -5,18 +5,17 @@ import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProveedorService {
     List<Proveedor> findAll(String nombre, String direccion);
 
-    Proveedor findById(Long id);
-
-    Proveedor findByUUID(String idEmpresa);
+    Proveedor findByUUID(String idProveedor);
 
     Proveedor save(ProveedorCreateDto proveedorCreateDto);
 
-    Proveedor update(ProveedorUpdateDto proveedorUpdateDto, Long idProveedor);
+    Proveedor update(ProveedorUpdateDto proveedorUpdateDto, UUID idProveedor);
 
-    void deleteById(Long idProveedor);
+    void deleteByUUID(UUID idProveedor);
 }
 
