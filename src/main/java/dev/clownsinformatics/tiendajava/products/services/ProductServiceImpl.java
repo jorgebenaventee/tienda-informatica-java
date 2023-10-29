@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
     @CachePut
     public Product save(ProductCreateDto productCreateDto) {
         log.info("Creando producto: " + productCreateDto);
-        Product product = productMapper.toProduct(UUID.randomUUID(), productCreateDto);
+        Product product = productMapper.toProduct(productRepository.getRandomUUID(), productCreateDto);
         return productRepository.save(product);
     }
 

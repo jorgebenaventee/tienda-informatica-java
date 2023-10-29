@@ -170,4 +170,10 @@ class ProductRepositoryImplTest {
                 () -> assertEquals(0, repository.products.size())
         );
     }
+
+    @Test
+    void getRandomUUID() {
+        UUID uuid = repository.getRandomUUID();
+        assertNotNull(uuid);
+    }
 }

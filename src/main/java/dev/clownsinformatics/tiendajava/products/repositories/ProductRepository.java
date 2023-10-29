@@ -26,4 +26,6 @@ public interface ProductRepository {
     void deleteByIdCategory(UUID idCategory);
 
     void deleteAll();
+
+    UUID getRandomUUID();
 }

@@ -94,4 +94,9 @@ public class ProductRepositoryImpl implements ProductRepository {
         log.info("Eliminando todos los productos");
         products.clear();
     }
+
+    @Override
+    public UUID getRandomUUID() {
+        return UUID.randomUUID();
+    }
 }
