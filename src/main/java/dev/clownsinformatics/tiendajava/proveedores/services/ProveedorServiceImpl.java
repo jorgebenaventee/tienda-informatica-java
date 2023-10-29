@@ -54,9 +54,11 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     @Cacheable(key = "#idEmpresa")
     public Proveedor findByUUID(String idEmpresa) {
-        return proveedorRepository.getByUUID(UUID.fromString(idEmpresa)).orElseThrow(
-                () -> new ProveedorNotFound(idEmpresa)
-        );
+        var uuid = UUID.fromString(idEmpresa);
+        return proveedorRepository.getByUUID(uuid).orElseThrow(
+                () -> new ProveedorNotFound(uuid)
+
+                );
     }
 
     @Override
