@@ -4,9 +4,7 @@ import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 import dev.clownsinformatics.tiendajava.products.services.ProductService;
-import dev.clownsinformatics.tiendajava.products.services.ProductServiceImpl;
 import jakarta.validation.Valid;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,15 +30,15 @@ public class ProductosRestController {
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts(
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double weight,
             @RequestParam(required = false) String name
     ) {
-        log.info("Buscando todos los productos con categoria: {} y marca: {}", category, name);
-        return ResponseEntity.ok(productService.findAll(category, name));
+        log.info("Buscando todos los productos con categoria: {} y marca: {}", weight, name);
+        return ResponseEntity.ok(productService.findAll(weight, name));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable String id) {
         log.info("Buscando producto con id: {}", id);
         return ResponseEntity.ok(productService.findById(id));
     }
@@ -52,19 +50,19 @@ public class ProductosRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> putProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateDto product) {
+    public ResponseEntity<Product> putProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Actualizando producto con id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Product> patchProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateDto product) {
+    public ResponseEntity<Product> patchProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Actualizando parcialmente producto con id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.info("Eliminando producto con id: {}", id);
         productService.deleteById(id);
         return ResponseEntity.noContent().build();

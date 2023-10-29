@@ -1,6 +1,5 @@
 package dev.clownsinformatics.tiendajava.products.repositories;
 
-import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 
 import java.util.List;
@@ -10,27 +9,21 @@ import java.util.UUID;
 public interface ProductRepository {
     List<Product> findAll();
 
-    List<Product> findAllByCategory(Categories category);
+    List<Product> findAllByWeight(Double weight);
 
     List<Product> findAllByName(String name);
 
-    List<Product> findAllByNameAndCategory(String name, Categories category);
+    List<Product> findAllByNameAndWeight(String name, Double weight);
 
-    Optional<Product> findById(Long id);
+    Optional<Product> findById(UUID id);
 
-    Optional<Product> findByIdCategory(Long idCategory);
-
-    Optional<Product> findByUUID(UUID uuid);
+    Optional<Product> findByIdCategory(UUID idCategory);
 
     Product save(Product product);
 
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
-    void deleteByIdCategory(Long idCategory);
-
-    void deleteByUUID(UUID uuid);
+    void deleteByIdCategory(UUID idCategory);
 
     void deleteAll();
-
-    Long nextId();
 }

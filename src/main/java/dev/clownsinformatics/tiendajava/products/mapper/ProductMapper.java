@@ -11,15 +11,13 @@ import java.util.UUID;
 
 @Component
 public class ProductMapper {
-    public Product toProduct(Long id, ProductCreateDto productCreateDto) {
+    public Product toProduct(UUID id, ProductCreateDto productCreateDto) {
         return Product.builder()
                 .id(id)
-                .uuid(UUID.randomUUID())
                 .name(productCreateDto.name())
                 .weight(productCreateDto.weight())
-                .category(productCreateDto.category())
+                .idCategory(productCreateDto.idCategory() != null ? productCreateDto.idCategory() : UUID.randomUUID())
                 .price(productCreateDto.price())
-                .idCategory(productCreateDto.idCategory())
                 .img(productCreateDto.img())
                 .stock(productCreateDto.stock())
                 .description(productCreateDto.description())
@@ -31,12 +29,10 @@ public class ProductMapper {
     public Product toProduct(ProductUpdateDto productUpdateDto, Product product) {
         return Product.builder()
                 .id(product.getId())
-                .uuid(product.getUuid())
                 .name(productUpdateDto.name() != null ? productUpdateDto.name() : product.getName())
                 .weight(productUpdateDto.weight() != null ? productUpdateDto.weight() : product.getWeight())
-                .category(productUpdateDto.category() != null ? productUpdateDto.category() : product.getCategory())
-                .price(productUpdateDto.price() != null ? productUpdateDto.price() : product.getPrice())
                 .idCategory(productUpdateDto.idCategory() != null ? productUpdateDto.idCategory() : product.getIdCategory())
+                .price(productUpdateDto.price() != null ? productUpdateDto.price() : product.getPrice())
                 .img(productUpdateDto.img() != null ? productUpdateDto.img() : product.getImg())
                 .stock(productUpdateDto.stock() != null ? productUpdateDto.stock() : product.getStock())
                 .description(productUpdateDto.description() != null ? productUpdateDto.description() : product.getDescription())
@@ -48,12 +44,10 @@ public class ProductMapper {
     public ProductResponseDto toProductoResponseDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
-                product.getUuid(),
                 product.getName(),
                 product.getWeight(),
-                product.getCategory(),
-                product.getPrice(),
                 product.getIdCategory(),
+                product.getPrice(),
                 product.getImg(),
                 product.getStock(),
                 product.getDescription(),

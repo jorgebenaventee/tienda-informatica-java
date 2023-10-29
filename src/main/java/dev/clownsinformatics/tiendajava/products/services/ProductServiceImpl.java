@@ -2,10 +2,8 @@ package dev.clownsinformatics.tiendajava.products.services;
 
 import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.products.exceptions.ProductBadUUID;
 import dev.clownsinformatics.tiendajava.products.exceptions.ProductNotFound;
 import dev.clownsinformatics.tiendajava.products.mapper.ProductMapper;
-import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 import dev.clownsinformatics.tiendajava.products.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,7 @@ import java.util.UUID;
 @Service
 @CacheConfig(cacheNames = {"products"})
 @Slf4j
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
@@ -33,60 +31,48 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> findAll(String category, String name) {
-        if ((category == null) && (name == null || name.isEmpty())) {
+    public List<Product> findAll(Double weight, String name) {
+        if ((weight == null) && (name == null || name.isEmpty())) {
             log.info("Buscando todos los productos");
             return productRepository.findAll();
         }
-        if ((name != null && !name.isEmpty()) && category == null) {
+        if ((name != null && !name.isEmpty()) && weight == null) {
             log.info("Buscando productos por nombre: " + name);
             return productRepository.findAllByName(name);
         }
         if (name == null || name.isEmpty()) {
-            log.info("Buscando productos por categoria: " + category);
-            return productRepository.findAllByCategory(Categories.valueOf(category.toUpperCase()));
+            log.info("Buscando productos por categoria: " + weight);
+            return productRepository.findAllByWeight(weight);
         }
-        log.info("Buscando productos por categoria: " + category + " y nombre: " + name);
-        return productRepository.findAllByNameAndCategory(name, Categories.valueOf(category.toUpperCase()));
+        log.info("Buscando productos por categoria: " + weight + " y nombre: " + name);
+        return productRepository.findAllByNameAndWeight(name, weight);
     }
 
     @Override
     @Cacheable
-    public Product findById(Long id) {
+    public Product findById(String id) {
         log.info("Buscando producto por id: " + id);
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFound(id.toString()));
+        return productRepository.findById(UUID.fromString(id)).orElseThrow(() -> new ProductNotFound(id));
     }
 
     @Override
     @Cacheable
-    public Product findByIdCategory(Long idCategory) {
+    public Product findByIdCategory(String idCategory) {
         log.info("Buscando producto por id de categoria: " + idCategory);
-        return productRepository.findByIdCategory(idCategory).orElseThrow(() -> new ProductNotFound(idCategory.toString()));
-    }
-
-    @Override
-    @Cacheable
-    public Product findByUUID(String uuid) {
-        log.info("Buscando producto por uuid: " + uuid);
-        try {
-            return productRepository.findByUUID(UUID.fromString(uuid)).orElseThrow(() -> new ProductNotFound(uuid));
-        } catch (IllegalArgumentException e) {
-            throw new ProductBadUUID(uuid);
-        }
+        return productRepository.findByIdCategory(UUID.fromString(idCategory)).orElseThrow(() -> new ProductNotFound(idCategory));
     }
 
     @Override
     @CachePut
     public Product save(ProductCreateDto productCreateDto) {
         log.info("Creando producto: " + productCreateDto);
-        Long id = productRepository.nextId();
-        Product product = productMapper.toProduct(id, productCreateDto);
+        Product product = productMapper.toProduct(UUID.randomUUID(), productCreateDto);
         return productRepository.save(product);
     }
 
     @Override
     @CachePut
-    public Product update(Long id, ProductUpdateDto productUpdateDto) {
+    public Product update(String id, ProductUpdateDto productUpdateDto) {
         log.info("Actualizando producto con id: " + id);
         Product product = findById(id);
         Product updatedProduct = productMapper.toProduct(productUpdateDto, product);
@@ -95,9 +81,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @CacheEvict
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         log.info("Eliminando producto con id: " + id);
         findById(id);
-        productRepository.deleteById(id);
+        productRepository.deleteById(UUID.fromString(id));
     }
 }

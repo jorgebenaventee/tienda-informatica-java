@@ -1,6 +1,5 @@
 package dev.clownsinformatics.tiendajava.products.repositories;
 
-import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,15 +12,15 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductRepositoryImplTest {
+    private final UUID idProduct1 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785464");
+    private final UUID idProduct2 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462");
 
     private final Product product1 = Product.builder()
-            .id(1L)
-            .uuid(UUID.randomUUID())
+            .id(idProduct1)
             .name("Product 1")
             .weight(2.5)
-            .category(Categories.SOBREMESA)
+            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
             .price(50.0)
-            .idCategory(1L)
             .img("imagen1.jpg")
             .stock(10)
             .description("Descripción del producto 1")
@@ -30,19 +29,18 @@ class ProductRepositoryImplTest {
             .build();
 
     private final Product product2 = Product.builder()
-            .id(2L)
-            .uuid(UUID.randomUUID())
+            .id(idProduct2)
             .name("Product 2")
-            .weight(2.5)
-            .category(Categories.SOBREMESA)
+            .weight(3.2)
+            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"))
             .price(50.0)
-            .idCategory(1L)
             .img("imagen2.jpg")
             .stock(10)
             .description("Descripción del producto 2")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
             .build();
+
     private ProductRepositoryImpl repository;
 
     @BeforeEach
@@ -64,12 +62,11 @@ class ProductRepositoryImplTest {
     }
 
     @Test
-    void findAllByCategory() {
-        List<Product> products = repository.findAllByCategory(Categories.SOBREMESA);
+    void findAllByWeight() {
+        List<Product> products = repository.findAllByWeight(3.2);
         assertAll(
-                () -> assertEquals(2, products.size()),
-                () -> assertEquals(product1, products.get(0)),
-                () -> assertEquals(product2, products.get(1))
+                () -> assertEquals(1, products.size()),
+                () -> assertEquals(product2, products.get(0))
         );
     }
 
@@ -83,8 +80,8 @@ class ProductRepositoryImplTest {
     }
 
     @Test
-    void findAllByNameAndCategory() {
-        List<Product> products = repository.findAllByNameAndCategory("Product 1", Categories.SOBREMESA);
+    void findAllByNameAndWeight() {
+        List<Product> products = repository.findAllByNameAndWeight("Product 1", 2.5);
         assertAll(
                 () -> assertEquals(1, products.size()),
                 () -> assertEquals(product1, products.get(0))
@@ -93,7 +90,7 @@ class ProductRepositoryImplTest {
 
     @Test
     void findById() {
-        Optional<Product> product = repository.findById(1L);
+        Optional<Product> product = repository.findById(idProduct1);
         assertAll(
                 () -> assertTrue(product.isPresent()),
                 () -> assertEquals(product1.getId(), product.get().getId())
@@ -101,8 +98,8 @@ class ProductRepositoryImplTest {
     }
 
     @Test
-    void findByIdNotFound(){
-        Optional<Product> product = repository.findById(100L);
+    void findByIdNotFound() {
+        Optional<Product> product = repository.findById(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785460"));
         assertAll(
                 () -> assertTrue(product.isEmpty()),
                 () -> assertNotNull(product)
@@ -111,7 +108,7 @@ class ProductRepositoryImplTest {
 
     @Test
     void findByIdCategory() {
-        Optional<Product> products = repository.findByIdCategory(1L);
+        Optional<Product> products = repository.findByIdCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"));
         assertAll(
                 () -> assertTrue(products.isPresent()),
                 () -> assertEquals(product1.getIdCategory(), products.get().getIdCategory())
@@ -119,26 +116,8 @@ class ProductRepositoryImplTest {
     }
 
     @Test
-    void findByIdCategoryNotFound(){
-        Optional<Product> product = repository.findByIdCategory(100L);
-        assertAll(
-                () -> assertTrue(product.isEmpty()),
-                () -> assertNotNull(product)
-        );
-    }
-
-    @Test
-    void findByUUID() {
-        Optional<Product> products = repository.findByUUID(product1.getUuid());
-        assertAll(
-                () -> assertTrue(products.isPresent()),
-                () -> assertEquals(product1.getUuid(), products.get().getUuid())
-        );
-    }
-
-    @Test
-    void findByUUIDNotFound(){
-        Optional<Product> product = repository.findByUUID(UUID.randomUUID());
+    void findByIdCategoryNotFound() {
+        Optional<Product> product = repository.findByIdCategory(UUID.fromString("cdf6ff32-181e-4006-9f4f-694e00785461"));
         assertAll(
                 () -> assertTrue(product.isEmpty()),
                 () -> assertNotNull(product)
@@ -147,14 +126,13 @@ class ProductRepositoryImplTest {
 
     @Test
     void save() {
+        UUID id = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785460");
         Product product = Product.builder()
-                .id(3L)
-                .uuid(UUID.randomUUID())
+                .id(id)
                 .name("Product 3")
                 .weight(2.5)
-                .category(Categories.SOBREMESA)
+                .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
                 .price(50.0)
-                .idCategory(1L)
                 .img("imagen3.jpg")
                 .stock(10)
                 .description("Descripción del producto 3")
@@ -164,33 +142,24 @@ class ProductRepositoryImplTest {
         repository.save(product);
         assertAll(
                 () -> assertEquals(3, repository.products.size()),
-                () -> assertEquals(product, repository.products.get(3L))
+                () -> assertEquals(product, repository.products.get(id))
         );
     }
 
     @Test
     void deleteById() {
-        repository.deleteById(1L);
+        repository.deleteById(idProduct1);
         assertAll(
                 () -> assertEquals(1, repository.products.size()),
-                () -> assertEquals(product2, repository.products.get(2L))
+                () -> assertNull(repository.products.get(idProduct1))
         );
     }
 
     @Test
     void deleteByIdCategory() {
-        repository.deleteByIdCategory(1L);
+        repository.deleteByIdCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"));
         assertAll(
-                () -> assertEquals(0, repository.products.size())
-        );
-    }
-
-    @Test
-    void deleteByUUID() {
-        repository.deleteByUUID(product1.getUuid());
-        assertAll(
-                () -> assertEquals(1, repository.products.size()),
-                () -> assertEquals(product2, repository.products.get(2L))
+                () -> assertEquals(1, repository.products.size())
         );
     }
 
@@ -200,11 +169,5 @@ class ProductRepositoryImplTest {
         assertAll(
                 () -> assertEquals(0, repository.products.size())
         );
-    }
-
-    @Test
-    void nextId() {
-        Long id = repository.nextId();
-        assertEquals(3L, id);
     }
 }

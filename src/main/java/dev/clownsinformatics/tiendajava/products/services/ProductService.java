@@ -2,23 +2,20 @@ package dev.clownsinformatics.tiendajava.products.services;
 
 import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.products.models.Categories;
 import dev.clownsinformatics.tiendajava.products.models.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAll(String category, String name);
+    List<Product> findAll(Double weight, String name);
 
-    Product findById(Long id);
+    Product findById(String id);
 
-    Product findByIdCategory(Long idCategory);
-
-    Product findByUUID(String uuid);
+    Product findByIdCategory(String idCategory);
 
     Product save(ProductCreateDto productCreateDto);
 
-    Product update(Long id, ProductUpdateDto productUpdateDto);
+    Product update(String id, ProductUpdateDto productUpdateDto);
 
-    void deleteById(Long id);
+    void deleteById(String id);
 }
