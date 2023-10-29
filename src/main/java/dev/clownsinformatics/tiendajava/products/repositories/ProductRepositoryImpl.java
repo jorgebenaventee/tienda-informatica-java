@@ -11,7 +11,7 @@ import java.util.*;
 @Slf4j
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
-    private final Map<Long, Product> products = new LinkedHashMap<>();
+    HashMap<Long, Product> products = new LinkedHashMap<>();
 
     public ProductRepositoryImpl() {
         for (int i = 1; i <= 50; i++) {
@@ -31,7 +31,6 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .build());
         }
     }
-
 
     @Override
     public List<Product> findAll() {

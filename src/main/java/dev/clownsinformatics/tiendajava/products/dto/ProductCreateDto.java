@@ -16,15 +16,17 @@ public record ProductCreateDto (
     Double weight,
 
     @NotNull(message = "La categoría no puede estar vacía")
-    @Min(value = 0, message = "La categoría debe ser mayor a 0")
     Categories category,
 
     @NotNull(message = "El precio no puede estar vacío")
     @Min(value = 0, message = "El precio debe ser mayor a 0")
     Double price,
 
+    @NotNull(message = "El id de la categoría no puede estar vacío")
+    @Min(value = 0, message = "El id de la categoría debe ser mayor a 0")
+    Long idCategory,
+
     @NotBlank(message = "La imagen no puede estar vacía")
-    @Min(value = 0, message = "La imagen debe ser mayor a 0")
     String img,
 
     @NotNull(message = "El stock no puede estar vacío")

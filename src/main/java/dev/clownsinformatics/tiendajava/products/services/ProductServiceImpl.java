@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> findAll(Categories category, String name) {
+    public List<Product> findAll(String category, String name) {
         if ((category == null) && (name == null || name.isEmpty())) {
             log.info("Buscando todos los productos");
             return productRepository.findAll();
@@ -43,26 +44,28 @@ public class ProductServiceImpl implements ProductService{
         }
         if (name == null || name.isEmpty()) {
             log.info("Buscando productos por categoria: " + category);
-            return productRepository.findAllByCategory(category);
+            return productRepository.findAllByCategory(Categories.valueOf(category.toUpperCase()));
         }
         log.info("Buscando productos por categoria: " + category + " y nombre: " + name);
-        return productRepository.findAllByNameAndCategory(name, category);
+        return productRepository.findAllByNameAndCategory(name, Categories.valueOf(category.toUpperCase()));
     }
 
     @Override
-    @CachePut(key = "#id")
+    @Cacheable
     public Product findById(Long id) {
         log.info("Buscando producto por id: " + id);
         return productRepository.findById(id).orElseThrow(() -> new ProductNotFound(id.toString()));
     }
 
     @Override
+    @Cacheable
     public Product findByIdCategory(Long idCategory) {
         log.info("Buscando producto por id de categoria: " + idCategory);
         return productRepository.findByIdCategory(idCategory).orElseThrow(() -> new ProductNotFound(idCategory.toString()));
     }
 
     @Override
+    @Cacheable
     public Product findByUUID(String uuid) {
         log.info("Buscando producto por uuid: " + uuid);
         try {
@@ -73,7 +76,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @CachePut(key = "#result.id")
+    @CachePut
     public Product save(ProductCreateDto productCreateDto) {
         log.info("Creando producto: " + productCreateDto);
         Long id = productRepository.nextId();
@@ -82,6 +85,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @CachePut
     public Product update(Long id, ProductUpdateDto productUpdateDto) {
         log.info("Actualizando producto con id: " + id);
         Product product = findById(id);
@@ -90,7 +94,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    @CacheEvict(key = "#id")
+    @CacheEvict
     public void deleteById(Long id) {
         log.info("Eliminando producto con id: " + id);
         findById(id);

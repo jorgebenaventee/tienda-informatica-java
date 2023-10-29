@@ -1,6 +1,5 @@
 package dev.clownsinformatics.tiendajava.products.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,6 @@ import java.util.UUID;
 
 @Builder
 @Data
-@AllArgsConstructor
 public class Product {
     private Long id;
     private UUID uuid;

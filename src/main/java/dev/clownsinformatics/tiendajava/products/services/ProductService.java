@@ -8,7 +8,7 @@ import dev.clownsinformatics.tiendajava.products.models.Product;
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAll(Categories category, String name);
+    List<Product> findAll(String category, String name);
 
     Product findById(Long id);
 
