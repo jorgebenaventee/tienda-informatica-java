@@ -4,6 +4,7 @@ import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface ProveedorRepository {
 
@@ -16,6 +17,8 @@ public interface ProveedorRepository {
     List<Proveedor> getByDireccion(String direccion);
 
     List<Proveedor> getByNombreAndDireccion(String nombre, String direccion);
+
+    Optional<Proveedor> getByUUID(UUID idEmpresa);
 
     Proveedor save(Proveedor proveedores);
 

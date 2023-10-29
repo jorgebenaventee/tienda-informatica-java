@@ -70,6 +70,12 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
     }
 
     @Override
+    public Optional<Proveedor> getByUUID(UUID idEmpresa) {
+        return proveedores.values().stream()
+                .filter(proveedor -> proveedor.getIdEmpresa().equals(idEmpresa)).findFirst();
+    }
+
+    @Override
     public Proveedor save(Proveedor proveedor) {
         return proveedores.put(proveedor.getIdProveedor(), proveedor);
 

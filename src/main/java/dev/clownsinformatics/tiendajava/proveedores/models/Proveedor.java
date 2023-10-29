@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Builder
 @Data
-public class Proveedores {
+public class Proveedor {
     private UUID idEmpresa;
     @Min(value = 1, message = "El id del proveedor debe ser mayor a 0")
     private Long idProveedor;
