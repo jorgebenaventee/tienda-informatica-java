@@ -7,7 +7,7 @@ public record ProveedorCreateDto(
         @NotBlank(message = "El nombre no puede estar vacio")
         String nombre,
         @Min(value = 0, message = "El contacto no puede ser negativo")
-        String contacto,
+        Integer contacto,
         @NotBlank(message = "La direccion no puede estar vacia")
         String direccion
 ) {

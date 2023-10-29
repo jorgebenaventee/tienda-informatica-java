@@ -14,8 +14,8 @@ public interface ProveedorService {
 
     Proveedor save(ProveedorCreateDto proveedorCreateDto);
 
-    Proveedor update(ProveedorUpdateDto proveedorUpdateDto, UUID idProveedor);
+    Proveedor update(ProveedorUpdateDto proveedorUpdateDto, String idProveedor);
 
-    void deleteByUUID(UUID idProveedor);
+    void deleteByUUID(String idProveedor);
 }
 

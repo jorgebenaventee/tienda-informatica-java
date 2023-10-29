@@ -70,4 +70,8 @@ public class ProveedorRepositoryImpl implements ProveedorRepository {
         proveedores.remove(idProveedor);
     }
 
+    @Override
+    public UUID generateUUID() {
+        return UUID.randomUUID();
+    }
 }

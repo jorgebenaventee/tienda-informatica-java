@@ -56,21 +56,22 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     @CachePut(key = "#result.idProveedor")
     public Proveedor save(ProveedorCreateDto proveedorCreateDto) {
-        return proveedorRepository.save(proveedorMapper.toProveedor(proveedorCreateDto, UUID.randomUUID()));
+        return proveedorRepository.save(proveedorMapper.toProveedor(proveedorCreateDto, proveedorRepository.generateUUID()));
     }
 
     @Override
     @CachePut(key = "#idProveedor")
-    public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, UUID idProveedor) {
-        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorRepository.getByUUID(idProveedor).orElseThrow(
-                () -> new ProveedorNotFound(idProveedor)
+    public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, String idProveedor) {
+        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorRepository.getByUUID(UUID.fromString(idProveedor)).orElseThrow(
+                () -> new ProveedorNotFound(UUID.fromString(idProveedor))
         )));
     }
 
     @Override
     @CacheEvict(key = "#idProveedor")
-    public void deleteByUUID(UUID idProveedor) {
-        proveedorRepository.deleteByUUID(idProveedor);
+    public void deleteByUUID(String idProveedor) {
+        findByUUID(idProveedor);
+        proveedorRepository.deleteByUUID(UUID.fromString(idProveedor));
 
     }
 }

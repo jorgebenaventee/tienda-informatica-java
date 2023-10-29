@@ -13,7 +13,7 @@ public class ProveedorMapper {
         return Proveedor.builder()
                 .idProveedor(idProveedor)
                 .nombre(proveedorCreateDto.nombre())
-                .contacto(Integer.valueOf(proveedorCreateDto.contacto()))
+                .contacto(proveedorCreateDto.contacto())
                 .direccion(proveedorCreateDto.direccion())
                 .build();
     }
@@ -30,7 +30,7 @@ public class ProveedorMapper {
     public ProveedorCreateDto toProveedorDto(Proveedor proveedor) {
         return new ProveedorCreateDto(
                 proveedor.getNombre(),
-                proveedor.getContacto().toString(),
+                proveedor.getContacto(),
                 proveedor.getDireccion(
                 )
         );

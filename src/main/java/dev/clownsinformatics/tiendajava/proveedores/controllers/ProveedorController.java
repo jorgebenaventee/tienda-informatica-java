@@ -22,12 +22,11 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @Slf4j
-@RequestMapping("/api/proveedor")
+@RequestMapping("/proveedor")
 @RestController
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
-    private final Logger logger = Logger.getLogger(ProveedorController.class.getName());
 
     @Autowired
     public ProveedorController(ProveedorService proveedorService) {
@@ -40,12 +39,11 @@ public class ProveedorController {
         return ResponseEntity.ok(proveedorService.findAll(nombre, direccion));
     }
 
-    @GetMapping
-    public Proveedor getProveedorByUUID(@PathVariable UUID idProveedor) {
+    @GetMapping("/{id}")
+    public Proveedor getProveedorByUUID(@PathVariable String idProveedor) {
         log.info("Buscando proveedor con ID: " + idProveedor);
-        return proveedorService.findByUUID(idProveedor.toString());
+        return proveedorService.findByUUID(idProveedor);
     }
-
     @NonNull
     @PostMapping()
     public ResponseEntity<Proveedor> createProveedor(@Valid @RequestBody ProveedorCreateDto proveedorCreateDto) {
@@ -55,21 +53,21 @@ public class ProveedorController {
 
     @NonNull
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedor(@PathVariable UUID idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+    public ResponseEntity<Proveedor> updateProveedor(@PathVariable String idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
         log.info("Actualizando proveedor con ID: " + idProveedor);
         return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
     }
 
     @NonNull
     @PatchMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable UUID idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable String idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
         log.info("Actualizando proveedor con ID: " + idProveedor);
         return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProveedor(@PathVariable UUID idProveedor) {
+    public ResponseEntity<Void> deleteProveedor(@PathVariable String idProveedor) {
         proveedorService.deleteByUUID(idProveedor);
         return ResponseEntity.noContent().build();
     }

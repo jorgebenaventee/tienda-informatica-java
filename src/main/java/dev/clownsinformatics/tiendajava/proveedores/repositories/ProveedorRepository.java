@@ -24,6 +24,8 @@ public interface ProveedorRepository {
 
     void deleteByUUID(UUID idProveedor);
 
+    UUID generateUUID();
+
 
 }
 
