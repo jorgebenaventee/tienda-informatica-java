@@ -41,7 +41,7 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductResponseDto toProductoResponseDto(Product product) {
+    public ProductResponseDto toProductResponseDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
                 product.getName(),

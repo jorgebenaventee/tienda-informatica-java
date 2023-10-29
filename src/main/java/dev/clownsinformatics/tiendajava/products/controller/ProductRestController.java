@@ -20,11 +20,11 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/productos")
-public class ProductosRestController {
+public class ProductRestController {
     private final ProductService productService;
 
     @Autowired
-    public ProductosRestController(ProductService productService) {
+    public ProductRestController(ProductService productService) {
         this.productService = productService;
     }
 
