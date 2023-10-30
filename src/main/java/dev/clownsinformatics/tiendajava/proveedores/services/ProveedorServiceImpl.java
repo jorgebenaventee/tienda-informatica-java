@@ -62,9 +62,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     @CachePut(key = "#idProveedor")
     public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, String idProveedor) {
-        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorRepository.getByUUID(UUID.fromString(idProveedor)).orElseThrow(
-                () -> new ProveedorNotFound(UUID.fromString(idProveedor))
-        )));
+        return proveedorRepository.update(proveedorMapper.toProveedor(proveedorUpdateDto, findByUUID(idProveedor)));
     }
 
     @Override
