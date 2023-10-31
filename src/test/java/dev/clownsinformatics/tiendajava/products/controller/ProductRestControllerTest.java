@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -68,10 +67,6 @@ class ProductRestControllerTest {
     MockMvc mockMvc;
     @MockBean
     private ProductService productService;
-    @Autowired
-    private JacksonTester<Product> jsonProductCreateDto;
-    @Autowired
-    private JacksonTester<Product> jsonProductUpdateDto;
 
     @Autowired
     public ProductRestControllerTest(ProductService productService) {
@@ -483,7 +478,7 @@ class ProductRestControllerTest {
                 50.0,
                 "imagen1.jpg",
                 10,
-                ""
+                null
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -528,7 +523,7 @@ class ProductRestControllerTest {
 
 
     @Test
-    void putProduct() throws Exception{
+    void putProduct() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + idProduct1;
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
@@ -554,19 +549,147 @@ class ProductRestControllerTest {
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(product1.getId(), productResponse.id()),
                 () -> assertEquals(product1.getName(), productResponse.name())
+        );
+        verify(productService, times(1)).update(anyString(), any(ProductUpdateDto.class));
+    }
 
+    @Test
+    void putProductIdNotFound() throws Exception {
+        var LOCAL_URL = BASE_URL + "/" + idProduct1;
+        ProductUpdateDto productUpdateDto = new ProductUpdateDto(
+                "Product 1",
+                2.5,
+                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
+                50.0,
+                "imagen1.jpg",
+                10,
+                "Descripcion del producto 1"
+        );
+
+        when(productService.update(anyString(), any())).thenThrow(new ProductNotFound(idProduct1.toString()));
+        assertAll(
+                () -> assertEquals(404, mockMvc.perform(
+                                put(LOCAL_URL)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(mapper.writeValueAsString(productUpdateDto))
+                                        .accept(MediaType.APPLICATION_JSON))
+                        .andReturn().getResponse().getStatus())
         );
     }
 
     @Test
-    void patchProduct() {
+    void putProductWithBadRequest() throws Exception {
+        var LOCAL_URL = BASE_URL + "/" + idProduct1;
+        ProductUpdateDto productUpdateDto = new ProductUpdateDto(
+                "",
+                2.5,
+                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
+                50.0,
+                "",
+                10,
+                "Descripcion del producto 1"
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        put(LOCAL_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(productUpdateDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        System.out.println(response.getContentAsString());
+
+        assertAll(
+                () -> assertEquals(400, response.getStatus()),
+                () -> assertTrue(response.getContentAsString().contains("El nombre debe tener entre 3 y 50 caracteres"))
+        );
     }
 
     @Test
-    void deleteProduct() {
+    void patchFunko() throws Exception {
+        var LOCAL_URL = BASE_URL + "/1";
+        ProductUpdateDto productUpdateDto = new ProductUpdateDto(
+                "Product 1",
+                2.5,
+                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
+                50.0,
+                "imagen1.jpg",
+                10,
+                "Descripcion del producto 1"
+        );
+        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(product1);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        patch(LOCAL_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(productUpdateDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        ProductResponseDto res = mapper.readValue(response.getContentAsString(), ProductResponseDto.class);
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(product1.getId(), res.id()),
+                () -> assertEquals(product1.getName(), res.name()),
+                () -> assertEquals(product1.getWeight(), res.weight()),
+                () -> assertEquals(product1.getIdCategory(), res.idCategory()),
+                () -> assertEquals(product1.getPrice(), res.price()),
+                () -> assertEquals(product1.getImg(), res.img()),
+                () -> assertEquals(product1.getStock(), res.stock()),
+                () -> assertEquals(product1.getDescription(), res.description())
+        );
+        verify(productService, times(1)).update(anyString(), any(ProductUpdateDto.class));
     }
 
     @Test
-    void handleValidationExceptions() {
+    void patchFunkoNotFound() {
+        var LOCAL_URL = BASE_URL + "/1";
+        ProductUpdateDto productUpdateDto = new ProductUpdateDto(
+                "Product 1",
+                2.5,
+                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
+                50.0,
+                "imagen1.jpg",
+                10,
+                "Descripcion del producto 1"
+        );
+        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Funko no encontrado"));
+        assertAll(
+                () -> assertEquals(404, mockMvc.perform(
+                                patch(LOCAL_URL)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(mapper.writeValueAsString(productUpdateDto))
+                                        .accept(MediaType.APPLICATION_JSON))
+                        .andReturn().getResponse().getStatus())
+        );
+    }
+
+
+    @Test
+    void deleteFunko() throws Exception {
+        var LOCAL_URL = BASE_URL + "/1";
+        doNothing().when(productService).deleteById(anyString());
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete(LOCAL_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(204, response.getStatus())
+        );
+        verify(productService, times(1)).deleteById(anyString());
+    }
+
+    @Test
+    void deleteFunkoNotFound() throws Exception {
+        var LOCAL_URL = BASE_URL + "/1";
+        doThrow(new ProductNotFound("Producto no encontrado")).when(productService).deleteById(anyString());
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete(LOCAL_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        assertAll(
+                () -> assertEquals(404, response.getStatus())
+        );
+        verify(productService, times(1)).deleteById(anyString());
     }
 }
