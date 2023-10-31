@@ -23,7 +23,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .price(50.0 + i)
                     .img("imagen" + i + ".jpg")
                     .stock(10 + i)
-                    .description("Descripción del producto " + i)
+                    .description("Descripcion del producto " + i)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .build());
