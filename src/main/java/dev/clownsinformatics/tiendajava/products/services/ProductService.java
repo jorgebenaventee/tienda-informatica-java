@@ -11,8 +11,6 @@ public interface ProductService {
 
     Product findById(String id);
 
-    Product findByIdCategory(String idCategory);
-
     Product save(ProductCreateDto productCreateDto);
 
     Product update(String id, ProductUpdateDto productUpdateDto);

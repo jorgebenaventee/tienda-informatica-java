@@ -16,7 +16,6 @@ public class ProductMapper {
                 .id(id)
                 .name(productCreateDto.name())
                 .weight(productCreateDto.weight())
-                .idCategory(productCreateDto.idCategory() != null ? productCreateDto.idCategory() : UUID.randomUUID())
                 .price(productCreateDto.price())
                 .img(productCreateDto.img())
                 .stock(productCreateDto.stock())
@@ -31,7 +30,6 @@ public class ProductMapper {
                 .id(product.getId())
                 .name(productUpdateDto.name() != null ? productUpdateDto.name() : product.getName())
                 .weight(productUpdateDto.weight() != null ? productUpdateDto.weight() : product.getWeight())
-                .idCategory(productUpdateDto.idCategory() != null ? productUpdateDto.idCategory() : product.getIdCategory())
                 .price(productUpdateDto.price() != null ? productUpdateDto.price() : product.getPrice())
                 .img(productUpdateDto.img() != null ? productUpdateDto.img() : product.getImg())
                 .stock(productUpdateDto.stock() != null ? productUpdateDto.stock() : product.getStock())
@@ -46,7 +44,6 @@ public class ProductMapper {
                 product.getId(),
                 product.getName(),
                 product.getWeight(),
-                product.getIdCategory(),
                 product.getPrice(),
                 product.getImg(),
                 product.getStock(),

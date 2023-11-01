@@ -41,12 +41,11 @@ class ProductRepositoryImplTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-    private ProductRepositoryImpl repository;
+    private ProductRepository repository;
 
     @BeforeEach
     void setUp() {
-        repository = new ProductRepositoryImpl();
-        repository.products.clear();
+        repository.deleteAll();
         repository.save(product1);
         repository.save(product2);
     }
@@ -141,7 +140,7 @@ class ProductRepositoryImplTest {
                 .build();
         repository.save(product);
         assertAll(
-                () -> assertEquals(3, repository.products.size()),
+                () -> assertEquals(3, repository.findAll().size()),
                 () -> assertEquals(product, repository.products.get(id))
         );
     }
@@ -150,7 +149,7 @@ class ProductRepositoryImplTest {
     void deleteById() {
         repository.deleteById(idProduct1);
         assertAll(
-                () -> assertEquals(1, repository.products.size()),
+                () -> assertEquals(1, repository.findAll().size()),
                 () -> assertNull(repository.products.get(idProduct1))
         );
     }
@@ -159,7 +158,7 @@ class ProductRepositoryImplTest {
     void deleteByIdCategory() {
         repository.deleteByIdCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"));
         assertAll(
-                () -> assertEquals(1, repository.products.size())
+                () -> assertEquals(1, repository.findAll().size())
         );
     }
 
@@ -167,7 +166,7 @@ class ProductRepositoryImplTest {
     void deleteAll() {
         repository.deleteAll();
         assertAll(
-                () -> assertEquals(0, repository.products.size())
+                () -> assertEquals(0, repository.findAll().size())
         );
     }
 

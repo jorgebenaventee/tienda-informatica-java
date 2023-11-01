@@ -56,17 +56,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable
-    public Product findByIdCategory(String idCategory) {
-        log.info("Buscando producto por id de categoria: " + idCategory);
-        return productRepository.findByIdCategory(UUID.fromString(idCategory)).orElseThrow(() -> new ProductNotFound(idCategory));
-    }
-
-    @Override
     @CachePut
     public Product save(ProductCreateDto productCreateDto) {
         log.info("Creando producto: " + productCreateDto);
-        Product product = productMapper.toProduct(productRepository.getRandomUUID(), productCreateDto);
+        Product product = productMapper.toProduct(UUID.randomUUID(), productCreateDto);
         return productRepository.save(product);
     }
 

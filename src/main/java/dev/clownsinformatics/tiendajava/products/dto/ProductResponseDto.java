@@ -7,7 +7,6 @@ public record ProductResponseDto(
         UUID id,
         String name,
         Double weight,
-        UUID idCategory,
         Double price,
         String img,
         Integer stock,
