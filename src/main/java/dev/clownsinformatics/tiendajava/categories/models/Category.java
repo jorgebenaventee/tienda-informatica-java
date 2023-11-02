@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.models;
+package dev.clownsinformatics.tiendajava.categories.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
