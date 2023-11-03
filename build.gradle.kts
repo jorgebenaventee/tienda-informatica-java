@@ -22,12 +22,13 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    implementation("org.springframework.boot:spring-boot-starter-cache:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.0.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
 }
 
 tasks.withType<Test> {

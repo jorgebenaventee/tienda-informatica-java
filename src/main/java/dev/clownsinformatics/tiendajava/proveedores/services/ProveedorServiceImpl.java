@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.proveedores.services;
 
 import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorCreateDto;
+import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorBadRequest;
 import dev.clownsinformatics.tiendajava.proveedores.mapper.ProveedorMapper;
 import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorNotFound;
@@ -47,10 +48,14 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     @Cacheable(key = "#idProveedor")
     public Proveedor findByUUID(String idProveedor) {
-        var uuid = UUID.fromString(idProveedor);
-        return proveedorRepository.getByUUID(uuid).orElseThrow(
-                () -> new ProveedorNotFound(uuid)
-                );
+        try {
+            UUID uuid = UUID.fromString(idProveedor);
+            return proveedorRepository.getByUUID(uuid).orElseThrow(
+                    () -> new ProveedorNotFound(uuid)
+            );
+        } catch (IllegalArgumentException e) {
+            throw new ProveedorBadRequest(idProveedor + " no es un UUID válido");
+        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dev.clownsinformatics.tiendajava.proveedores.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -20,4 +22,19 @@ public class Proveedor {
     private String direccion;
     @Builder.Default
     private LocalDate fechaContratacion = LocalDate.now();
+
+    @JsonCreator
+    public Proveedor(
+            @JsonProperty("idProveedor") UUID idProveedor,
+                     @JsonProperty("nombre") String nombre,
+                     @JsonProperty("contacto") Integer contacto,
+                     @JsonProperty("direccion") String direccion,
+                     @JsonProperty("fechaContratacion") LocalDate fechaContratacion
+    ) {
+        this.idProveedor = idProveedor;
+        this.nombre = nombre;
+        this.contacto = contacto;
+        this.direccion = direccion;
+        this.fechaContratacion = fechaContratacion;
+    }
 }

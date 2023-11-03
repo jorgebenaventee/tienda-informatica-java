@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.objenesis.instantiator.util.UnsafeUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 @Slf4j
 @RequestMapping("/proveedor")
@@ -40,10 +37,11 @@ public class ProveedorController {
     }
 
     @GetMapping("/{id}")
-    public Proveedor getProveedorByUUID(@PathVariable String idProveedor) {
-        log.info("Buscando proveedor con ID: " + idProveedor);
-        return proveedorService.findByUUID(idProveedor);
+    public Proveedor getProveedorByUUID(@PathVariable String id) {
+        log.info("Buscando proveedor con ID: " + id);
+        return proveedorService.findByUUID(id);
     }
+
     @NonNull
     @PostMapping()
     public ResponseEntity<Proveedor> createProveedor(@Valid @RequestBody ProveedorCreateDto proveedorCreateDto) {
@@ -53,22 +51,22 @@ public class ProveedorController {
 
     @NonNull
     @PutMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedor(@PathVariable String idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
-        log.info("Actualizando proveedor con ID: " + idProveedor);
-        return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
+    public ResponseEntity<Proveedor> updateProveedor(@PathVariable String id, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+        log.info("Actualizando proveedor con ID: " + id);
+        return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, id));
     }
 
     @NonNull
     @PatchMapping("/{id}")
-    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable String idProveedor, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
-        log.info("Actualizando proveedor con ID: " + idProveedor);
-        return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, idProveedor));
+    public ResponseEntity<Proveedor> updateProveedorPatch(@PathVariable String id, @Valid @RequestBody ProveedorUpdateDto proveedorUpdateDto) {
+        log.info("Actualizando proveedor con ID: " + id);
+        return ResponseEntity.ok(proveedorService.update(proveedorUpdateDto, id));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProveedor(@PathVariable String idProveedor) {
-        proveedorService.deleteByUUID(idProveedor);
+    public ResponseEntity<Void> deleteProveedor(@PathVariable String id) {
+        proveedorService.deleteByUUID(id);
         return ResponseEntity.noContent().build();
     }
 
