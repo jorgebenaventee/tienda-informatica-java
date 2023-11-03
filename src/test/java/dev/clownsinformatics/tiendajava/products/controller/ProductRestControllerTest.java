@@ -265,7 +265,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El nombre no puede estar vacio"))
+                () -> assertTrue(response.getContentAsString().contains("El name no puede estar vacio"))
         );
     }
 
@@ -290,7 +290,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El nombre debe tener entre 3 y 50 caracteres"))
+                () -> assertTrue(response.getContentAsString().contains("El name debe tener entre 3 y 50 caracteres"))
         );
     }
 
@@ -600,7 +600,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El nombre debe tener entre 3 y 50 caracteres"))
+                () -> assertTrue(response.getContentAsString().contains("El name debe tener entre 3 y 50 caracteres"))
         );
     }
 

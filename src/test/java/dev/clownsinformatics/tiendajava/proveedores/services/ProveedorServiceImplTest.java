@@ -70,7 +70,7 @@ class ProveedorServiceImplTest {
         Proveedor proveedorActual = proveedorService.findByUUID(uuid.toString());
         assertAll(
                 () -> assertEquals(proveedor1.getIdProveedor(), proveedorActual.getIdProveedor()),
-                () -> assertEquals(proveedor1.getNombre(), proveedorActual.getNombre()),
+                () -> assertEquals(proveedor1.getName(), proveedorActual.getName()),
                 () -> assertEquals(proveedor1.getContacto(), proveedorActual.getContacto()),
                 () -> assertEquals(proveedor1.getDireccion(), proveedorActual.getDireccion()),
                 () -> assertEquals(proveedor1.getFechaContratacion(), proveedorActual.getFechaContratacion())
@@ -90,10 +90,10 @@ class ProveedorServiceImplTest {
     void findByNombre() {
         String nombre = "Proveedor 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByNombreContainingIgnoreCase(nombre)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByNameContainingIgnoreCase(nombre)).thenReturn(proveedorEsperado);
         List<Proveedor> proveedorActual = proveedorService.findAll(nombre, null);
         assertIterableEquals(proveedorEsperado, proveedorActual);
-        verify(proveedorRepository, times(1)).getByNombreContainingIgnoreCase(nombre);
+        verify(proveedorRepository, times(1)).getByNameContainingIgnoreCase(nombre);
 
     }
 
@@ -101,10 +101,10 @@ class ProveedorServiceImplTest {
     void findByDireccion() {
         String direccion = "Calle 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByDireccionContainingIgnoreCase(direccion)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByAddressContainingIgnoreCase(direccion)).thenReturn(proveedorEsperado);
         List<Proveedor> proveedorActual = proveedorService.findAll(null, direccion);
         assertIterableEquals(proveedorEsperado, proveedorActual);
-        verify(proveedorRepository, times(1)).getByDireccionContainingIgnoreCase(direccion);
+        verify(proveedorRepository, times(1)).getByAddressContainingIgnoreCase(direccion);
 
     }
 
@@ -113,13 +113,13 @@ class ProveedorServiceImplTest {
         String nombre = "Proveedor 1";
         String direccion = "Calle 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByNombreAndDireccionContainingIgnoreCase(nombre, direccion)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByNameAndAddressContainingIgnoreCase(nombre, direccion)).thenReturn(proveedorEsperado);
 
         List<Proveedor> proveedorActual = proveedorService.findAll(nombre, direccion);
 
         assertIterableEquals(proveedorEsperado, proveedorActual);
 
-        verify(proveedorRepository, times(1)).getByNombreAndDireccionContainingIgnoreCase(nombre, direccion);
+        verify(proveedorRepository, times(1)).getByNameAndAddressContainingIgnoreCase(nombre, direccion);
 
     }
 
@@ -133,9 +133,9 @@ class ProveedorServiceImplTest {
 
         Proveedor proveedorEsperado = Proveedor.builder()
                 .idProveedor(UUID.randomUUID())
-                .nombre(proveedorCreateDto.nombre())
-                .contacto(proveedorCreateDto.contacto())
-                .direccion(proveedorCreateDto.direccion())
+                .nombre(proveedorCreateDto.name())
+                .contacto(proveedorCreateDto.contact())
+                .direccion(proveedorCreateDto.address())
                 .fechaContratacion(LocalDate.now())
                 .build();
 
@@ -147,7 +147,7 @@ class ProveedorServiceImplTest {
 
         assertAll(
                 () -> assertEquals(proveedorEsperado.getIdProveedor(), proveedorActual.getIdProveedor()),
-                () -> assertEquals(proveedorEsperado.getNombre(), proveedorActual.getNombre()),
+                () -> assertEquals(proveedorEsperado.getName(), proveedorActual.getName()),
                 () -> assertEquals(proveedorEsperado.getContacto(), proveedorActual.getContacto()),
                 () -> assertEquals(proveedorEsperado.getDireccion(), proveedorActual.getDireccion()),
                 () -> assertEquals(proveedorEsperado.getFechaContratacion(), proveedorActual.getFechaContratacion())
@@ -177,7 +177,7 @@ class ProveedorServiceImplTest {
 
         assertAll(
                 () -> assertEquals(proveedor.getIdProveedor(), proveedorActual.getIdProveedor()),
-                () -> assertEquals(proveedor.getNombre(), proveedorActual.getNombre()),
+                () -> assertEquals(proveedor.getName(), proveedorActual.getName()),
                 () -> assertEquals(proveedor.getContacto(), proveedorActual.getContacto()),
                 () -> assertEquals(proveedor.getDireccion(), proveedorActual.getDireccion()),
                 () -> assertEquals(proveedor.getFechaContratacion(), proveedorActual.getFechaContratacion())

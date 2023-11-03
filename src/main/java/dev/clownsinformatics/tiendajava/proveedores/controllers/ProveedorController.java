@@ -31,9 +31,9 @@ public class ProveedorController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Proveedor>> getAll(@RequestParam(required = false) String nombre, @RequestParam(required = false) String direccion) {
+    public ResponseEntity<List<Proveedor>> getAll(@RequestParam(required = false) String name, @RequestParam(required = false) String address) {
         log.info("Buscando proveedores...");
-        return ResponseEntity.ok(proveedorService.findAll(nombre, direccion));
+        return ResponseEntity.ok(proveedorService.findAll(name, address));
     }
 
     @GetMapping("/{id}")

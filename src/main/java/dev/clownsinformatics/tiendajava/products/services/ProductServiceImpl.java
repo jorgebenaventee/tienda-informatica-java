@@ -37,14 +37,14 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.findAll();
         }
         if ((name != null && !name.isEmpty()) && weight == null) {
-            log.info("Buscando productos por nombre: " + name);
+            log.info("Buscando productos por name: " + name);
             return productRepository.findAllByName(name);
         }
         if (name == null || name.isEmpty()) {
             log.info("Buscando productos por categoria: " + weight);
             return productRepository.findAllByWeight(weight);
         }
-        log.info("Buscando productos por categoria: " + weight + " y nombre: " + name);
+        log.info("Buscando productos por categoria: " + weight + " y name: " + name);
         return productRepository.findAllByNameAndWeight(name, weight);
     }
 

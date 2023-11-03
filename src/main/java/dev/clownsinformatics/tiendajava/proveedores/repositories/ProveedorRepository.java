@@ -14,11 +14,11 @@ public interface ProveedorRepository extends JpaRepository<Proveedor, UUID> {
 
     Optional<Proveedor> getByIdProveedor(UUID idProveedor);
 
-    List<Proveedor> getByNombreContainingIgnoreCase(String nombre);
+    List<Proveedor> getByNameContainingIgnoreCase(String name);
 
-    List<Proveedor> getByDireccionContainingIgnoreCase(String direccion);
+    List<Proveedor> getByAddressContainingIgnoreCase(String address);
 
-    List<Proveedor> getByNombreAndDireccionContainingIgnoreCase(String nombre, String direccion);
+    List<Proveedor> getByNameAndAddressContainingIgnoreCase(String name, String address);
 
     void deleteByIdProveedor(UUID idProveedor);
 

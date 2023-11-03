@@ -12,26 +12,26 @@ public class ProveedorMapper {
     public Proveedor toProveedor(ProveedorCreateDto proveedorCreateDto, UUID idProveedor) {
         return Proveedor.builder()
                 .idProveedor(idProveedor)
-                .nombre(proveedorCreateDto.nombre())
-                .contacto(proveedorCreateDto.contacto())
-                .direccion(proveedorCreateDto.direccion())
+                .name(proveedorCreateDto.name())
+                .contact(proveedorCreateDto.contact())
+                .address(proveedorCreateDto.address())
                 .build();
     }
 
     public Proveedor toProveedor(ProveedorUpdateDto proveedorUpdateDto, Proveedor proveedor) {
         return Proveedor.builder().idProveedor(proveedor.getIdProveedor())
-                .nombre(proveedorUpdateDto.nombre() != null ? proveedorUpdateDto.nombre() : proveedor.getNombre())
-                .contacto(proveedorUpdateDto.contacto() != null ? Integer.valueOf(proveedorUpdateDto.contacto()) : proveedor.getContacto())
-                .direccion(proveedorUpdateDto.direccion() != null ? proveedorUpdateDto.direccion() : proveedor.getDireccion())
+                .name(proveedorUpdateDto.name() != null ? proveedorUpdateDto.name() : proveedor.getName())
+                .contact(proveedorUpdateDto.contact() != null ? Integer.valueOf(proveedorUpdateDto.contact()) : proveedor.getContact())
+                .address(proveedorUpdateDto.address() != null ? proveedorUpdateDto.address() : proveedor.getAddress())
                 .build();
     }
 
 
     public ProveedorCreateDto toProveedorDto(Proveedor proveedor) {
         return new ProveedorCreateDto(
-                proveedor.getNombre(),
-                proveedor.getContacto(),
-                proveedor.getDireccion(
+                proveedor.getName(),
+                proveedor.getContact(),
+                proveedor.getAddress(
                 )
         );
     }

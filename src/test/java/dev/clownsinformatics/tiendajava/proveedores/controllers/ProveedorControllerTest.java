@@ -78,15 +78,15 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(proveedor1.getIdProveedor(), proveedores.get(0).idProveedor()),
-                () -> assertEquals(proveedor1.getNombre(), proveedores.get(0).nombre()),
-                () -> assertEquals(proveedor1.getContacto(), proveedores.get(0).contacto()),
-                () -> assertEquals(proveedor1.getDireccion(), proveedores.get(0).direccion()),
-                () -> assertEquals(proveedor1.getFechaContratacion(), proveedores.get(0).fechaContratacion()),
+                () -> assertEquals(proveedor1.getName(), proveedores.get(0).name()),
+                () -> assertEquals(proveedor1.getContacto(), proveedores.get(0).contact()),
+                () -> assertEquals(proveedor1.getDireccion(), proveedores.get(0).address()),
+                () -> assertEquals(proveedor1.getFechaContratacion(), proveedores.get(0).dateOfHire()),
                 () -> assertEquals(proveedor2.getIdProveedor(), proveedores.get(1).idProveedor()),
-                () -> assertEquals(proveedor2.getNombre(), proveedores.get(1).nombre()),
-                () -> assertEquals(proveedor2.getContacto(), proveedores.get(1).contacto()),
-                () -> assertEquals(proveedor2.getDireccion(), proveedores.get(1).direccion()),
-                () -> assertEquals(proveedor2.getFechaContratacion(), proveedores.get(1).fechaContratacion())
+                () -> assertEquals(proveedor2.getName(), proveedores.get(1).name()),
+                () -> assertEquals(proveedor2.getContacto(), proveedores.get(1).contact()),
+                () -> assertEquals(proveedor2.getDireccion(), proveedores.get(1).address()),
+                () -> assertEquals(proveedor2.getFechaContratacion(), proveedores.get(1).dateOfHire())
         );
         verify(proveedorService, times(1)).findAll(null, null);
     }
@@ -104,10 +104,10 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
                 () -> assertEquals(proveedor1.getIdProveedor(), proveedorResponseDto.idProveedor()),
-                () -> assertEquals(proveedor1.getNombre(), proveedorResponseDto.nombre()),
-                () -> assertEquals(proveedor1.getContacto(), proveedorResponseDto.contacto()),
-                () -> assertEquals(proveedor1.getDireccion(), proveedorResponseDto.direccion()),
-                () -> assertEquals(proveedor1.getFechaContratacion(), proveedorResponseDto.fechaContratacion())
+                () -> assertEquals(proveedor1.getName(), proveedorResponseDto.name()),
+                () -> assertEquals(proveedor1.getContacto(), proveedorResponseDto.contact()),
+                () -> assertEquals(proveedor1.getDireccion(), proveedorResponseDto.address()),
+                () -> assertEquals(proveedor1.getFechaContratacion(), proveedorResponseDto.dateOfHire())
         );
     }
 

@@ -32,17 +32,17 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
-    public List<Proveedor> findAll(String nombre, String direccion) {
-        if ((nombre == null || nombre.isEmpty()) && (direccion == null || direccion.isEmpty())) {
+    public List<Proveedor> findAll(String name, String address) {
+        if ((name == null || name.isEmpty()) && (address == null || address.isEmpty())) {
             return proveedorRepository.findAll();
         }
-        if ((nombre != null && !nombre.isEmpty()) && (direccion == null || direccion.isEmpty())) {
-            return proveedorRepository.getByNombreContainingIgnoreCase(nombre);
+        if ((name != null && !name.isEmpty()) && (address == null || address.isEmpty())) {
+            return proveedorRepository.getByNameContainingIgnoreCase(name);
         }
-        if (nombre == null || nombre.isEmpty()) {
-            return proveedorRepository.getByDireccionContainingIgnoreCase(direccion);
+        if (name == null || name.isEmpty()) {
+            return proveedorRepository.getByAddressContainingIgnoreCase(address);
         }
-        return proveedorRepository.getByNombreAndDireccionContainingIgnoreCase(nombre, direccion);
+        return proveedorRepository.getByNameAndAddressContainingIgnoreCase(name, address);
     }
 
 

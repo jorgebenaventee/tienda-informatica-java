@@ -1,17 +1,16 @@
 package dev.clownsinformatics.tiendajava.proveedores.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import dev.clownsinformatics.tiendajava.categories.models.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,16 +26,20 @@ public class Proveedor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idProveedor;
     @Column
-    @NotBlank(message = "El nombre del proveedor no puede estar vacío")
-    private String nombre;
+    @NotBlank(message = "El name del proveedor no puede estar vacío")
+    private String name;
     @Column
-    @Min(value = 1, message = "El contacto del proveedor debe ser mayor a 0")
-    private Integer contacto;
+    @Min(value = 1, message = "El contact del proveedor debe ser mayor a 0")
+    private Integer contact;
     @Column
     @NotBlank(message = "La dirección del proveedor no puede estar vacía")
-    private String direccion;
+    private String address;
     @Column
     @Builder.Default
-    private LocalDateTime fechaContratacion = LocalDateTime.now();
+    private LocalDateTime dateOfHire = LocalDateTime.now();
 
+    @ManyToOne()
+    @JoinColumn(name = "category_id")
+    @NotNull
+    private Category category;
 }

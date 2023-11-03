@@ -32,9 +32,9 @@ class ProveedorMapperTest {
 
         assertAll(
                 () -> assertEquals(proveedor.getIdProveedor(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getIdProveedor()),
-                () -> assertEquals(proveedorCreateDto.nombre(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getNombre()),
-                () -> assertEquals(proveedorCreateDto.contacto(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getContacto()),
-                () -> assertEquals(proveedorCreateDto.direccion(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getDireccion())
+                () -> assertEquals(proveedorCreateDto.name(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getName()),
+                () -> assertEquals(proveedorCreateDto.contact(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getContacto()),
+                () -> assertEquals(proveedorCreateDto.address(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getDireccion())
         );
     }
 
@@ -57,7 +57,7 @@ class ProveedorMapperTest {
 
         assertAll(
                 () -> assertEquals(proveedor1.getIdProveedor(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getIdProveedor()),
-                () -> assertEquals(proveedor1.getNombre(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getNombre()),
+                () -> assertEquals(proveedor1.getName(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getName()),
                 () -> assertEquals(proveedor1.getContacto(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getContacto()),
                 () -> assertEquals(proveedor1.getDireccion(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getDireccion())
         );
@@ -74,9 +74,9 @@ class ProveedorMapperTest {
                 .build();
 
         assertAll(
-                () -> assertEquals(proveedor1.getNombre(), proveedorMapper.toProveedorDto(proveedor1).nombre()),
-                () -> assertEquals(proveedor1.getContacto(), proveedorMapper.toProveedorDto(proveedor1).contacto()),
-                () -> assertEquals(proveedor1.getDireccion(), proveedorMapper.toProveedorDto(proveedor1).direccion())
+                () -> assertEquals(proveedor1.getName(), proveedorMapper.toProveedorDto(proveedor1).name()),
+                () -> assertEquals(proveedor1.getContacto(), proveedorMapper.toProveedorDto(proveedor1).contact()),
+                () -> assertEquals(proveedor1.getDireccion(), proveedorMapper.toProveedorDto(proveedor1).address())
         );
     }
 }

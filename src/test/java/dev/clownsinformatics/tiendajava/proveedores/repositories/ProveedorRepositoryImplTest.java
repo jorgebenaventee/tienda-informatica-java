@@ -60,28 +60,28 @@ class ProveedorRepositoryImplTest {
 
     @Test
     void getByNombreContainingIgnoreCase() {
-        proveedorRepository.getByNombreContainingIgnoreCase("Proveedor 1");
+        proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByNombreContainingIgnoreCase("Proveedor 1")),
-                () -> assertNotNull(proveedorRepository.getByNombreContainingIgnoreCase("Proveedor 2"))
+                () -> assertNotNull(proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1")),
+                () -> assertNotNull(proveedorRepository.getByNameContainingIgnoreCase("Proveedor 2"))
         );
     }
 
     @Test
     void getByDireccionContainingIgnoreCase() {
-        proveedorRepository.getByDireccionContainingIgnoreCase("Calle 1");
+        proveedorRepository.getByAddressContainingIgnoreCase("Calle 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByDireccionContainingIgnoreCase("Calle 1")),
-                () -> assertNotNull(proveedorRepository.getByDireccionContainingIgnoreCase("Calle 2"))
+                () -> assertNotNull(proveedorRepository.getByAddressContainingIgnoreCase("Calle 1")),
+                () -> assertNotNull(proveedorRepository.getByAddressContainingIgnoreCase("Calle 2"))
         );
     }
 
     @Test
     void getByNombreAndDireccionContainingIgnoreCase() {
-        proveedorRepository.getByNombreAndDireccionContainingIgnoreCase("Proveedor 1", "Calle 1");
+        proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByNombreAndDireccionContainingIgnoreCase("Proveedor 1", "Calle 1")),
-                () -> assertNotNull(proveedorRepository.getByNombreAndDireccionContainingIgnoreCase("Proveedor 2", "Calle 2"))
+                () -> assertNotNull(proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1")),
+                () -> assertNotNull(proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 2", "Calle 2"))
         );
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProveedorService {
-    List<Proveedor> findAll(String nombre, String direccion);
+    List<Proveedor> findAll(String name, String address);
 
     Proveedor findByUUID(String idProveedor);
 
