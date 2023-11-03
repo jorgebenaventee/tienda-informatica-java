@@ -9,7 +9,7 @@ public record ProveedorUpdateDto(
         String nombre,
         @Min(value = 0, message = "El contacto no puede ser negativo")
         String contacto,
-        @Length(min = 10, max = 10, message = "La dirección debe tener 10 caracteres")
+        @Length(min = 2, max = 50, message = "La dirección debe tener mas de 2 caracteres")
         String direccion
 ) {
 }

@@ -5,7 +5,7 @@ import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorNotFound;
 import dev.clownsinformatics.tiendajava.proveedores.mapper.ProveedorMapper;
 import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.proveedores.repositories.ProveedorRepositoryImpl;
+import dev.clownsinformatics.tiendajava.proveedores.repositories.ProveedorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +45,7 @@ class ProveedorServiceImplTest {
             .build();
 
     @Mock
-    private ProveedorRepositoryImpl proveedorRepository;
+    private ProveedorRepository proveedorRepository;
     @Mock
     private ProveedorMapper proveedorMapper;
     @InjectMocks
@@ -57,16 +57,16 @@ class ProveedorServiceImplTest {
     @Test
     void findAll() {
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1, proveedor2);
-        when(proveedorRepository.getAll()).thenReturn(proveedorEsperado);
+        when(proveedorRepository.findAll()).thenReturn(proveedorEsperado);
         List<Proveedor> proveedorActual = proveedorService.findAll(null, null);
         assertIterableEquals(proveedorEsperado, proveedorActual);
-        verify(proveedorRepository, times(1)).getAll();
+        verify(proveedorRepository, times(1)).findAll();
     }
 
     @Test
     void findByUUID() {
         UUID uuid = UUID.randomUUID();
-        when(proveedorRepository.getByUUID(uuid)).thenReturn(java.util.Optional.of(proveedor1));
+        when(proveedorRepository.getByIdProveedor(uuid)).thenReturn(java.util.Optional.of(proveedor1));
         Proveedor proveedorActual = proveedorService.findByUUID(uuid.toString());
         assertAll(
                 () -> assertEquals(proveedor1.getIdProveedor(), proveedorActual.getIdProveedor()),
@@ -75,25 +75,25 @@ class ProveedorServiceImplTest {
                 () -> assertEquals(proveedor1.getDireccion(), proveedorActual.getDireccion()),
                 () -> assertEquals(proveedor1.getFechaContratacion(), proveedorActual.getFechaContratacion())
         );
-        verify(proveedorRepository, times(1)).getByUUID(uuid);
+        verify(proveedorRepository, times(1)).getByIdProveedor(uuid);
     }
 
     @Test
     void findByUUIDNotFound() {
         UUID uuid = UUID.randomUUID();
-        when(proveedorRepository.getByUUID(uuid)).thenReturn(java.util.Optional.empty());
+        when(proveedorRepository.getByIdProveedor(uuid)).thenReturn(java.util.Optional.empty());
         assertThrows(ProveedorNotFound.class, () -> proveedorService.findByUUID(uuid.toString()));
-        verify(proveedorRepository, times(1)).getByUUID(uuid);
+        verify(proveedorRepository, times(1)).getByIdProveedor(uuid);
     }
 
     @Test
     void findByNombre() {
         String nombre = "Proveedor 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByNombre(nombre)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByNombreContainingIgnoreCase(nombre)).thenReturn(proveedorEsperado);
         List<Proveedor> proveedorActual = proveedorService.findAll(nombre, null);
         assertIterableEquals(proveedorEsperado, proveedorActual);
-        verify(proveedorRepository, times(1)).getByNombre(nombre);
+        verify(proveedorRepository, times(1)).getByNombreContainingIgnoreCase(nombre);
 
     }
 
@@ -101,10 +101,10 @@ class ProveedorServiceImplTest {
     void findByDireccion() {
         String direccion = "Calle 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByDireccion(direccion)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByDireccionContainingIgnoreCase(direccion)).thenReturn(proveedorEsperado);
         List<Proveedor> proveedorActual = proveedorService.findAll(null, direccion);
         assertIterableEquals(proveedorEsperado, proveedorActual);
-        verify(proveedorRepository, times(1)).getByDireccion(direccion);
+        verify(proveedorRepository, times(1)).getByDireccionContainingIgnoreCase(direccion);
 
     }
 
@@ -113,13 +113,13 @@ class ProveedorServiceImplTest {
         String nombre = "Proveedor 1";
         String direccion = "Calle 1";
         List<Proveedor> proveedorEsperado = Arrays.asList(proveedor1);
-        when(proveedorRepository.getByNombreAndDireccion(nombre, direccion)).thenReturn(proveedorEsperado);
+        when(proveedorRepository.getByNombreAndDireccionContainingIgnoreCase(nombre, direccion)).thenReturn(proveedorEsperado);
 
         List<Proveedor> proveedorActual = proveedorService.findAll(nombre, direccion);
 
         assertIterableEquals(proveedorEsperado, proveedorActual);
 
-        verify(proveedorRepository, times(1)).getByNombreAndDireccion(nombre, direccion);
+        verify(proveedorRepository, times(1)).getByNombreAndDireccionContainingIgnoreCase(nombre, direccion);
 
     }
 
@@ -169,8 +169,8 @@ class ProveedorServiceImplTest {
 
         Proveedor proveedor = proveedor1;
 
-        when(proveedorRepository.getByUUID(uuid)).thenReturn(java.util.Optional.of(proveedor));
-        when(proveedorRepository.update(proveedor)).thenReturn(proveedor);
+        when(proveedorRepository.getByIdProveedor(uuid)).thenReturn(java.util.Optional.of(proveedor));
+        when(proveedorRepository.save(proveedor)).thenReturn(proveedor);
         when(proveedorMapper.toProveedor(proveedorUpdateDto, proveedor)).thenReturn(proveedor);
 
         Proveedor proveedorActual = proveedorService.update(proveedorUpdateDto, uuid.toString());
@@ -183,24 +183,24 @@ class ProveedorServiceImplTest {
                 () -> assertEquals(proveedor.getFechaContratacion(), proveedorActual.getFechaContratacion())
         );
 
-        verify(proveedorRepository, times(1)).getByUUID(uuid);
-        verify(proveedorRepository, times(1)).update(proveedorArgumentCaptor.capture());
+        verify(proveedorRepository, times(1)).getByIdProveedor(uuid);
+        verify(proveedorRepository, times(1)).save(proveedorArgumentCaptor.capture());
         verify(proveedorMapper, times(1)).toProveedor(proveedorUpdateDto, proveedor);
     }
 
     @Test
     void deleteByUUID() {
         UUID uuid = UUID.randomUUID();
-        when(proveedorRepository.getByUUID(uuid)).thenReturn(java.util.Optional.of(proveedor1));
+        when(proveedorRepository.getByIdProveedor(uuid)).thenReturn(java.util.Optional.of(proveedor1));
         proveedorService.deleteByUUID(uuid.toString());
-        verify(proveedorRepository, times(1)).deleteByUUID(uuid);
+        verify(proveedorRepository, times(1)).deleteByIdProveedor(uuid);
     }
 
     @Test
     void deleteByUUIDNotFound() {
         UUID uuid = UUID.randomUUID();
-        when(proveedorRepository.getByUUID(uuid)).thenReturn(java.util.Optional.empty());
+        when(proveedorRepository.getByIdProveedor(uuid)).thenReturn(java.util.Optional.empty());
         assertThrows(ProveedorNotFound.class, () -> proveedorService.deleteByUUID(uuid.toString()));
-        verify(proveedorRepository, times(1)).getByUUID(uuid);
+        verify(proveedorRepository, times(1)).getByIdProveedor(uuid);
     }
 }

@@ -1,8 +1,7 @@
 package dev.clownsinformatics.tiendajava.proveedores.dto;
 
 
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ProveedorResponseDto(
@@ -10,6 +9,6 @@ public record ProveedorResponseDto(
         String nombre,
         Integer contacto,
         String direccion,
-        LocalDate fechaContratacion
+        LocalDateTime fechaContratacion
 ) {
 }
