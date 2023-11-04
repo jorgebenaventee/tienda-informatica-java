@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.proveedores.services;
 
+import dev.clownsinformatics.tiendajava.categories.services.CategoryService;
 import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorCreateDto;
 import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorBadRequest;
@@ -24,11 +25,13 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
     private final ProveedorMapper proveedorMapper;
+    private final CategoryService categoryService;
 
     @Autowired
-    public ProveedorServiceImpl(ProveedorRepository proveedoresRepository, ProveedorMapper proveedorMapper) {
+    public ProveedorServiceImpl(ProveedorRepository proveedoresRepository, ProveedorMapper proveedorMapper, CategoryService categoryService) {
         this.proveedorRepository = proveedoresRepository;
         this.proveedorMapper = proveedorMapper;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -63,6 +66,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Override
     @CachePut(key = "#result.idProveedor")
     public Proveedor save(ProveedorCreateDto proveedorCreateDto) {
+        categoryService.findById(proveedorCreateDto.category().getUuid());
         return proveedorRepository.save(proveedorMapper.toProveedor(proveedorCreateDto, UUID.randomUUID()));
     }
 

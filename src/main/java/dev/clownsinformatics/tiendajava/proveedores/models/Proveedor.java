@@ -38,7 +38,7 @@ public class Proveedor {
     @Builder.Default
     private LocalDateTime dateOfHire = LocalDateTime.now();
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "category_id")
     @NotNull
     private Category category;

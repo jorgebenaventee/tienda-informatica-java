@@ -18,6 +18,7 @@ public interface ProveedorRepository extends JpaRepository<Proveedor, UUID> {
 
     List<Proveedor> getByAddressContainingIgnoreCase(String address);
 
+
     List<Proveedor> getByNameAndAddressContainingIgnoreCase(String name, String address);
 
     void deleteByIdProveedor(UUID idProveedor);
