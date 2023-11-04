@@ -2,12 +2,12 @@ package dev.clownsinformatics.tiendajava.products.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
-import dev.clownsinformatics.tiendajava.products.dto.ProductResponseDto;
-import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.products.exceptions.ProductNotFound;
-import dev.clownsinformatics.tiendajava.products.models.Product;
-import dev.clownsinformatics.tiendajava.products.services.ProductService;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
+import dev.clownsinformatics.tiendajava.rest.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.products.services.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

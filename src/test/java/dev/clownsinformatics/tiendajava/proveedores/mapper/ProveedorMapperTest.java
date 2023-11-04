@@ -1,8 +1,9 @@
 package dev.clownsinformatics.tiendajava.proveedores.mapper;
 
-import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorCreateDto;
-import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
-import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.ProveedorMapper;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

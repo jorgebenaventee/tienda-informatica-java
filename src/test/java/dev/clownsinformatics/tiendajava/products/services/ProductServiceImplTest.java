@@ -1,11 +1,12 @@
 package dev.clownsinformatics.tiendajava.products.services;
 
-import dev.clownsinformatics.tiendajava.products.dto.ProductCreateDto;
-import dev.clownsinformatics.tiendajava.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.products.exceptions.ProductNotFound;
-import dev.clownsinformatics.tiendajava.products.mapper.ProductMapper;
-import dev.clownsinformatics.tiendajava.products.models.Product;
-import dev.clownsinformatics.tiendajava.products.repositories.ProductRepository;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
+import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
+import dev.clownsinformatics.tiendajava.rest.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
+import dev.clownsinformatics.tiendajava.rest.products.services.ProductServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

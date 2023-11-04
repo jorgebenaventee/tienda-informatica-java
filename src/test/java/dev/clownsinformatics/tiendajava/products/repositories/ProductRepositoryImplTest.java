@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.products.repositories;
 
-import dev.clownsinformatics.tiendajava.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

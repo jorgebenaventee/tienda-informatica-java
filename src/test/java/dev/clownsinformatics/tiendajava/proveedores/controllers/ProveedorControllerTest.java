@@ -2,11 +2,11 @@ package dev.clownsinformatics.tiendajava.proveedores.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorResponseDto;
-import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorBadRequest;
-import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorNotFound;
-import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.proveedores.services.ProveedorServiceImpl;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorResponseDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorBadRequest;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorNotFound;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.services.ProveedorServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
