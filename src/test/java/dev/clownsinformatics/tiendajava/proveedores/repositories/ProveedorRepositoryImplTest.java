@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.proveedores.repositories;
 
-import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,12 @@
 package dev.clownsinformatics.tiendajava.proveedores.services;
 
-import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorCreateDto;
-import dev.clownsinformatics.tiendajava.proveedores.dto.ProveedorUpdateDto;
-import dev.clownsinformatics.tiendajava.proveedores.exceptions.ProveedorNotFound;
-import dev.clownsinformatics.tiendajava.proveedores.mapper.ProveedorMapper;
-import dev.clownsinformatics.tiendajava.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.proveedores.repositories.ProveedorRepository;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorNotFound;
+import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.ProveedorMapper;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;
+import dev.clownsinformatics.tiendajava.rest.proveedores.services.ProveedorServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
