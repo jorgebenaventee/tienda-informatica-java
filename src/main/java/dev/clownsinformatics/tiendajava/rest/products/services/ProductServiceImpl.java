@@ -41,7 +41,8 @@ public class ProductServiceImpl implements ProductService {
         this.storageService = storageService;
     }
 
-    private UUID getUUID(String id) {
+    @Override
+    public UUID getUUID(String id) {
         try {
             return UUID.fromString(id);
         } catch (IllegalArgumentException e) {
@@ -87,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto save(ProductCreateDto productCreateDto) {
         log.info("Saving product: " + productCreateDto);
         var category = findCategory(productCreateDto.category().getName());
-        var productSaved = productRepository.save(productMapper.toProduct(UUID.randomUUID(), productCreateDto, category));
+        var productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
 
         return productMapper.toProductResponseDto(productSaved);
     }

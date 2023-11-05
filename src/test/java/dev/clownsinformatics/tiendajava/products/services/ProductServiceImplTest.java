@@ -1,12 +1,17 @@
 package dev.clownsinformatics.tiendajava.products.services;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
+import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
+import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductBadRequest;
 import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
 import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductServiceImpl;
+import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,8 +19,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,36 +33,45 @@ class ProductServiceImplTest {
     private final UUID idProduct1 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785464");
     private final UUID idProduct2 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462");
 
+    private final Category category1 = Category.builder()
+            .uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
+            .name("Category 1")
+            .build();
+    private final Category category2 = Category.builder()
+            .uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"))
+            .name("Category 2")
+            .build();
+
     private final Product product1 = Product.builder()
             .id(idProduct1)
             .name("Product 1")
             .weight(2.5)
-            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
             .price(50.0)
             .img("imagen1.jpg")
             .stock(10)
             .description("Descripción del producto 1")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .category(category1)
             .build();
 
     private final Product product2 = Product.builder()
             .id(idProduct2)
             .name("Product 2")
             .weight(3.2)
-            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"))
             .price(50.0)
             .img("imagen2.jpg")
             .stock(10)
             .description("Descripción del producto 2")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .category(category2)
             .build();
 
     @Mock
     private ProductRepository repository;
     @Mock
     private ProductMapper mapper;
+    @Mock
+    private CategoryRepository categoryRepository;
+    @Mock
+    private StorageService storageService;
     @InjectMocks
     private ProductServiceImpl service;
     @Captor
@@ -112,42 +126,33 @@ class ProductServiceImplTest {
                 () -> assertEquals(idProduct1, actualProduct.getId()),
                 () -> assertEquals("Product 1", actualProduct.getName()),
                 () -> assertEquals(2.5, actualProduct.getWeight()),
-                () -> assertEquals(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"), actualProduct.getIdCategory()),
                 () -> assertEquals(50.0, actualProduct.getPrice()),
                 () -> assertEquals("imagen1.jpg", actualProduct.getImg()),
                 () -> assertEquals(10, actualProduct.getStock()),
                 () -> assertEquals("Descripción del producto 1", actualProduct.getDescription()),
                 () -> assertNotNull(actualProduct.getCreatedAt()),
-                () -> assertNotNull(actualProduct.getUpdatedAt())
+                () -> assertNotNull(actualProduct.getUpdatedAt()),
+                () -> assertEquals(category1, actualProduct.getCategory())
         );
         verify(repository, times(1)).findById(idProduct1);
     }
 
     @Test
-    void findByIdNotFound(){
+    void findByIdNotFound() {
         when(repository.findById(idProduct1)).thenReturn(Optional.empty());
         assertThrows(ProductNotFound.class, () -> service.findById(idProduct1.toString()));
         verify(repository, times(1)).findById(idProduct1);
     }
 
     @Test
-    void findByIdCategory() {
-        UUID idCategory = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461");
-        when(repository.findByIdCategory(idCategory)).thenReturn(Optional.of(product1));
-        Product actualProducts = service.findByIdCategory(idCategory.toString());
-        assertAll(
-                () -> assertEquals(idProduct1, actualProducts.getId()),
-                () -> assertEquals("Product 1", actualProducts.getName()),
-                () -> assertEquals(2.5, actualProducts.getWeight()),
-                () -> assertEquals(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"), actualProducts.getIdCategory()),
-                () -> assertEquals(50.0, actualProducts.getPrice()),
-                () -> assertEquals("imagen1.jpg", actualProducts.getImg()),
-                () -> assertEquals(10, actualProducts.getStock()),
-                () -> assertEquals("Descripción del producto 1", actualProducts.getDescription()),
-                () -> assertNotNull(actualProducts.getCreatedAt()),
-                () -> assertNotNull(actualProducts.getUpdatedAt())
-        );
-        verify(repository, times(1)).findByIdCategory(idCategory);
+    void getUUID() {
+        UUID uuid = service.getUUID(idProduct1.toString());
+        assertEquals(idProduct1, uuid);
+    }
+
+    @Test
+    void getUUIDBadRequest() {
+        assertThrows(ProductBadRequest.class, () -> service.getUUID("cdf61632-181e-4006-9f4f-694e0078546gggssdf"));
     }
 
     @Test
@@ -155,46 +160,59 @@ class ProductServiceImplTest {
         ProductCreateDto productCreateDto = new ProductCreateDto(
                 "Product 3",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen3.jpg",
                 10,
-                "Descripción del producto 3"
+                "Descripción del producto 3",
+                category1
         );
+
         UUID id = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785460");
         Product productExpected = Product.builder()
                 .id(id)
                 .name("Product 3")
                 .weight(2.5)
-                .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
                 .price(50.0)
                 .img("imagen3.jpg")
                 .stock(10)
                 .description("Descripción del producto 3")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .category(category1)
                 .build();
-
-        when(repository.getRandomUUID()).thenReturn(id);
-        when(mapper.toProduct(id, productCreateDto)).thenReturn(productExpected);
-        when(repository.save(productExpected)).thenReturn(productExpected);
-
-        Product actualProduct = service.save(productCreateDto);
-        assertAll(
-                () -> assertEquals(id, actualProduct.getId()),
-                () -> assertEquals("Product 3", actualProduct.getName()),
-                () -> assertEquals(2.5, actualProduct.getWeight()),
-                () -> assertEquals(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"), actualProduct.getIdCategory()),
-                () -> assertEquals(50.0, actualProduct.getPrice()),
-                () -> assertEquals("imagen3.jpg", actualProduct.getImg()),
-                () -> assertEquals(10, actualProduct.getStock()),
-                () -> assertEquals("Descripción del producto 3", actualProduct.getDescription()),
-                () -> assertNotNull(actualProduct.getCreatedAt()),
-                () -> assertNotNull(actualProduct.getUpdatedAt())
+        ProductResponseDto productResponseDto = new ProductResponseDto(
+                id,
+                "Product 3",
+                2.5,
+                50.0,
+                "imagen3.jpg",
+                10,
+                "Descripción del producto 3",
+                category1,
+                productExpected.getCreatedAt(),
+                productExpected.getUpdatedAt()
         );
-        verify(repository, times(1)).getRandomUUID();
+
+        when(categoryRepository.findByNameContainingIgnoreCase("Category 1")).thenReturn(Optional.of(category1));
+        when(mapper.toProduct(productCreateDto, category1)).thenReturn(productExpected);
+        when(repository.save(productExpected)).thenReturn(productExpected);
+        when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
+
+        ProductResponseDto actualProduct = service.save(productCreateDto);
+        assertAll(
+                () -> assertEquals(id, actualProduct.id()),
+                () -> assertEquals("Product 3", actualProduct.name()),
+                () -> assertEquals(2.5, actualProduct.weight()),
+                () -> assertEquals(50.0, actualProduct.price()),
+                () -> assertEquals("imagen3.jpg", actualProduct.img()),
+                () -> assertEquals(10, actualProduct.stock()),
+                () -> assertEquals("Descripción del producto 3", actualProduct.description()),
+                () -> assertNotNull(actualProduct.createdAt()),
+                () -> assertNotNull(actualProduct.updatedAt()),
+                () -> assertEquals(category1, actualProduct.category())
+        );
+        verify(categoryRepository, times(1)).findByNameContainingIgnoreCase("Category 1");
         verify(repository, times(1)).save(productCaptor.capture());
-        verify(mapper, times(1)).toProduct(id, productCreateDto);
+        verify(mapper, times(1)).toProduct(productCreateDto, category1);
+        verify(mapper, times(1)).toProductResponseDto(productExpected);
     }
 
     @Test
@@ -203,45 +221,78 @@ class ProductServiceImplTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 3",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen3.jpg",
                 10,
-                "Descripción del producto 3"
+                "Descripción del producto 3",
+                category1
         );
         Product productExpected = Product.builder()
                 .id(id)
                 .name("Product 3")
                 .weight(2.5)
-                .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
                 .price(50.0)
                 .img("imagen3.jpg")
                 .stock(10)
                 .description("Descripción del producto 3")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .category(category1)
                 .build();
+        ProductResponseDto productResponseDto = new ProductResponseDto(
+                id,
+                "Product 3",
+                2.5,
+                50.0,
+                "imagen3.jpg",
+                10,
+                "Descripción del producto 3",
+                category1,
+                productExpected.getCreatedAt(),
+                productExpected.getUpdatedAt()
+        );
 
         when(repository.findById(id)).thenReturn(Optional.of(productExpected));
-        when(mapper.toProduct(productUpdateDto, productExpected)).thenReturn(productExpected);
+        when(mapper.toProduct(productUpdateDto, productExpected, category1)).thenReturn(productExpected);
         when(repository.save(productExpected)).thenReturn(productExpected);
+        when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
 
-        Product actualProduct = service.update(id.toString(), productUpdateDto);
+        ProductResponseDto actualProduct = service.update(id.toString(), productUpdateDto);
         assertAll(
-                () -> assertEquals(id, actualProduct.getId()),
-                () -> assertEquals("Product 3", actualProduct.getName()),
-                () -> assertEquals(2.5, actualProduct.getWeight()),
-                () -> assertEquals(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"), actualProduct.getIdCategory()),
-                () -> assertEquals(50.0, actualProduct.getPrice()),
-                () -> assertEquals("imagen3.jpg", actualProduct.getImg()),
-                () -> assertEquals(10, actualProduct.getStock()),
-                () -> assertEquals("Descripción del producto 3", actualProduct.getDescription()),
-                () -> assertNotNull(actualProduct.getCreatedAt()),
-                () -> assertNotNull(actualProduct.getUpdatedAt())
+                () -> assertEquals(id, actualProduct.id()),
+                () -> assertEquals("Product 3", actualProduct.name()),
+                () -> assertEquals(2.5, actualProduct.weight()),
+                () -> assertEquals(50.0, actualProduct.price()),
+                () -> assertEquals("imagen3.jpg", actualProduct.img()),
+                () -> assertEquals(10, actualProduct.stock()),
+                () -> assertEquals("Descripción del producto 3", actualProduct.description()),
+                () -> assertNotNull(actualProduct.createdAt()),
+                () -> assertNotNull(actualProduct.updatedAt()),
+                () -> assertEquals(category1, actualProduct.category())
         );
         verify(repository, times(1)).findById(id);
         verify(repository, times(1)).save(productCaptor.capture());
-        verify(mapper, times(1)).toProduct(productUpdateDto, productExpected);
+        verify(mapper, times(1)).toProduct(productUpdateDto, productExpected, category1);
+        verify(mapper, times(1)).toProductResponseDto(productExpected);
+    }
+
+    @Test
+    void updateImage(){
+        String imageUrl = "imagen1.jpg";
+
+        MultipartFile multipartFile = mock(MultipartFile.class);
+
+        when(repository.findById(idProduct1)).thenReturn(Optional.of(product1));
+        when(storageService.store(multipartFile)).thenReturn(imageUrl);
+        when(storageService.getUrl(imageUrl)).thenReturn(imageUrl);
+        when(repository.save(any(Product.class))).thenReturn(product1);
+
+        Product updatedFunko = service.updateImage(idProduct1.toString(), multipartFile);
+
+        // Assert
+        assertEquals(imageUrl, updatedFunko.getImg());
+
+        verify(repository, times(1)).save(any(Product.class));
+        verify(storageService, times(1)).delete(product1.getImg());
+        verify(storageService, times(1)).store(multipartFile);
     }
 
     @Test
