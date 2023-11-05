@@ -12,9 +12,8 @@ import java.util.UUID;
 
 @Component
 public class ProductMapper {
-    public Product toProduct(UUID id, ProductCreateDto productCreateDto, Category category) {
+    public Product toProduct(ProductCreateDto productCreateDto, Category category) {
         return Product.builder()
-                .id(id)
                 .name(productCreateDto.name())
                 .weight(productCreateDto.weight())
                 .price(productCreateDto.price())

@@ -19,7 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -280,7 +282,7 @@ class ProductRestControllerTest {
     @Test
     void postProductWithBadRequestNameEmpty() throws Exception {
         var productDto = new ProductCreateDto(
-                "",
+                null,
                 2.5,
                 50.0,
                 "imagen1.jpg",
@@ -670,6 +672,44 @@ class ProductRestControllerTest {
                 () -> assertEquals(product1.getCategory(), res.category())
         );
         verify(productService, times(1)).update(anyString(), any(ProductUpdateDto.class));
+    }
+
+    @Test
+    void patchProductImage() throws Exception {
+        var LOCAL_URL = BASE_URL + "/" + idProduct1 + "/image";
+        when(productService.updateImage(anyString(), any(MultipartFile.class))).thenReturn(product1);
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "filename.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "Contenido del archivo".getBytes()
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        multipart(LOCAL_URL)
+                                .file(file)
+                                .with(req -> {
+                                    req.setMethod("PATCH");
+                                    return req;
+                                })
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+        Product res = mapper.readValue(response.getContentAsString(), Product.class);
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(product1.getId(), res.getId()),
+                () -> assertEquals(product1.getName(), res.getName()),
+                () -> assertEquals(product1.getWeight(), res.getWeight()),
+                () -> assertEquals(product1.getPrice(), res.getPrice()),
+                () -> assertEquals(product1.getImg(), res.getImg()),
+                () -> assertEquals(product1.getStock(), res.getStock()),
+                () -> assertEquals(product1.getDescription(), res.getDescription()),
+                () -> assertEquals(product1.getCategory(), res.getCategory())
+        );
+
+        verify(productService, times(1)).updateImage(anyString(), any(MultipartFile.class));
     }
 
     @Test

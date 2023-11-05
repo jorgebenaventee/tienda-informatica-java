@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.products.mapper;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
@@ -12,29 +13,32 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProductMapperTest {
     private final ProductMapper mapper = new ProductMapper();
+    private final Category category1 = Category.builder()
+            .uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
+            .name("Category 1")
+            .build();
 
     @Test
     void toProduct() {
-        UUID uuid = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461");
         ProductCreateDto productCreateDto = new ProductCreateDto(
                 "Product 3",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462"),
                 50.0,
                 "imagen3.jpg",
                 10,
-                "Descripción del producto 3"
+                "Descripción del producto 3",
+                category1
+
         );
-        var res = mapper.toProduct(uuid, productCreateDto);
+        var res = mapper.toProduct(productCreateDto, category1);
         assertAll(
-                () -> assertEquals(uuid, res.getId()),
                 () -> assertEquals(productCreateDto.name(), res.getName()),
                 () -> assertEquals(productCreateDto.price(), res.getPrice()),
-                () -> assertEquals(productCreateDto.idCategory(), res.getIdCategory()),
                 () -> assertEquals(productCreateDto.price(), res.getPrice()),
                 () -> assertEquals(productCreateDto.img(), res.getImg()),
                 () -> assertEquals(productCreateDto.stock(), res.getStock()),
-                () -> assertEquals(productCreateDto.description(), res.getDescription())
+                () -> assertEquals(productCreateDto.description(), res.getDescription()),
+                () -> assertEquals(category1, res.getCategory())
         );
     }
 
@@ -44,32 +48,32 @@ class ProductMapperTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 3",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462"),
                 50.0,
                 "imagen3.jpg",
                 10,
-                "Descripción del producto 3"
+                "Descripción del producto 3",
+                category1
         );
         Product product = Product.builder()
                 .id(uuid)
                 .name(productUpdateDto.name())
                 .price(productUpdateDto.price())
-                .idCategory(productUpdateDto.idCategory())
                 .price(productUpdateDto.price())
                 .img(productUpdateDto.img())
                 .stock(productUpdateDto.stock())
                 .description(productUpdateDto.description())
+                .category(category1)
                 .build();
-        var res = mapper.toProduct(productUpdateDto, product);
+        var res = mapper.toProduct(productUpdateDto, product, category1);
         assertAll(
                 () -> assertEquals(uuid, res.getId()),
                 () -> assertEquals(productUpdateDto.name(), res.getName()),
                 () -> assertEquals(productUpdateDto.price(), res.getPrice()),
-                () -> assertEquals(productUpdateDto.idCategory(), res.getIdCategory()),
                 () -> assertEquals(productUpdateDto.price(), res.getPrice()),
                 () -> assertEquals(productUpdateDto.img(), res.getImg()),
                 () -> assertEquals(productUpdateDto.stock(), res.getStock()),
-                () -> assertEquals(productUpdateDto.description(), res.getDescription())
+                () -> assertEquals(productUpdateDto.description(), res.getDescription()),
+                () -> assertEquals(category1, res.getCategory())
         );
 
     }
@@ -81,22 +85,22 @@ class ProductMapperTest {
                 .id(uuid)
                 .name("Product 3")
                 .price(50.0)
-                .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462"))
                 .price(50.0)
                 .img("imagen3.jpg")
                 .stock(10)
                 .description("Descripción del producto 3")
+                .category(category1)
                 .build();
         var res = mapper.toProductResponseDto(product);
         assertAll(
                 () -> assertEquals(uuid, res.id()),
                 () -> assertEquals(product.getName(), res.name()),
                 () -> assertEquals(product.getPrice(), res.price()),
-                () -> assertEquals(product.getIdCategory(), res.idCategory()),
                 () -> assertEquals(product.getPrice(), res.price()),
                 () -> assertEquals(product.getImg(), res.img()),
                 () -> assertEquals(product.getStock(), res.stock()),
-                () -> assertEquals(product.getDescription(), res.description())
+                () -> assertEquals(product.getDescription(), res.description()),
+                () -> assertEquals(category1, res.category())
         );
     }
 }
