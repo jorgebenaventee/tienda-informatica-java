@@ -26,6 +26,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("random_uuid()")
+    @Builder.Default
     private UUID uuid = UUID.randomUUID();
 
     @Column(unique = true, nullable = false)
