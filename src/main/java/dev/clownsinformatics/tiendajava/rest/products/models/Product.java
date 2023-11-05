@@ -4,9 +4,11 @@ import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -74,29 +76,5 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-
-    /*@JsonCreator
-    public Product(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("name") String name,
-            @JsonProperty("weight") Double weight,
-            @JsonProperty("idCategory") UUID idCategory,
-            @JsonProperty("price") Double price,
-            @JsonProperty("img") String img,
-            @JsonProperty("stock") Integer stock,
-            @JsonProperty("description") String description,
-            @JsonProperty("createdAt") LocalDateTime createdAt,
-            @JsonProperty("updatedAt") LocalDateTime updatedAt
-    ) {
-        this.id = id;
-        this.name = name;
-        this.weight = weight;
-        this.idCategory = idCategory;
-        this.price = price;
-        this.img = img;
-        this.stock = stock;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }*/
 }
+
