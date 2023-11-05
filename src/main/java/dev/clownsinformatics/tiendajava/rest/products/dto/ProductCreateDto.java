@@ -1,11 +1,10 @@
 package dev.clownsinformatics.tiendajava.rest.products.dto;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.UUID;
 
 public record ProductCreateDto(
         @NotBlank(message = "The name cannot be empty")
@@ -29,6 +28,9 @@ public record ProductCreateDto(
 
         @NotBlank(message = "The category cannot be empty")
         @Length(min = 3, max = 100, message = "The name must be between 3 and 100 characters")
-        String description
+        String description,
+
+        @NotNull(message = "The category cannot be empty")
+        Category category
 ) {
 }

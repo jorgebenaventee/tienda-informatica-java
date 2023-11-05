@@ -2,7 +2,7 @@ package dev.clownsinformatics.tiendajava.rest.storage.services;
 
 import dev.clownsinformatics.tiendajava.rest.storage.controllers.StorageController;
 import dev.clownsinformatics.tiendajava.rest.storage.exceptions.StorageBadRequest;
-import dev.clownsinformatics.tiendajava.rest.storage.exceptions.StorageInternal;
+import dev.clownsinformatics.tiendajava.rest.storage.exceptions.StorageConflict;
 import dev.clownsinformatics.tiendajava.rest.storage.exceptions.StorageNotFound;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ public class FileSystemStorageService implements StorageService {
         try {
             Files.createDirectories(rootLocation);
         } catch (Exception e) {
-            throw new StorageInternal("Could not initialize storage service" + e.getMessage());
+            throw new StorageConflict("Could not initialize storage service" + e.getMessage());
         }
     }
 
@@ -54,20 +54,17 @@ public class FileSystemStorageService implements StorageService {
                 throw new StorageBadRequest("Empty file " + filename);
             }
             if (filename.contains("..")) {
-                throw new StorageBadRequest(
-                        "Cannot store file with relative path outside current directory"
-                                + filename);
+                throw new StorageBadRequest("Cannot store file with relative path outside current directory" + filename);
             }
-
             try (InputStream inputStream = file.getInputStream()) {
+                storedFilename = storedFilename.replaceAll(" ", "_");
                 log.info("Saving file " + filename + " as " + storedFilename);
-                Files.copy(inputStream, this.rootLocation.resolve(storedFilename),
-                        StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(inputStream, this.rootLocation.resolve(storedFilename), StandardCopyOption.REPLACE_EXISTING);
                 return storedFilename;
             }
 
         } catch (IOException e) {
-            throw new StorageInternal("Failed to save file" + filename + " " + e);
+            throw new StorageConflict("Failed to save file " + filename + " " + e);
         }
     }
 
@@ -79,7 +76,7 @@ public class FileSystemStorageService implements StorageService {
                     .filter(path -> !path.equals(this.rootLocation))
                     .map(this.rootLocation::relativize);
         } catch (IOException e) {
-            throw new StorageInternal("Fallo al leer ficheros almacenados " + e);
+            throw new StorageConflict("Failed to read saved files " + e);
         }
     }
 
@@ -113,7 +110,7 @@ public class FileSystemStorageService implements StorageService {
             Path file = load(justFilename);
             Files.deleteIfExists(file);
         } catch (IOException e) {
-            throw new StorageInternal("Could not delete file " + filename + " " + e);
+            throw new StorageConflict("Could not delete file " + filename + " " + e);
         }
     }
 

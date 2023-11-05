@@ -2,9 +2,9 @@ package dev.clownsinformatics.tiendajava.config.storage;
 
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
