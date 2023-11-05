@@ -57,7 +57,7 @@ public class FileSystemStorageService implements StorageService {
                 throw new StorageBadRequest("Cannot store file with relative path outside current directory" + filename);
             }
             try (InputStream inputStream = file.getInputStream()) {
-                storedFilename = storedFilename.replaceAll(" ", "_");
+                storedFilename = storedFilename.replace(" ", "_");
                 log.info("Saving file " + filename + " as " + storedFilename);
                 Files.copy(inputStream, this.rootLocation.resolve(storedFilename), StandardCopyOption.REPLACE_EXISTING);
                 return storedFilename;
