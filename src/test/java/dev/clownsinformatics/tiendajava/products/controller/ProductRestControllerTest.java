@@ -2,6 +2,7 @@ package dev.clownsinformatics.tiendajava.products.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
@@ -37,31 +38,64 @@ class ProductRestControllerTest {
     private final UUID idProduct1 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785464");
     private final UUID idProduct2 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462");
 
+    private final Category category1 = Category.builder()
+            .uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
+            .name("Category 1")
+            .build();
+    private final Category category2 = Category.builder()
+            .uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"))
+            .name("Category 2")
+            .build();
+
     private final Product product1 = Product.builder()
             .id(idProduct1)
             .name("Product 1")
             .weight(2.5)
-            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"))
             .price(50.0)
             .img("imagen1.jpg")
             .stock(10)
             .description("Descripcion del producto 1")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .category(category1)
             .build();
 
     private final Product product2 = Product.builder()
             .id(idProduct2)
             .name("Product 2")
             .weight(3.2)
-            .idCategory(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467"))
             .price(50.0)
             .img("imagen2.jpg")
             .stock(10)
             .description("Descripcion del producto 2")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .category(category2)
             .build();
+
+    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(
+            idProduct1,
+            "Product 1",
+            2.5,
+            50.0,
+            "imagen1.jpg",
+            10,
+            "Descripcion del producto 1",
+            category1,
+            LocalDateTime.now(),
+            LocalDateTime.now()
+    );
+
+    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(
+            idProduct2,
+            "Product 2",
+            3.2,
+            50.0,
+            "imagen2.jpg",
+            10,
+            "Descripcion del producto 2",
+            category2,
+            LocalDateTime.now(),
+            LocalDateTime.now()
+    );
+
+
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     MockMvc mockMvc;
@@ -218,14 +252,14 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
-        when(productService.save(any(ProductCreateDto.class))).thenReturn(product1);
+        when(productService.save(any(ProductCreateDto.class))).thenReturn(productResponseDto1);
 
         MockHttpServletResponse response = mockMvc.perform(
                         post(BASE_URL)
@@ -238,8 +272,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(201, response.getStatus()),
-                () -> assertEquals(product1.getId(), productResponse.id()),
-                () -> assertEquals(product1.getName(), productResponse.name())
+                () -> assertEquals(productResponseDto1, productResponse)
         );
         verify(productService, times(1)).save(any(ProductCreateDto.class));
     }
@@ -249,11 +282,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -265,7 +298,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El name no puede estar vacio"))
+                () -> assertTrue(response.getContentAsString().contains("The name cannot be blank"))
         );
     }
 
@@ -274,11 +307,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "P",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -290,7 +323,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El name debe tener entre 3 y 50 caracteres"))
+                () -> assertTrue(response.getContentAsString().contains("The name must be between 3 and 50 characters"))
         );
     }
 
@@ -299,11 +332,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 null,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -315,7 +348,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El peso no puede estar vacio"))
+                () -> assertTrue(response.getContentAsString().contains("The weight cannot be null"))
         );
     }
 
@@ -323,12 +356,12 @@ class ProductRestControllerTest {
     void postProductWithBadRequestWeightMin() throws Exception {
         var productDto = new ProductCreateDto(
                 "Product 1",
-                -1.0,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
+                -2.5,
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -340,7 +373,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El peso debe ser mayor a 0"))
+                () -> assertTrue(response.getContentAsString().contains("The weight must be greater than 0"))
         );
     }
 
@@ -349,11 +382,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 null,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -365,7 +398,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El precio no puede estar vacio"))
+                () -> assertTrue(response.getContentAsString().contains("The price cannot be null"))
         );
     }
 
@@ -374,11 +407,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
-                -1.0,
+                -50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -390,7 +423,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El precio debe ser mayor a 0"))
+                () -> assertTrue(response.getContentAsString().contains("The price must be greater than 0"))
         );
     }
 
@@ -399,11 +432,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -415,7 +448,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("La imagen no puede estar vacia"))
+                () -> assertTrue(response.getContentAsString().contains("The image cannot be blank"))
         );
     }
 
@@ -424,11 +457,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 null,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -440,7 +473,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El stock no puede estar vacio"))
+                () -> assertTrue(response.getContentAsString().contains("The stock cannot be empty"))
         );
     }
 
@@ -449,11 +482,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
-                -1,
-                "Descripcion del producto 1"
+                -10,
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -465,7 +498,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El stock debe ser mayor a 0"))
+                () -> assertTrue(response.getContentAsString().contains("The stock must be greater than 0"))
         );
     }
 
@@ -474,11 +507,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                null
+                null,
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -491,7 +524,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("La descripcion no puede estar vacia"))
+                () -> assertTrue(response.getContentAsString().contains("The description cannot be blank"))
         );
     }
 
@@ -500,11 +533,11 @@ class ProductRestControllerTest {
         var productDto = new ProductCreateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "D"
+                "D",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -517,7 +550,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("La descripcion debe tener entre 3 y 100 caracteres"))
+                () -> assertTrue(response.getContentAsString().contains("The description must be between 3 and 100 characters"))
         );
     }
 
@@ -528,14 +561,14 @@ class ProductRestControllerTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
-        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(product1);
+        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
 
         MockHttpServletResponse response = mockMvc.perform(
                         put(LOCAL_URL)
@@ -559,11 +592,11 @@ class ProductRestControllerTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         when(productService.update(anyString(), any())).thenThrow(new ProductNotFound(idProduct1.toString()));
@@ -581,13 +614,13 @@ class ProductRestControllerTest {
     void putProductWithBadRequest() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + idProduct1;
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
-                "",
+                "P",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
-                "",
+                "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -600,7 +633,7 @@ class ProductRestControllerTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(response.getContentAsString().contains("El name debe tener entre 3 y 50 caracteres"))
+                () -> assertTrue(response.getContentAsString().contains("The name must be between 3 and 50 characters"))
         );
     }
 
@@ -610,13 +643,13 @@ class ProductRestControllerTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
-        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(product1);
+        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
 
         MockHttpServletResponse response = mockMvc.perform(
                         patch(LOCAL_URL)
@@ -630,11 +663,11 @@ class ProductRestControllerTest {
                 () -> assertEquals(product1.getId(), res.id()),
                 () -> assertEquals(product1.getName(), res.name()),
                 () -> assertEquals(product1.getWeight(), res.weight()),
-                () -> assertEquals(product1.getIdCategory(), res.idCategory()),
                 () -> assertEquals(product1.getPrice(), res.price()),
                 () -> assertEquals(product1.getImg(), res.img()),
                 () -> assertEquals(product1.getStock(), res.stock()),
-                () -> assertEquals(product1.getDescription(), res.description())
+                () -> assertEquals(product1.getDescription(), res.description()),
+                () -> assertEquals(product1.getCategory(), res.category())
         );
         verify(productService, times(1)).update(anyString(), any(ProductUpdateDto.class));
     }
@@ -645,11 +678,11 @@ class ProductRestControllerTest {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
                 2.5,
-                UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461"),
                 50.0,
                 "imagen1.jpg",
                 10,
-                "Descripcion del producto 1"
+                "Descripcion del producto 1",
+                category1
         );
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Producto no encontrado"));
         assertAll(
