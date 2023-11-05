@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<List<Category>> findAllByNameContainingIgnoreCase(String name);
 
+    Optional<Category> findByNameContainingIgnoreCase(String name);
+
     Optional<Category> findByUuid(UUID uuid);
 
     Optional<Category> findByName(String name);

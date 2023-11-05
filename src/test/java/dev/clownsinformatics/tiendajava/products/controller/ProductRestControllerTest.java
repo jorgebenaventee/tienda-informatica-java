@@ -605,7 +605,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void patchFunko() throws Exception {
+    void patchProduct() throws Exception {
         var LOCAL_URL = BASE_URL + "/1";
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
@@ -640,7 +640,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void patchFunkoNotFound() {
+    void patchProductNotFound() {
         var LOCAL_URL = BASE_URL + "/1";
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 1",
@@ -651,7 +651,7 @@ class ProductRestControllerTest {
                 10,
                 "Descripcion del producto 1"
         );
-        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Funko no encontrado"));
+        when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Producto no encontrado"));
         assertAll(
                 () -> assertEquals(404, mockMvc.perform(
                                 patch(LOCAL_URL)
@@ -664,7 +664,7 @@ class ProductRestControllerTest {
 
 
     @Test
-    void deleteFunko() throws Exception {
+    void deleteProduct() throws Exception {
         var LOCAL_URL = BASE_URL + "/1";
         doNothing().when(productService).deleteById(anyString());
         MockHttpServletResponse response = mockMvc.perform(
@@ -679,7 +679,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void deleteFunkoNotFound() throws Exception {
+    void deleteProductNotFound() throws Exception {
         var LOCAL_URL = BASE_URL + "/1";
         doThrow(new ProductNotFound("Producto no encontrado")).when(productService).deleteById(anyString());
         MockHttpServletResponse response = mockMvc.perform(
