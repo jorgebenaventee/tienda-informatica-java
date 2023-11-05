@@ -4,11 +4,9 @@ import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,11 +18,13 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Builder
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 @Table(name = "PRODUCTS")
 public class Product {
+    public static final String IMAGE_DEFAULT = "https://placehold.co/600x400";
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -45,7 +45,9 @@ public class Product {
     private Double price = 0.0;
 
     @NotBlank
-    private String img;
+    @Column(nullable = false)
+    @Builder.Default
+    private String img = IMAGE_DEFAULT;
 
     @NotNull
     @Min(value = 0, message = "The stock must be greater than or equal to 0")

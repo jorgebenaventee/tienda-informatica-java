@@ -21,9 +21,9 @@ import java.util.UUID;
 @Service
 @CacheConfig(cacheNames = "categories")
 public class CategoryServiceImpl implements CategoryService {
+    private static final String CATEGORY_NOT_FOUND = "Category not found";
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper = new CategoryMapper();
-    private static final String CATEGORY_NOT_FOUND = "Category not found";
 
     @Autowired
     public CategoryServiceImpl(CategoryRepository categoryRepository) {

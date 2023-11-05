@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.rest.products.mapper;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Component
 public class ProductMapper {
-    public Product toProduct(UUID id, ProductCreateDto productCreateDto) {
+    public Product toProduct(UUID id, ProductCreateDto productCreateDto, Category category) {
         return Product.builder()
                 .id(id)
                 .name(productCreateDto.name())
@@ -20,12 +21,13 @@ public class ProductMapper {
                 .img(productCreateDto.img())
                 .stock(productCreateDto.stock())
                 .description(productCreateDto.description())
+                .category(category)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
 
-    public Product toProduct(ProductUpdateDto productUpdateDto, Product product) {
+    public Product toProduct(ProductUpdateDto productUpdateDto, Product product, Category category) {
         return Product.builder()
                 .id(product.getId())
                 .name(productUpdateDto.name() != null ? productUpdateDto.name() : product.getName())
@@ -34,6 +36,7 @@ public class ProductMapper {
                 .img(productUpdateDto.img() != null ? productUpdateDto.img() : product.getImg())
                 .stock(productUpdateDto.stock() != null ? productUpdateDto.stock() : product.getStock())
                 .description(productUpdateDto.description() != null ? productUpdateDto.description() : product.getDescription())
+                .category(category)
                 .createdAt(product.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -48,6 +51,7 @@ public class ProductMapper {
                 product.getImg(),
                 product.getStock(),
                 product.getDescription(),
+                product.getCategory(),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );

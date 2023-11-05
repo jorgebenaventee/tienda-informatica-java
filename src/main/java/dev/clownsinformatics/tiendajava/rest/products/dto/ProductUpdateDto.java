@@ -1,9 +1,8 @@
 package dev.clownsinformatics.tiendajava.rest.products.dto;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import jakarta.validation.constraints.Min;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.UUID;
 
 public record ProductUpdateDto(
         @Length(min = 3, max = 50, message = "The name must be between 3 and 50 characters")
@@ -21,6 +20,8 @@ public record ProductUpdateDto(
         Integer stock,
 
         @Length(min = 3, max = 100, message = "The description must be between 3 and 100 characters")
-        String description
+        String description,
+
+        Category category
 ) {
 }
