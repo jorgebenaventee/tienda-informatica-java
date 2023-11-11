@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.models;
+package dev.clownsinformatics.tiendajava.rest.products.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

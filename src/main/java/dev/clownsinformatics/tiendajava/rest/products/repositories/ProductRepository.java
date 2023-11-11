@@ -1,7 +1,7 @@
-package dev.clownsinformatics.tiendajava.products.repositories;
+package dev.clownsinformatics.tiendajava.rest.products.repositories;
 
-import dev.clownsinformatics.tiendajava.products.models.Categories;
-import dev.clownsinformatics.tiendajava.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.products.models.Categories;
+import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 
 import java.util.List;
 import java.util.Optional;
