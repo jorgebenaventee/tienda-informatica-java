@@ -25,7 +25,6 @@ import java.util.UUID;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @ColumnDefault("random_uuid()")
     @Builder.Default
     private UUID uuid = UUID.randomUUID();
 
@@ -35,13 +34,13 @@ public class Category {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(updatable = false, nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = true, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(updatable = true, nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
