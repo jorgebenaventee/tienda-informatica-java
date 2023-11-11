@@ -21,4 +21,8 @@ VALUES ('d69cf3db-b77d-4181-b3cd-5ca8107fb6a0', 'Producto A', 1, 100, 'productA.
        ('98765432-1234-5678-90ab-cdef01234567', 'Producto D', 4, 250, 'productD.jpg', 25, 'Descripción del producto D',
         '8c5c06ba-49d6-46b6-85cc-8246c0f362bc', current_timestamp, current_timestamp);
 
-
+INSERT INTO employee (salary, name, position)
+values (1000, 'Paco Pancetas', 'Técnico de sistemas'),
+       (2000, 'Pedro Sánchez', 'Desarrollador web'),
+       (3000, 'Mariano Rajoy', 'Administrador de base de datos'),
+       (4000, 'Belén Esteban', 'Directora de Marketing');
