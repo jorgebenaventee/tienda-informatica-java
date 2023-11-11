@@ -47,7 +47,8 @@ public class ClientMapper {
                 client.getAddress(),
                 client.getPhone(),
                 client.getBirthdate(),
-                client.getImage()
+                client.getImage(),
+                client.getIsDeleted()
         );
     }
 

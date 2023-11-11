@@ -3,6 +3,7 @@ package dev.clownsinformatics.tiendajava.rest.clients.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -16,8 +17,8 @@ public record ClientResponse(
         @NotBlank(message = "El email no puede estar vacio.") String email,
         @NotBlank(message = "La direccion no puede estar vacia.") String address,
         @NotBlank(message = "El telefono no puede estar vacio.") String phone,
-        @NotBlank(message = "La fecha de nacimiento no puede estar vacia.") LocalDate birthdate,
-        String image) {
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
+        String image, Boolean isDeleted) {
 
 
 
