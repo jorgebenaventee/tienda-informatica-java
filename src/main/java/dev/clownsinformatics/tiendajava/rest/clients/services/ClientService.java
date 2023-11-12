@@ -27,5 +27,4 @@ public interface ClientService {
     ClientResponse updateImage(Long id, MultipartFile image, Boolean withUrl);
 
 
-
 }

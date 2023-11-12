@@ -2,6 +2,7 @@ package dev.clownsinformatics.tiendajava.rest.categories.repositories;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
     Optional<List<Category>> findAllByNameContainingIgnoreCase(String name);
 
     Optional<Category> findByNameContainingIgnoreCase(String name);

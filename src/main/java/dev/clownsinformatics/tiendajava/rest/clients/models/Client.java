@@ -1,12 +1,12 @@
 package dev.clownsinformatics.tiendajava.rest.clients.models;
 
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
@@ -41,7 +41,8 @@ public class Client {
     @NotBlank(message = "La direccion no puede estar vacia.")
     private String address;
 
-    @NotBlank(message = "El telefono no puede estar vacio.") @NumberFormat(
+    @NotBlank(message = "El telefono no puede estar vacio.")
+    @NumberFormat(
             style = NumberFormat.Style.NUMBER,
             pattern = "########"
     )
@@ -54,8 +55,6 @@ public class Client {
 
     @Column(columnDefinition = "boolean default false")
     private Boolean isDeleted;
-
-
 
 
 }

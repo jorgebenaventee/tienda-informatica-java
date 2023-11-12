@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 @CacheConfig(cacheNames = "clients")
 @Slf4j
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;

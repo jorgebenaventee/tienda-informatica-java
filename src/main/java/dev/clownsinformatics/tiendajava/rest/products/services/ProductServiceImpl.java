@@ -11,6 +11,7 @@ import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
+import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,13 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,21 +55,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAll(Double weight, String name) {
-        if ((weight == null) && (name == null || name.isEmpty())) {
-            log.info("Searching all products");
-            return productRepository.findAll();
-        }
-        if ((name != null && !name.isEmpty()) && weight == null) {
-            log.info("Searching products by name: " + name);
-            return productRepository.findAllByName(name);
-        }
-        if (name == null || name.isEmpty()) {
-            log.info("Searching products by category: " + weight);
-            return productRepository.findAllByWeight(weight);
-        }
-        log.info("Searching products by name: " + name + " and category: " + weight);
-        return productRepository.findAllByNameAndWeight(name, weight);
+    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Pageable pageable) {
+        Specification<Product> specName = (root, query, criteriaBuilder) ->
+                name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Product> specMaxWeight = (root, query, criteriaBuilder) ->
+                maxWeight.map(value -> criteriaBuilder.lessThanOrEqualTo(root.get("weight"), value))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Product> specMaxPrice = (root, query, criteriaBuilder) ->
+                maxPrice.map(value -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), value))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Product> spectMinStock = (root, query, criteriaBuilder) ->
+                minStock.map(value -> criteriaBuilder.greaterThanOrEqualTo(root.get("stock"), value))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Product> specCategory = (root, query, criteriaBuilder) ->
+                category.map(value -> {
+                    Join<Product, Category> categoryJoin = root.join("category");
+                    return criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("name")), "%" + value.toLowerCase() + "%");
+                }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Product> spec = Specification.where(specName).and(specMaxWeight).and(specMaxPrice).and(spectMinStock).and(specCategory);
+        return productRepository.findAll(spec, pageable).map(productMapper::toProductResponseDto);
     }
 
     @Override

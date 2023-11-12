@@ -8,7 +8,6 @@ import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Component
 public class ProductMapper {

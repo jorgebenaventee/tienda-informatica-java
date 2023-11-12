@@ -37,9 +37,9 @@ public class ProveedorServiceImpl implements ProveedorService {
     private final ProveedorMapper proveedorMapper;
     private final CategoryService categoryService;
     private final WebSocketConfig webSocketConfig;
-    private WebSocketHandler webSocketService;
     private final ProveedoresNotificationMapper proveedoresNotificationMapper;
     private final ObjectMapper mapper;
+    private WebSocketHandler webSocketService;
 
     @Autowired
     public ProveedorServiceImpl(ProveedorRepository proveedoresRepository, ProveedorMapper proveedorMapper, CategoryService categoryService, WebSocketConfig webSocketConfig, ProveedoresNotificationMapper proveedoresNotificationMapper, ObjectMapper mapper) {

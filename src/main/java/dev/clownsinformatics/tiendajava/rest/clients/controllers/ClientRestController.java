@@ -30,7 +30,6 @@ public class ClientRestController {
     private final PaginationLinksUtils paginationLinksUtils;
 
 
-
     @Autowired
     public ClientRestController(ClientService clientService, PaginationLinksUtils paginationLinksUtils) {
         this.clientService = clientService;
@@ -58,8 +57,8 @@ public class ClientRestController {
 
     @GetMapping("/")
     public ResponseEntity<PageResponse<ClientResponse>> getAllClients(@RequestParam(required = false) Optional<String> username, @RequestParam(defaultValue = "false") String isDeleted,
-                                                        @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
-                                                        @RequestParam(defaultValue = "asc") String direction, HttpServletRequest request) {
+                                                                      @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
+                                                                      @RequestParam(defaultValue = "asc") String direction, HttpServletRequest request) {
         log.info("Getting all clients");
 
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -78,8 +77,6 @@ public class ClientRestController {
         clientService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 
 }

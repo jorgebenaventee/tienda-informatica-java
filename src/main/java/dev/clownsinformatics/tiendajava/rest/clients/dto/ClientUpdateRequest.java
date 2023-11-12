@@ -16,6 +16,4 @@ public record ClientUpdateRequest(
         String image) {
 
 
-
-
 }
