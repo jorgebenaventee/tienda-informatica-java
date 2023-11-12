@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.products.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
@@ -9,6 +10,7 @@ import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductService;
+import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,6 +19,9 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -25,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,7 +103,6 @@ class ProductRestControllerTest {
             LocalDateTime.now()
     );
 
-
     private final ObjectMapper mapper = new ObjectMapper();
     @Autowired
     MockMvc mockMvc;
@@ -112,105 +117,211 @@ class ProductRestControllerTest {
 
     @Test
     void getAllProducts() throws Exception {
-        List<Product> products = List.of(product1, product2);
+        var funkolist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
-        when(productService.findAll(null, null)).thenReturn(products);
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(BASE_URL)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-        List<Product> productsResponse = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Product.class));
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(2, productsResponse.size()),
-                () -> assertEquals(product1.getId(), productsResponse.get(0).getId()),
-                () -> assertEquals(product2.getId(), productsResponse.get(1).getId()),
-                () -> assertEquals(product1.getName(), productsResponse.get(0).getName()),
-                () -> assertEquals(product2.getName(), productsResponse.get(1).getName())
-
+                () -> assertEquals(2, res.content().size())
         );
-        verify(productService, times(1)).findAll(null, null);
-    }
 
-    @Test
-    void getAllProductsByWeight() throws Exception {
-        Double weight = 2.5;
-        var LOCAL_URL = BASE_URL + "?weight=" + weight;
-        List<Product> products = List.of(product1);
-
-        when(productService.findAll(weight, null)).thenReturn(products);
-
-        MockHttpServletResponse response = mockMvc.perform(
-                        get(LOCAL_URL)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-        List<Product> productsResponse = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Product.class));
-
-        assertAll(
-                () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(1, productsResponse.size()),
-                () -> assertEquals(product1.getId(), productsResponse.get(0).getId()),
-                () -> assertEquals(product1.getName(), productsResponse.get(0).getName()),
-                () -> assertEquals(product1.getWeight(), productsResponse.get(0).getWeight())
-
-        );
-        verify(productService, times(1)).findAll(weight, null);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
     }
 
     @Test
     void getAllProductsByName() throws Exception {
-        String name = "Product 1";
-        var LOCAL_URL = BASE_URL + "?name=" + name;
-        List<Product> products = List.of(product1);
+        var LOCAL_URL = "/api/products?name=Product 1";
+        var funkolist = List.of(productResponseDto1);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
-        when(productService.findAll(null, name)).thenReturn(products);
+        Optional<String> name = Optional.of("Product 1");
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-        List<Product> productsResponse = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Product.class));
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(1, productsResponse.size()),
-                () -> assertEquals(product1.getId(), productsResponse.get(0).getId()),
-                () -> assertEquals(product1.getName(), productsResponse.get(0).getName())
-
+                () -> assertEquals(1, res.content().size())
         );
-        verify(productService, times(1)).findAll(null, name);
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
     }
 
     @Test
-    void getAllProductsByWeightAndName() throws Exception {
-        String name = "Product 1";
-        Double weight = 2.5;
-        var LOCAL_URL = BASE_URL + "?name=" + name + "&weight=" + weight;
-        List<Product> products = List.of(product1);
+    void getAllProductsByWeight() throws Exception {
+        var LOCAL_URL = "/api/products?maxWeight=2";
+        var funkolist = List.of(productResponseDto1);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
-        when(productService.findAll(weight, name)).thenReturn(products);
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.of(2.0);
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
-        List<Product> productsResponse = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructCollectionType(List.class, Product.class));
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(1, productsResponse.size()),
-                () -> assertEquals(product1.getId(), productsResponse.get(0).getId()),
-                () -> assertEquals(product1.getName(), productsResponse.get(0).getName())
-
+                () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(weight, name);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+    }
+
+    @Test
+    void getAllProductsByMaxPrice() throws Exception{
+        var LOCAL_URL = "/api/products?maxPrice=50";
+        var funkolist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.of(50.0);
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+    }
+
+    @Test
+    void getAllProductsByMinStock() throws Exception{
+        var LOCAL_URL = "/api/products?minStock=10";
+        var funkolist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.of(10.0);
+        Optional<String> category = Optional.empty();
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+    }
+
+    @Test
+    void getAllProductsByCategory() throws Exception{
+        var LOCAL_URL = "/api/products?category=Category 1";
+        var funkolist = List.of(productResponseDto1);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.of("Category 1");
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+    }
+
+    @Test
+    void getAllProductsByAllParams() throws Exception{
+        var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1";
+        var funkolist = List.of(productResponseDto1);
+        var page = new PageImpl<>(funkolist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.of("Product 1");
+        Optional<Double> maxWeight = Optional.of(2.0);
+        Optional<Double> maxPrice = Optional.of(50.0);
+        Optional<Double> minStock = Optional.of(10.0);
+        Optional<String> category = Optional.of("Category 1");
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
     }
 
     @Test
