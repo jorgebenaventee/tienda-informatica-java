@@ -101,10 +101,14 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(UUID id) {
         log.info("Deleting category with id: {}", id);
         Category categoryToUpdate = categoryRepository.findByUuid(id).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
-        boolean exists = categoryRepository.existsProductById(id);
-        if (exists) {
+        boolean hasProducts = categoryRepository.existsProductById(id);
+        boolean hasProveedores = categoryRepository.existsProveedorById(id);
+        if (hasProducts) {
             log.warn("Not deleting category with id: {} because it has products", id);
             throw new CategoryConflict("Category has products");
+        } else if (hasProveedores) {
+            log.warn("Not deleting category with id: {} because it has proveedores", id);
+            throw new CategoryConflict("Category has proveedores");
         } else {
             onChange(Notification.Tipo.DELETE, categoryToUpdate);
             categoryRepository.delete(categoryToUpdate);
@@ -119,7 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         try {
             Notification<CategoryNotificationDto> notificacion = new Notification<>(
-                    "CAREGORY",
+                    "CATEGORY",
                     tipo,
                     categoryNotificationMapper.toCategoryNotificationDto(data),
                     LocalDateTime.now().toString()

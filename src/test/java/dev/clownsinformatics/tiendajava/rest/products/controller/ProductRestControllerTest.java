@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.controller;
+package dev.clownsinformatics.tiendajava.rest.products.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

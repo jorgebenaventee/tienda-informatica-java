@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private Category findCategory(String categoryName) {
-        var category = categoryRepository.findByNameContainingIgnoreCase(categoryName);
+        var category = categoryRepository.findByNameEqualsIgnoreCase(categoryName);
         if (category.isEmpty()) {
             throw new ProductBadRequest("Category not found");
         }

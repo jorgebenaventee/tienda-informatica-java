@@ -12,9 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
-    Optional<List<Category>> findAllByNameContainingIgnoreCase(String name);
-
-    Optional<Category> findByNameContainingIgnoreCase(String name);
+    Optional<Category> findByNameEqualsIgnoreCase(String name);
 
     Optional<Category> findByUuid(UUID uuid);
 
@@ -23,6 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSp
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.category.uuid = :id")
     Boolean existsProductById(UUID id);
 
-    @Query("SELECT p.uuid FROM Category p WHERE p.name = :name")
-    Optional<Long> getIdByName(String name);
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Proveedor p WHERE p.category.uuid = :id")
+    Boolean existsProveedorById(UUID id);
 }
