@@ -22,7 +22,7 @@ public record ClientCreateRequest(
                 pattern = "########"
         ) String phone,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
-        String image) {
+        String image, Boolean isDeleted) {
 
 
 

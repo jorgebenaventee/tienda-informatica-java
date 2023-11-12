@@ -5,6 +5,7 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientService;
+import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
@@ -26,13 +28,13 @@ import java.util.Optional;
 public class ClientRestController {
 
 
-    private final ClientService clientService;
+    private final ClientServiceImpl clientService;
     private final PaginationLinksUtils paginationLinksUtils;
 
 
 
     @Autowired
-    public ClientRestController(ClientService clientService, PaginationLinksUtils paginationLinksUtils) {
+    public ClientRestController(ClientServiceImpl clientService, PaginationLinksUtils paginationLinksUtils) {
         this.clientService = clientService;
         this.paginationLinksUtils = paginationLinksUtils;
     }
@@ -79,7 +81,11 @@ public class ClientRestController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PatchMapping("/{id}/image")
+    public ResponseEntity<ClientResponse> updateImage(@PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestParam("withUrl") Optional<Boolean> withUrl) {
+        log.info("Updating image");
+        return ResponseEntity.ok(clientService.updateImage(id, file, withUrl.orElse(true)));
+    }
 
 
 }

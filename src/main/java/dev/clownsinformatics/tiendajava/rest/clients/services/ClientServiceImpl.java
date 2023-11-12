@@ -9,6 +9,7 @@ import dev.clownsinformatics.tiendajava.rest.clients.mappers.ClientMapper;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import dev.clownsinformatics.tiendajava.rest.clients.repositories.ClientRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.FileSystemStorageService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -79,7 +80,51 @@ public class ClientServiceImpl implements ClientService{
     @Override
     @CachePut(key = "#result.id")
     public ClientResponse update(Long id, ClientUpdateRequest productoUpdateRequest) {
-        ClientResponse response = clientMapper.toClientResponse(clientRepository.save(clientMapper.toClient(productoUpdateRequest)));
+
+        ClientResponse currentClient = findById(id);
+
+        Client clientToSave = Client.builder()
+                .id(id)
+                .name(currentClient.name())
+                .username(currentClient.username())
+                .email(currentClient.email())
+                .address(currentClient.address())
+                .phone(currentClient.phone())
+                .birthdate(currentClient.birthdate())
+                .image(currentClient.image())
+                .balance(currentClient.balance())
+                .isDeleted(currentClient.isDeleted())
+                .build();
+
+        if (productoUpdateRequest.name() != null){
+            clientToSave.setName(productoUpdateRequest.name());
+        }
+        if (productoUpdateRequest.username() != null){
+            clientToSave.setUsername(productoUpdateRequest.username());
+        }
+        if (productoUpdateRequest.email() != null){
+            clientToSave.setEmail(productoUpdateRequest.email());
+        }
+        if (productoUpdateRequest.address() != null){
+            clientToSave.setAddress(productoUpdateRequest.address());
+        }
+        if (productoUpdateRequest.phone() != null){
+            clientToSave.setPhone(productoUpdateRequest.phone());
+        }
+        if (productoUpdateRequest.birthdate() != null){
+            clientToSave.setBirthdate(productoUpdateRequest.birthdate());
+        }
+        if (productoUpdateRequest.image() != null){
+            clientToSave.setImage(productoUpdateRequest.image());
+        }
+        if (productoUpdateRequest.balance() != null){
+            clientToSave.setBalance(productoUpdateRequest.balance());
+        }
+        if (productoUpdateRequest.isDeleted() != null){
+            clientToSave.setIsDeleted(productoUpdateRequest.isDeleted());
+        }
+
+        ClientResponse response = clientMapper.toClientResponse(clientRepository.save(clientToSave));
         return response;
     }
 
@@ -92,13 +137,35 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     @CachePut(key = "#result.id")
+    @Transactional
     public ClientResponse updateImage(Long id, MultipartFile image, Boolean withUrl) {
-        findById(id);
+        ClientResponse currentClient = findById(id);
         String imageUrl = fileSystemStorageService.store(image);
 
         imageUrl = withUrl ? fileSystemStorageService.getUrl(imageUrl) : imageUrl;
 
-        ClientResponse response = clientMapper.toClientResponse(clientRepository.updateImageById(id, imageUrl));
+        if (currentClient.image() != null && !currentClient.image().isEmpty() && fileSystemStorageService.getUrl(currentClient.image()) != null){
+            fileSystemStorageService.delete(currentClient.image());
+        }
+
+        Integer rowsAffected = clientRepository.updateImageById(id, imageUrl);
+
+        if (rowsAffected == 0){
+            throw new ClientNotFound(id);
+        }
+
+        ClientResponse response = ClientResponse.builder()
+                .id(id)
+                .name(currentClient.name())
+                .username(currentClient.username())
+                .email(currentClient.email())
+                .address(currentClient.address())
+                .phone(currentClient.phone())
+                .birthdate(currentClient.birthdate())
+                .image(imageUrl)
+                .balance(currentClient.balance())
+                .isDeleted(currentClient.isDeleted())
+                .build();
 
         return response;
     }

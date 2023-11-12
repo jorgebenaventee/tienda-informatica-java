@@ -3,12 +3,13 @@ package dev.clownsinformatics.tiendajava.rest.clients.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 
-
+@Builder
 public record ClientResponse(
         Long id,
         @NotBlank(message = "El usuario no puede estar vacio.") String username,

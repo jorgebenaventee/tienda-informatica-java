@@ -21,6 +21,7 @@ public class ClientMapper {
                 .birthdate(clientCreateRequest.birthdate())
                 .image(clientCreateRequest.image())
                 .balance(clientCreateRequest.balance())
+                .isDeleted(clientCreateRequest.isDeleted())
                 .build();
     }
 
@@ -34,6 +35,7 @@ public class ClientMapper {
                 .birthdate(clientUpdateRequest.birthdate())
                 .image(clientUpdateRequest.image())
                 .balance(clientUpdateRequest.balance())
+                .isDeleted(clientUpdateRequest.isDeleted())
                 .build();
     }
 

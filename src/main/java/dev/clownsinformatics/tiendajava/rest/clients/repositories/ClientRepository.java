@@ -22,7 +22,7 @@ public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecif
 
     @Modifying
     @Query("UPDATE Client c SET c.image = ?2 WHERE c.id = ?1")
-    Client updateImageById(Long id, String image);
+    Integer updateImageById(Long id, String image);
 
 
 }
