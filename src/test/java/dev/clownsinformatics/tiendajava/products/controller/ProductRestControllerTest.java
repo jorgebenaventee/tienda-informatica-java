@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureJsonTesters
 @ExtendWith(MockitoExtension.class)
 class ProductRestControllerTest {
-    private final String BASE_URL = "/api/productos";
+    private final String BASE_URL = "/api/products";
     private final UUID idProduct1 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785464");
     private final UUID idProduct2 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785462");
 

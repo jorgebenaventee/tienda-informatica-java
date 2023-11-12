@@ -12,9 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -31,14 +35,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> findAll(String name) {
-        if (name == null || name.isEmpty()) {
-            log.info("Getting all categories");
-            return categoryRepository.findAll();
-        } else {
-            log.info("Getting all categories with name");
-            return categoryRepository.findAllByNameContainingIgnoreCase(name).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
-        }
+    public Page<Category> findAll(Optional<String> name, Pageable pageable) {
+        log.info("Getting all categories with name: {}", name);
+        Specification<Category> specName = (root, criteriaQuery, criteriaBuilder) ->
+                name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Category> spec = Specification.where(specName);
+        return categoryRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -56,7 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
             throw new CategoryConflict("Category already exists");
         });
         return categoryRepository.save(categoryMapper.toCategory(category));
-
     }
 
     @Override
@@ -79,7 +82,8 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(UUID id) {
         log.info("Deleting category with id: {}", id);
         Category categoryToUpdate = categoryRepository.findByUuid(id).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
-        if (categoryRepository.existsProductById(id)) {
+        boolean exists = categoryRepository.existsProductById(id);
+        if (exists) {
             log.warn("Not deleting category with id: {} because it has products", id);
             throw new CategoryConflict("Category has products");
         } else {

@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/products")
 public class ProductRestController {
     private final ProductService productService;
     private final PaginationLinksUtils paginationLinksUtils;
