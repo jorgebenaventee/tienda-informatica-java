@@ -13,6 +13,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketProveedorHandler(), "/ws/proveedor");
+        registry.addHandler(webSocketClientHandler(), "/ws/clients");
     }
 
     //ws://localhost:8080/ws/proveedor
@@ -21,4 +22,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public WebSocketHandler webSocketProveedorHandler() {
         return new WebSocketHandler("Proveedor");
     }
+
+    //ws://localhost:8080/ws/clients
+    @Bean
+    public WebSocketHandler webSocketClientHandler() {
+        return new WebSocketHandler("Client");
+    }
+
 }

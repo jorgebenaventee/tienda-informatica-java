@@ -1,6 +1,10 @@
 package dev.clownsinformatics.tiendajava.rest.clients.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
@@ -9,6 +13,9 @@ import dev.clownsinformatics.tiendajava.rest.clients.mappers.ClientMapper;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import dev.clownsinformatics.tiendajava.rest.clients.repositories.ClientRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.FileSystemStorageService;
+import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ClientNotificationDto;
+import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ClientNotificationMapper;
+import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -31,12 +39,20 @@ public class ClientServiceImpl implements ClientService{
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final FileSystemStorageService fileSystemStorageService;
+    private WebSocketHandler webSocketService;
+    private final ClientNotificationMapper clientNotificationMapper;
+    private final WebSocketConfig webSocketConfig;
+    private final ObjectMapper mapper = new ObjectMapper();
+
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, FileSystemStorageService fileSystemStorageService) {
+    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, FileSystemStorageService fileSystemStorageService, ClientNotificationMapper clientNotificationMapper, WebSocketConfig webSocketConfig) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.fileSystemStorageService = fileSystemStorageService;
+        this.clientNotificationMapper = clientNotificationMapper;
+        this.webSocketConfig = webSocketConfig;
+        this.webSocketService = webSocketConfig.webSocketClientHandler();
     }
 
 
@@ -51,6 +67,8 @@ public class ClientServiceImpl implements ClientService{
 
         Page<ClientResponse> response = clientRepository.findAll(specs, pageable).map(clientMapper::toClientResponse);
 
+//        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response.getContent()));
+
         return response;
 
     }
@@ -61,12 +79,14 @@ public class ClientServiceImpl implements ClientService{
         ClientResponse response = clientMapper.toClientResponse(clientRepository.findByIdAndIsDeletedFalse(id).orElseThrow(
                 () -> new ClientNotFound(id)
         ));
+        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response));
         return response;
     }
 
     @Override
-    public ClientResponse findByName(String name) {
-        ClientResponse response = clientMapper.toClientResponse(clientRepository.findByNameAndIsDeletedFalse(name));
+    public ClientResponse findByUsername(String username) {
+        ClientResponse response = clientMapper.toClientResponse(clientRepository.findByUsernameAndIsDeletedFalse(username));
+        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response));
         return response;
     }
 
@@ -74,6 +94,7 @@ public class ClientServiceImpl implements ClientService{
     @CachePut(key = "#result.id")
     public ClientResponse save(ClientCreateRequest productoCreateRequest) {
         ClientResponse response = clientMapper.toClientResponse(clientRepository.save(clientMapper.toClient(productoCreateRequest)));
+        sendNotification(Notification.Tipo.CREATE, clientMapper.toClient(response));
         return response;
     }
 
@@ -125,6 +146,9 @@ public class ClientServiceImpl implements ClientService{
         }
 
         ClientResponse response = clientMapper.toClientResponse(clientRepository.save(clientToSave));
+
+        sendNotification(Notification.Tipo.UPDATE, clientMapper.toClient(response));
+
         return response;
     }
 
@@ -132,7 +156,7 @@ public class ClientServiceImpl implements ClientService{
     @CachePut(key = "#id")
     public void deleteById(Long id) {
         findById(id);
-        clientRepository.deleteById(id);
+        clientRepository.logicalDeleteById(id);
     }
 
     @Override
@@ -167,6 +191,39 @@ public class ClientServiceImpl implements ClientService{
                 .isDeleted(currentClient.isDeleted())
                 .build();
 
+        sendNotification(Notification.Tipo.UPDATE, clientMapper.toClient(response));
+
         return response;
     }
+
+    void sendNotification(Notification.Tipo tipo, Client data) {
+        if (webSocketService == null) {
+            log.warn("No se ha configurado el servicio de websockets");
+            webSocketService = this.webSocketConfig.webSocketClientHandler();
+        }
+        try {
+            Notification<ClientNotificationDto> notificacion = new Notification<>(
+                    "CLIENTS",
+                    tipo,
+                    clientNotificationMapper.toClientNotificationDto(data),
+                    LocalDate.now().toString()
+            );
+
+            String json = mapper.writeValueAsString((notificacion));
+            log.info("Enviando notificación mensaje..");
+
+            Thread senderThread = new Thread(() -> {
+                try {
+                    webSocketService.sendMessage(json);
+                } catch (Exception e) {
+                    log.error("Error al enviar el mensaje a través del servicio WebSocket", e);
+                }
+            });
+            senderThread.start();
+        } catch (JsonProcessingException e) {
+            log.error("Error al convertir la notificación a JSON", e);
+        }
+    }
+
+
 }

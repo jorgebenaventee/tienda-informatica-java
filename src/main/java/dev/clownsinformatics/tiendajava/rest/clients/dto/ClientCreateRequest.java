@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -22,7 +23,8 @@ public record ClientCreateRequest(
                 pattern = "########"
         ) String phone,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
-        String image, Boolean isDeleted) {
+        String image,
+        Boolean isDeleted) {
 
 
 

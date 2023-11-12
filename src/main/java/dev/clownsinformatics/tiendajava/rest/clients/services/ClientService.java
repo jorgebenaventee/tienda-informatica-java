@@ -16,7 +16,7 @@ public interface ClientService {
 
     ClientResponse findById(Long id);
 
-    ClientResponse findByName(String name);
+    ClientResponse findByUsername(String name);
 
     ClientResponse save(ClientCreateRequest productoCreateRequest);
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Builder
@@ -19,7 +20,9 @@ public record ClientResponse(
         @NotBlank(message = "La direccion no puede estar vacia.") String address,
         @NotBlank(message = "El telefono no puede estar vacio.") String phone,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
-        String image, Boolean isDeleted) {
+        String image, Boolean isDeleted,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt){
 
 
 

@@ -27,6 +27,6 @@ values (1000, 'Paco Pancetas', 'Técnico de sistemas', current_timestamp, curren
        (3000, 'Mariano Rajoy', 'Administrador de base de datos', current_timestamp, current_timestamp),
        (4000, 'Belén Esteban', 'Directora de Marketing', current_timestamp, current_timestamp);
 
-INSERT INTO CLIENTS (USERNAME, NAME, BALANCE, EMAIL, ADDRESS, PHONE, BIRTHDATE, IMAGE, IS_DELETED)
-VALUES ('cliente1', 'Cliente 1', 0, 'hola@gmail.com', 'Direccion 1', 123456789, CURRENT_TIMESTAMP, null, false),
-       ('cliente2', 'Cliente 2', 0, 'adios@gmail.com' , 'Direccion 2', 987654321, CURRENT_TIMESTAMP, null, false);
+INSERT INTO CLIENTS (USERNAME, NAME, BALANCE, EMAIL, ADDRESS, PHONE, BIRTHDATE, IMAGE, IS_DELETED, CREATED_AT, UPDATED_AT)
+VALUES ('cliente1', 'Cliente 1', 0, 'hola@gmail.com', 'Direccion 1', 123456789, CURRENT_TIMESTAMP, null, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('cliente2', 'Cliente 2', 0, 'adios@gmail.com' , 'Direccion 2', 987654321, CURRENT_TIMESTAMP, null, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

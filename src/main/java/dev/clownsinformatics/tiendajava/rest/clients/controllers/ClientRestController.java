@@ -23,7 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("${api.version}/clientes")
+@RequestMapping("api/clients")
 @Slf4j
 public class ClientRestController {
 
@@ -38,7 +38,6 @@ public class ClientRestController {
         this.clientService = clientService;
         this.paginationLinksUtils = paginationLinksUtils;
     }
-
 
     @PostMapping("/")
     public ResponseEntity<ClientResponse> createClient(@RequestBody @Valid ClientCreateRequest clientCreateRequest) {

@@ -21,7 +21,7 @@ public class ClientMapper {
                 .birthdate(clientCreateRequest.birthdate())
                 .image(clientCreateRequest.image())
                 .balance(clientCreateRequest.balance())
-                .isDeleted(clientCreateRequest.isDeleted())
+                .isDeleted(clientCreateRequest.isDeleted() != null ? clientCreateRequest.isDeleted() : Boolean.FALSE)
                 .build();
     }
 
@@ -35,7 +35,23 @@ public class ClientMapper {
                 .birthdate(clientUpdateRequest.birthdate())
                 .image(clientUpdateRequest.image())
                 .balance(clientUpdateRequest.balance())
-                .isDeleted(clientUpdateRequest.isDeleted())
+                .isDeleted(clientUpdateRequest.isDeleted() != null ? clientUpdateRequest.isDeleted() : Boolean.FALSE)
+                .build();
+    }
+
+    public Client toClient(ClientResponse clientResponse) {
+        return Client.builder()
+                .name(clientResponse.name())
+                .username(clientResponse.username())
+                .email(clientResponse.email())
+                .address(clientResponse.address())
+                .phone(clientResponse.phone())
+                .birthdate(clientResponse.birthdate())
+                .image(clientResponse.image())
+                .balance(clientResponse.balance())
+                .isDeleted(clientResponse.isDeleted() != null ? clientResponse.isDeleted() : Boolean.FALSE)
+                .createdAt(clientResponse.createdAt())
+                .updatedAt(clientResponse.updatedAt())
                 .build();
     }
 
@@ -50,7 +66,9 @@ public class ClientMapper {
                 client.getPhone(),
                 client.getBirthdate(),
                 client.getImage(),
-                client.getIsDeleted()
+                client.getIsDeleted(),
+                client.getCreatedAt(),
+                client.getUpdatedAt()
         );
     }
 
