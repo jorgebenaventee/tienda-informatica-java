@@ -26,3 +26,8 @@ values (1000, 'Paco Pancetas', 'Técnico de sistemas', current_timestamp, curren
        (2000, 'Pedro Sánchez', 'Desarrollador web', current_timestamp, current_timestamp),
        (3000, 'Mariano Rajoy', 'Administrador de base de datos', current_timestamp, current_timestamp),
        (4000, 'Belén Esteban', 'Directora de Marketing', current_timestamp, current_timestamp);
+        '8c5c06ba-49d6-46b6-85cc-8246c0f362bc');
+
+INSERT INTO CLIENTS (USERNAME, NAME, BALANCE, EMAIL, ADDRESS, PHONE, BIRTHDATE, IMAGE, IS_DELETED)
+VALUES ('cliente1', 'Cliente 1', 0, 'hola@gmail.com', 'Direccion 1', 123456789, CURRENT_TIMESTAMP, null, 0),
+       ('cliente2', 'Cliente 2', 0, 'adios@gmail.com' , 'Direccion 2', 987654321, CURRENT_TIMESTAMP, null, 0);

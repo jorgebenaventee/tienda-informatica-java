@@ -23,6 +23,10 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.springframework.boot:spring-boot-starter-cache:3.1.0")
