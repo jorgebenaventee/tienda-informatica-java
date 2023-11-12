@@ -1,5 +1,9 @@
 package dev.clownsinformatics.tiendajava.rest.products.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
@@ -11,6 +15,9 @@ import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
+import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProductsNotificationDto;
+import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProductNotificationMapper;
+import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +32,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,12 +45,21 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final StorageService storageService;
 
+    private final WebSocketConfig webSocketConfig;
+    private final ObjectMapper mapper;
+    private final ProductNotificationMapper productNotificationMapper;
+    private WebSocketHandler webSocketHandler;
+
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper, StorageService storageService) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper, StorageService storageService, WebSocketConfig webSocketConfig, ObjectMapper mapper, ProductNotificationMapper productNotificationMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
         this.storageService = storageService;
+        this.webSocketConfig = webSocketConfig;
+        this.mapper = mapper;
+        this.productNotificationMapper = productNotificationMapper;
+        webSocketHandler = webSocketConfig.webSocketProductHandler();
     }
 
     @Override
@@ -103,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
         log.info("Saving product: " + productCreateDto);
         var category = findCategory(productCreateDto.category().getName());
         var productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
-
+        onChange(Notification.Tipo.CREATE, productSaved);
         return productMapper.toProductResponseDto(productSaved);
     }
 
@@ -122,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         var productUpdated = productRepository.save(productMapper.toProduct(productUpdateDto, actualProduct, category));
-
+        onChange(Notification.Tipo.UPDATE, productUpdated);
         return productMapper.toProductResponseDto(productUpdated);
     }
 
@@ -137,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
             Product product = findById(id);
             storageService.delete(product.getImg());
             product.setImg(urlImage);
-
+            onChange(Notification.Tipo.UPDATE, product);
             return productRepository.save(product);
         } else {
             throw new ProductBadRequest("Image is empty");
@@ -154,6 +171,37 @@ public class ProductServiceImpl implements ProductService {
         if (product.getImg() != null && !product.getImg().equals(Product.IMAGE_DEFAULT)) {
             storageService.delete(product.getImg());
         }
+        onChange(Notification.Tipo.DELETE, product);
+    }
 
+    public void onChange(Notification.Tipo tipo, Product data) {
+        if (webSocketHandler == null) {
+            log.warn("Not sending notification to clients because the webSocketHandler is null");
+            webSocketHandler = this.webSocketConfig.webSocketProductHandler();
+        }
+
+        try {
+            Notification<ProductsNotificationDto> notificacion = new Notification<>(
+                    "PRODUCTS",
+                    tipo,
+                    productNotificationMapper.toProductNotificationDto(data),
+                    LocalDateTime.now().toString()
+            );
+
+            String json = mapper.writeValueAsString((notificacion));
+
+            log.info("Sending notification to clients: " + json);
+
+            Thread senderThread = new Thread(() -> {
+                try {
+                    webSocketHandler.sendMessage(json);
+                } catch (Exception e) {
+                    log.error("Error sending message to clients", e);
+                }
+            });
+            senderThread.start();
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing notification to json", e);
+        }
     }
 }

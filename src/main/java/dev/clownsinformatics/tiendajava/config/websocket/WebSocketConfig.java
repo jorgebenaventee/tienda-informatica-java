@@ -13,12 +13,17 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketProveedorHandler(), "/ws/proveedor");
+        registry.addHandler(webSocketProductHandler(), "/ws/product");
     }
-
-    //ws://localhost:8080/ws/proveedor
 
     @Bean
     public WebSocketHandler webSocketProveedorHandler() {
         return new WebSocketHandler("Proveedor");
     }
+
+    @Bean
+    public WebSocketHandler webSocketProductHandler() {
+        return new WebSocketHandler("Product");
+    }
+
 }

@@ -1,5 +1,8 @@
 package dev.clownsinformatics.tiendajava.products.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
@@ -12,6 +15,7 @@ import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductServiceImpl;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
+import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProductNotificationMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -23,6 +27,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -71,6 +76,7 @@ class ProductServiceImplTest {
     private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
     private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now());
 
+    WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
     @Mock
     private ProductRepository repository;
     @Mock
@@ -79,6 +85,12 @@ class ProductServiceImplTest {
     private CategoryRepository categoryRepository;
     @Mock
     private StorageService storageService;
+    @Mock
+    private WebSocketConfig webSocketConfig;
+    @Mock
+    private ProductNotificationMapper productNotificationMapper;
+    @Mock
+    private ObjectMapper objectMapper;
     @InjectMocks
     private ProductServiceImpl service;
     @Captor
@@ -311,7 +323,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void save() {
+    void save() throws IOException {
         ProductCreateDto productCreateDto = new ProductCreateDto(
                 "Product 3",
                 2.5,
@@ -350,6 +362,7 @@ class ProductServiceImplTest {
         when(mapper.toProduct(productCreateDto, category1)).thenReturn(productExpected);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         ProductResponseDto actualProduct = service.save(productCreateDto);
         assertAll(
@@ -371,7 +384,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void update() {
+    void update() throws IOException {
         UUID id = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785460");
         ProductUpdateDto productUpdateDto = new ProductUpdateDto(
                 "Product 3",
@@ -409,6 +422,7 @@ class ProductServiceImplTest {
         when(mapper.toProduct(productUpdateDto, productExpected, category1)).thenReturn(productExpected);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         ProductResponseDto actualProduct = service.update(id.toString(), productUpdateDto);
         assertAll(
@@ -430,7 +444,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void updateImage() {
+    void updateImage() throws IOException {
         String imageUrl = "imagen1.jpg";
 
         MultipartFile multipartFile = mock(MultipartFile.class);
@@ -439,6 +453,7 @@ class ProductServiceImplTest {
         when(storageService.store(multipartFile)).thenReturn(imageUrl);
         when(storageService.getUrl(imageUrl)).thenReturn(imageUrl);
         when(repository.save(any(Product.class))).thenReturn(product1);
+        doNothing().when(webSocketHandlerMock).sendMessage(any());
 
         Product updatedProduct = service.updateImage(idProduct1.toString(), multipartFile);
 
