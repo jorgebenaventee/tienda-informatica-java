@@ -1,11 +1,19 @@
 package dev.clownsinformatics.tiendajava.rest.categories.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.dto.CategoryResponseDto;
 import dev.clownsinformatics.tiendajava.rest.categories.exceptions.CategoryConflict;
 import dev.clownsinformatics.tiendajava.rest.categories.exceptions.CategoryNotFound;
 import dev.clownsinformatics.tiendajava.rest.categories.mappers.CategoryMapper;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
+import dev.clownsinformatics.tiendajava.websockets.notifications.dto.CategoryNotificationDto;
+import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProductsNotificationDto;
+import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.CategoryNotificationMapper;
+import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,9 +37,18 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper = new CategoryMapper();
 
+    private final WebSocketConfig webSocketConfig;
+    private final ObjectMapper mapper;
+    private final CategoryNotificationMapper categoryNotificationMapper;
+    private WebSocketHandler webSocketHandler;
+
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, WebSocketConfig webSocketConfig, ObjectMapper mapper, CategoryNotificationMapper categoryNotificationMapper) {
         this.categoryRepository = categoryRepository;
+        this.webSocketConfig = webSocketConfig;
+        this.mapper = mapper;
+        this.categoryNotificationMapper = categoryNotificationMapper;
+        webSocketHandler = webSocketConfig.webSocketCategoryHandler();
     }
 
     @Override
@@ -59,6 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findByName(category.name()).ifPresent(c -> {
             throw new CategoryConflict("Category already exists");
         });
+        onChange(Notification.Tipo.CREATE, categoryMapper.toCategory(category));
         return categoryRepository.save(categoryMapper.toCategory(category));
     }
 
@@ -73,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
                 throw new CategoryConflict("Category already exists");
             }
         });
+        onChange(Notification.Tipo.UPDATE, categoryToUpdate);
         return categoryRepository.save(categoryMapper.toCategory(category, categoryToUpdate));
     }
 
@@ -87,7 +106,39 @@ public class CategoryServiceImpl implements CategoryService {
             log.warn("Not deleting category with id: {} because it has products", id);
             throw new CategoryConflict("Category has products");
         } else {
+            onChange(Notification.Tipo.DELETE, categoryToUpdate);
             categoryRepository.delete(categoryToUpdate);
+        }
+    }
+
+    public void onChange(Notification.Tipo tipo, Category data) {
+        if (webSocketHandler == null) {
+            log.warn("Not sending notification to clients because the webSocketHandler is null");
+            webSocketHandler = this.webSocketConfig.webSocketProductHandler();
+        }
+
+        try {
+            Notification<CategoryNotificationDto> notificacion = new Notification<>(
+                    "CAREGORY",
+                    tipo,
+                    categoryNotificationMapper.toCategoryNotificationDto(data),
+                    LocalDateTime.now().toString()
+            );
+
+            String json = mapper.writeValueAsString(notificacion);
+
+            log.info("Sending notification to clients: " + json);
+
+            Thread senderThread = new Thread(() -> {
+                try {
+                    webSocketHandler.sendMessage(json);
+                } catch (Exception e) {
+                    log.error("Error sending message to clients", e);
+                }
+            });
+            senderThread.start();
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing notification to json", e);
         }
     }
 }
