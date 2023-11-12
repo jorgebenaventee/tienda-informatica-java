@@ -34,7 +34,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
-    implementation("com.h2database:h2:2.1.214")
+    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-websocket:3.0.4")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }
