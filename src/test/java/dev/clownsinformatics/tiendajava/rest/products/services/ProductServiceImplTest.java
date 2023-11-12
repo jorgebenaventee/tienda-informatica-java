@@ -93,8 +93,6 @@ class ProductServiceImplTest {
     private ObjectMapper objectMapper;
     @InjectMocks
     private ProductServiceImpl service;
-    @Captor
-    private ArgumentCaptor<Product> productCaptor;
 
     @Test
     void findAll() {
@@ -378,7 +376,7 @@ class ProductServiceImplTest {
                 () -> assertEquals(category1, actualProduct.category())
         );
         verify(categoryRepository, times(1)).findByNameEqualsIgnoreCase("Category 1");
-        verify(repository, times(1)).save(productCaptor.capture());
+        verify(repository, times(1)).save(productExpected);
         verify(mapper, times(1)).toProduct(productCreateDto, category1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }
@@ -438,7 +436,7 @@ class ProductServiceImplTest {
                 () -> assertEquals(category1, actualProduct.category())
         );
         verify(repository, times(1)).findById(id);
-        verify(repository, times(1)).save(productCaptor.capture());
+        verify(repository, times(1)).save(productExpected);
         verify(mapper, times(1)).toProduct(productUpdateDto, productExpected, category1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }

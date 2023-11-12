@@ -48,8 +48,6 @@ class CategoryServiceImplTest {
     private ObjectMapper objectMapper;
     @InjectMocks
     private CategoryServiceImpl categoryService;
-    @Captor
-    private ArgumentCaptor<Category> categoryArgumentCaptor;
 
 
     @Test
@@ -122,7 +120,7 @@ class CategoryServiceImplTest {
 
         assertEquals(expectedCategory, actualCategory);
 
-        verify(categoryRepository, times(1)).save(categoryArgumentCaptor.capture());
+        verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
@@ -151,7 +149,7 @@ class CategoryServiceImplTest {
         assertEquals(expectedCategory, actualCategory);
 
         verify(categoryRepository, times(1)).findByUuid(categoryToUpdate.getUuid());
-        verify(categoryRepository, times(1)).save(categoryArgumentCaptor.capture());
+        verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test

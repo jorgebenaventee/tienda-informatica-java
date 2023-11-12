@@ -11,7 +11,6 @@ import dev.clownsinformatics.tiendajava.rest.categories.mappers.CategoryMapper;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.CategoryNotificationDto;
-import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProductsNotificationDto;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.CategoryNotificationMapper;
 import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.transaction.Transactional;
