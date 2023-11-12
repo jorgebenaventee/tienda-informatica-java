@@ -1,36 +1,39 @@
-package dev.clownsinformatics.tiendajava.rest.categories.models;
+package dev.clownsinformatics.tiendajava.rest.employees.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+@Entity
+
+@EntityListeners(AuditingEntityListener.class)
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-@Builder
-@Entity
-@Table(name = "CATEGORIES")
-@EntityListeners(AuditingEntityListener.class)
-
-public class Category {
+public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Builder.Default
-    private UUID uuid = UUID.randomUUID();
-
-    @Column(unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @NotBlank
     @Length(min = 3, max = 50, message = "The name must be between 3 and 50 characters")
     private String name;
+    @DecimalMin(value = "0.0", message = "The salary must be greater than or equal to 0")
+    private Double salary;
+    @NotBlank
+    @Length(min = 3, max = 50, message = "The position must be between 3 and 50 characters")
+    private String position;
+
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,4 +46,5 @@ public class Category {
     @Column(updatable = true, nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
 }

@@ -36,13 +36,11 @@ public class Product {
     private String name;
 
     @Min(value = 0, message = "The weight must be greater than or equal to 0")
-    @Column(columnDefinition = "double default 0.0")
     @Builder.Default
     private Double weight = 0.0;
 
     @NotNull
     @Min(value = 0, message = "The price must be greater than or equal to 0")
-    @Column(columnDefinition = "double default 0.0")
     @Builder.Default
     private Double price = 0.0;
 
@@ -53,7 +51,6 @@ public class Product {
 
     @NotNull
     @Min(value = 0, message = "The stock must be greater than or equal to 0")
-    @Column(columnDefinition = "int default 0")
     @Builder.Default
     private Integer stock = 0;
 
@@ -63,13 +60,13 @@ public class Product {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(updatable = false, nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = true, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(updatable = true, nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
 
