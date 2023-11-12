@@ -1,5 +1,9 @@
 package dev.clownsinformatics.tiendajava.rest.employees.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.CreateEmployeeRequestDto;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.EmployeeResponseDto;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.UpdateEmployeeRequestDto;
@@ -7,9 +11,11 @@ import dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFou
 import dev.clownsinformatics.tiendajava.rest.employees.mappers.EmployeeMapper;
 import dev.clownsinformatics.tiendajava.rest.employees.models.Employee;
 import dev.clownsinformatics.tiendajava.rest.employees.repository.EmployeeRepository;
+import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,17 +24,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.text.Normalizer;
-import java.util.Locale;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 @Slf4j
 @CacheConfig(cacheNames = "employees")
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeServiceImpl implements EmployeeService {
-    private EmployeeMapper employeeMapper;
-    private EmployeeRepository employeeRepository;
+    private final EmployeeMapper employeeMapper;
+    private WebSocketHandler webSocketHandler;
+    private final WebSocketConfig webSocketConfig;
+    private final EmployeeRepository employeeRepository;
+    private final ObjectMapper objectMapper;
+
+    public EmployeeServiceImpl(EmployeeMapper employeeMapper, WebSocketConfig webSocketConfig, EmployeeRepository employeeRepository) {
+        this.employeeMapper = employeeMapper;
+        this.webSocketConfig = webSocketConfig;
+        this.employeeRepository = employeeRepository;
+        this.webSocketHandler = webSocketConfig.webSocketEmployeeHandler();
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Override
     public Page<EmployeeResponseDto> findAll(Optional<String> name, Optional<Double> minSalary, Optional<Double> maxSalary, Optional<String> position, Pageable pageable) {
@@ -49,7 +65,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponseDto save(CreateEmployeeRequestDto createEmployeeRequestDto) {
         Employee employee = employeeMapper.toEmployee(createEmployeeRequestDto);
         Employee savedEmployee = employeeRepository.save(employee);
-        return employeeMapper.toResponseDto(savedEmployee);
+        EmployeeResponseDto responseDto = employeeMapper.toResponseDto(savedEmployee);
+        sendNotification(Notification.Tipo.CREATE, responseDto);
+        return responseDto;
     }
 
     @Override
@@ -58,15 +76,46 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee dbEmployee = getEmployee(id);
         Employee updatedEmployee = employeeMapper.toEmployee(updateEmployeeRequestDto, dbEmployee);
         Employee dbUpdatedEmployee = employeeRepository.save(updatedEmployee);
-        return employeeMapper.toResponseDto(dbUpdatedEmployee);
+        EmployeeResponseDto responseDto = employeeMapper.toResponseDto(dbUpdatedEmployee);
+        sendNotification(Notification.Tipo.UPDATE, responseDto);
+        return responseDto;
     }
 
 
     @Override
     @CacheEvict(key = "#id")
     public void delete(Integer id) {
-        findById(id);
+        EmployeeResponseDto employeeResponseDto = findById(id);
         employeeRepository.deleteById(id);
+        sendNotification(Notification.Tipo.DELETE, employeeResponseDto);
+    }
+
+    private void sendNotification(Notification.Tipo tipo, EmployeeResponseDto data) {
+        if (webSocketHandler == null) {
+            log.warn("No se ha configurado el servicio de websockets");
+            webSocketHandler = this.webSocketConfig.webSocketEmployeeHandler();
+        }
+
+        try {
+            Notification<EmployeeResponseDto> notification = new Notification<>(
+                    "Employee",
+                    tipo,
+                    data,
+                    LocalDate.now().toString()
+            );
+            String json = objectMapper.writeValueAsString(notification);
+
+            Thread senderThread = new Thread(() -> {
+                try {
+                    webSocketHandler.sendMessage(json);
+                } catch (IOException e) {
+                    log.error("Error al enviar la notificacion", e);
+                }
+            });
+            senderThread.start();
+        } catch (JsonProcessingException e) {
+            log.error("Error al convertir la notificacion a JSON", e);
+        }
     }
 
     private Specification<Employee> getSpecification(Optional<String> name, Optional<Double> minSalary, Optional<Double> maxSalary, Optional<String> position) {
