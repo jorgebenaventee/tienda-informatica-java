@@ -11,7 +11,6 @@ import dev.clownsinformatics.tiendajava.rest.categories.mappers.CategoryMapper;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.CategoryNotificationDto;
-import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProductsNotificationDto;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.CategoryNotificationMapper;
 import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.transaction.Transactional;
@@ -101,10 +100,14 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(UUID id) {
         log.info("Deleting category with id: {}", id);
         Category categoryToUpdate = categoryRepository.findByUuid(id).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
-        boolean exists = categoryRepository.existsProductById(id);
-        if (exists) {
+        boolean hasProducts = categoryRepository.existsProductById(id);
+        boolean hasProveedores = categoryRepository.existsProveedorById(id);
+        if (hasProducts) {
             log.warn("Not deleting category with id: {} because it has products", id);
             throw new CategoryConflict("Category has products");
+        } else if (hasProveedores) {
+            log.warn("Not deleting category with id: {} because it has proveedores", id);
+            throw new CategoryConflict("Category has proveedores");
         } else {
             onChange(Notification.Tipo.DELETE, categoryToUpdate);
             categoryRepository.delete(categoryToUpdate);
@@ -119,7 +122,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         try {
             Notification<CategoryNotificationDto> notificacion = new Notification<>(
-                    "CAREGORY",
+                    "CATEGORY",
                     tipo,
                     categoryNotificationMapper.toCategoryNotificationDto(data),
                     LocalDateTime.now().toString()

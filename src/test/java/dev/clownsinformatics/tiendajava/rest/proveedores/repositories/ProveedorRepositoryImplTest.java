@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.proveedores.repositories;
+package dev.clownsinformatics.tiendajava.rest.proveedores.repositories;
 
 import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
 import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;

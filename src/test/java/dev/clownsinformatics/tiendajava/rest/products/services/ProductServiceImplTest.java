@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.services;
+package dev.clownsinformatics.tiendajava.rest.products.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
@@ -93,8 +93,6 @@ class ProductServiceImplTest {
     private ObjectMapper objectMapper;
     @InjectMocks
     private ProductServiceImpl service;
-    @Captor
-    private ArgumentCaptor<Product> productCaptor;
 
     @Test
     void findAll() {
@@ -358,7 +356,7 @@ class ProductServiceImplTest {
                 productExpected.getUpdatedAt()
         );
 
-        when(categoryRepository.findByNameContainingIgnoreCase("Category 1")).thenReturn(Optional.of(category1));
+        when(categoryRepository.findByNameEqualsIgnoreCase("Category 1")).thenReturn(Optional.of(category1));
         when(mapper.toProduct(productCreateDto, category1)).thenReturn(productExpected);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
@@ -377,8 +375,8 @@ class ProductServiceImplTest {
                 () -> assertNotNull(actualProduct.updatedAt()),
                 () -> assertEquals(category1, actualProduct.category())
         );
-        verify(categoryRepository, times(1)).findByNameContainingIgnoreCase("Category 1");
-        verify(repository, times(1)).save(productCaptor.capture());
+        verify(categoryRepository, times(1)).findByNameEqualsIgnoreCase("Category 1");
+        verify(repository, times(1)).save(productExpected);
         verify(mapper, times(1)).toProduct(productCreateDto, category1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }
@@ -438,7 +436,7 @@ class ProductServiceImplTest {
                 () -> assertEquals(category1, actualProduct.category())
         );
         verify(repository, times(1)).findById(id);
-        verify(repository, times(1)).save(productCaptor.capture());
+        verify(repository, times(1)).save(productExpected);
         verify(mapper, times(1)).toProduct(productUpdateDto, productExpected, category1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }

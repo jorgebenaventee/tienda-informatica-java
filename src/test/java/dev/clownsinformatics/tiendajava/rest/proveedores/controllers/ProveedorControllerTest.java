@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.proveedores.controllers;
+package dev.clownsinformatics.tiendajava.rest.proveedores.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

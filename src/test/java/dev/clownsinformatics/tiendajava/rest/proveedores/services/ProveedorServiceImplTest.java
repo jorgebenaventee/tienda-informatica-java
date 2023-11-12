@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.proveedores.services;
+package dev.clownsinformatics.tiendajava.rest.proveedores.services;
 
 import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
 import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;

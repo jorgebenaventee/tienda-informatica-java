@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.repositories;
+package dev.clownsinformatics.tiendajava.rest.products.repositories;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;

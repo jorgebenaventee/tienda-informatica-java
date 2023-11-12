@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.products.mapper;
+package dev.clownsinformatics.tiendajava.rest.products.mapper;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
