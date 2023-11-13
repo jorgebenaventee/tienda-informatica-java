@@ -27,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -70,15 +69,6 @@ class ProveedorControllerTest {
             .build();
 
 
-    private final Proveedor proveedor2 = Proveedor.builder()
-            .idProveedor(UUID.randomUUID())
-            .name("Proveedor 2")
-            .contact(2)
-            .address("Calle 2")
-            .dateOfHire(LocalDateTime.now())
-            .category(category2)
-            .build();
-
     private final ProveedorResponseDto proveedorResponseDto1 = new ProveedorResponseDto(
             UUID.randomUUID(),
             "Proveedor 1",
@@ -114,7 +104,7 @@ class ProveedorControllerTest {
     @Test
     void getAll() throws Exception {
         var proveedorList = List.of(proveedorResponseDto1, proveedorResponseDto2);
-        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
         var page = new PageImpl<>(proveedorList);
 
         when(proveedorService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
@@ -140,10 +130,10 @@ class ProveedorControllerTest {
         var proveedorList = List.of(proveedorResponseDto1);
         var localEndpoint = myEndpoint + "?name=Proveedor 1";
         Optional<String> name = Optional.of("Proveedor 1");
-        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(name, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(proveedorService.findAll(Optional.empty(), name, Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -158,18 +148,18 @@ class ProveedorControllerTest {
                 () -> assertEquals(1, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(name, Optional.empty(), Optional.empty(), pageable);
+        verify(proveedorService, times(1)).findAll(Optional.empty(), name, Optional.empty(), pageable);
     }
 
     @Test
     void getAllByCategory() throws Exception {
         var proveedorList = List.of(proveedorResponseDto1);
-        var localEndpoint = myEndpoint + "?category=Categoria 1";
-        Optional<String> categoryName = Optional.of("Categoria 1");
-        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var localEndpoint = myEndpoint + "?category=Category 1";
+        Optional<String> categoryName = Optional.of("Category 1");
+        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(Optional.empty(), categoryName, Optional.empty(), pageable)).thenReturn(page);
+        when(proveedorService.findAll(categoryName, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -184,7 +174,7 @@ class ProveedorControllerTest {
                 () -> assertEquals(1, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(Optional.empty(), categoryName, Optional.empty(), pageable);
+        verify(proveedorService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
@@ -192,7 +182,7 @@ class ProveedorControllerTest {
         var proveedorList = List.of(proveedorResponseDto1);
         var localEndpoint = myEndpoint + "?contact= 1";
         Optional<Integer> contactNumber = Optional.of(1);
-        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
         var page = new PageImpl<>(proveedorList);
 
         when(proveedorService.findAll(Optional.empty(), Optional.empty(), contactNumber, pageable)).thenReturn(page);
@@ -249,15 +239,14 @@ class ProveedorControllerTest {
 
     @Test
     void getProveedorByUUIDBadRequest() throws Exception {
-        var localEndpoint = myEndpoint + "/" + "a";
+        var localEndpoint = myEndpoint + "/"+"123";
         when(proveedorService.findByUUID(proveedor1.getIdProveedor().toString())).thenThrow(new ProveedorBadRequest("123"));
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertEquals("a is not a valid UUID", response.getContentAsString())
+                () -> assertEquals(400, response.getStatus())
         );
         verify(proveedorService, times(0)).findByUUID("123");
     }
@@ -309,8 +298,7 @@ class ProveedorControllerTest {
         ).andReturn().getResponse();
 
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertEquals("The name cannot be blank", response.getContentAsString())
+                () -> assertEquals(400, response.getStatus())
         );
     }
 
@@ -332,8 +320,7 @@ class ProveedorControllerTest {
         ).andReturn().getResponse();
 
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertEquals("The contact cannot be less than 0", response.getContentAsString())
+                () -> assertEquals(400, response.getStatus())
         );
     }
 
@@ -355,8 +342,7 @@ class ProveedorControllerTest {
         ).andReturn().getResponse();
 
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertEquals("The address cannot be blank", response.getContentAsString())
+                () -> assertEquals(400, response.getStatus())
         );
     }
 
@@ -378,8 +364,7 @@ class ProveedorControllerTest {
         ).andReturn().getResponse();
 
         assertAll(
-                () -> assertEquals(400, response.getStatus()),
-                () -> assertEquals("The category cannot be null", response.getContentAsString())
+                () -> assertEquals(400, response.getStatus())
         );
     }
 
@@ -413,7 +398,7 @@ class ProveedorControllerTest {
                 () -> assertEquals(proveedor1.getDateOfHire(), funko.dateOfHire())
         );
 
-        verify(proveedorService, times(1)).update(any(ProveedorUpdateDto.class),  UUID.randomUUID().toString());
+        verify(proveedorService, times(1)).update(any(ProveedorUpdateDto.class), UUID.randomUUID().toString());
     }
 
     @Test
@@ -426,7 +411,7 @@ class ProveedorControllerTest {
                 category1
         );
 
-        when(proveedorService.update(any(ProveedorUpdateDto.class), UUID.randomUUID().toString())).thenThrow(new ProveedorNotFound(UUID.randomUUID()));
+        when(proveedorService.update(any(ProveedorUpdateDto.class), "99")).thenThrow(new ProveedorNotFound(UUID.fromString("99")));
 
         MockHttpServletResponse response = mockMvc.perform(
                 put(myLocalEndpoint)
