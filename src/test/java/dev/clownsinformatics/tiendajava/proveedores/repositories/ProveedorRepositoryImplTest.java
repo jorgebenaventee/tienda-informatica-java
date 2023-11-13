@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.proveedores.repositories;
 
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
 import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -18,20 +19,29 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
 class ProveedorRepositoryImplTest {
 
+    private final Category category = Category.builder()
+            .uuid(UUID.randomUUID())
+            .name("Category 1")
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
+            .build();
+
     private final Proveedor proveedor1 = Proveedor.builder()
             .idProveedor(UUID.randomUUID())
-            .nombre("Proveedor 1")
-            .contacto(1)
-            .direccion("Calle 1")
-            .fechaContratacion(LocalDate.now())
+            .name("Proveedor 1")
+            .contact(1)
+            .address("Calle 1")
+            .dateOfHire(LocalDateTime.now())
+            .category(category)
             .build();
 
     private final Proveedor proveedor2 = Proveedor.builder()
             .idProveedor(UUID.randomUUID())
-            .nombre("Proveedor 2")
-            .contacto(2)
-            .direccion("Calle 2")
-            .fechaContratacion(LocalDate.now())
+            .name("Proveedor 2")
+            .contact(2)
+            .address("Calle 2")
+            .dateOfHire(LocalDateTime.now())
+            .category(category)
             .build();
 
     @Autowired
@@ -42,8 +52,8 @@ class ProveedorRepositoryImplTest {
     @BeforeEach
     void setUp() {
         proveedorRepository.deleteAll();
-        //entityManager.merge(categoria);
-        //entityManager.flush();
+        entityManager.merge(category);
+        entityManager.flush();
 
         entityManager.merge(proveedor1);
         entityManager.merge(proveedor2);
@@ -51,16 +61,16 @@ class ProveedorRepositoryImplTest {
     }
 
     @Test
-    void getByUUID() {
-        proveedorRepository.getByUUID(proveedor1.getIdProveedor());
+    void getByIdProveedor() {
+        proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor());
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor1.getIdProveedor())),
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor2.getIdProveedor()))
+                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor())),
+                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor2.getIdProveedor()))
         );
     }
 
     @Test
-    void getByNombreContainingIgnoreCase() {
+    void getByNameContainingIgnoreCase() {
         proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1");
         assertAll(
                 () -> assertNotNull(proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1")),
@@ -69,7 +79,7 @@ class ProveedorRepositoryImplTest {
     }
 
     @Test
-    void getByDireccionContainingIgnoreCase() {
+    void getByAddressContainingIgnoreCase() {
         proveedorRepository.getByAddressContainingIgnoreCase("Calle 1");
         assertAll(
                 () -> assertNotNull(proveedorRepository.getByAddressContainingIgnoreCase("Calle 1")),
@@ -78,7 +88,7 @@ class ProveedorRepositoryImplTest {
     }
 
     @Test
-    void getByNombreAndDireccionContainingIgnoreCase() {
+    void getByNameAndAddressContainingIgnoreCase() {
         proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1");
         assertAll(
                 () -> assertNotNull(proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1")),
@@ -87,20 +97,11 @@ class ProveedorRepositoryImplTest {
     }
 
     @Test
-    void deleteByUUID() {
-        proveedorRepository.deleteByUUID(proveedor1.getIdProveedor());
+    void deleteByIdProveedor() {
+        proveedorRepository.deleteByIdProveedor(proveedor1.getIdProveedor());
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor1.getIdProveedor())),
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor2.getIdProveedor()))
-        );
-    }
-
-    @Test
-    void generateUUID() {
-        proveedorRepository.generateUUID();
-        assertAll(
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor1.getIdProveedor())),
-                () -> assertNotNull(proveedorRepository.getByUUID(proveedor2.getIdProveedor()))
+                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor())),
+                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor2.getIdProveedor()))
         );
     }
 }

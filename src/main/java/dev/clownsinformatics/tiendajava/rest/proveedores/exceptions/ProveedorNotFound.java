@@ -9,7 +9,7 @@ import java.util.UUID;
 public class ProveedorNotFound extends ProveedorException {
 
     public ProveedorNotFound(UUID idProveedor) {
-        super("No hay ningun proveedor con id " + idProveedor);
+        super("There is not any proveedor with ID: " + idProveedor);
 
     }
 

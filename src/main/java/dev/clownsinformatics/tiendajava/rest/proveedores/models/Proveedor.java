@@ -26,13 +26,13 @@ public class Proveedor {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idProveedor;
     @Column
-    @NotBlank(message = "El name del proveedor no puede estar vacío")
+    @NotBlank(message = "The name cannot be empty")
     private String name;
     @Column
-    @Min(value = 1, message = "El contact del proveedor debe ser mayor a 0")
+    @Min(value = 1, message = "The contact cannot be empty")
     private Integer contact;
     @Column
-    @NotBlank(message = "La dirección del proveedor no puede estar vacía")
+    @NotBlank(message = "The address cannot be empty")
     private String address;
     @Column
     @Builder.Default

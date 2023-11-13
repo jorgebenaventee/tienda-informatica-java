@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
+import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService;
 import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorResponseDto;
 import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorBadRequest;
 import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorNotFound;
@@ -15,17 +17,21 @@ import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorR
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProveedoresNotificationDto;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProveedoresNotificationMapper;
 import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
+import jakarta.persistence.criteria.Join;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -53,17 +59,22 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
-    public List<Proveedor> findAll(String name, String address) {
-        if ((name == null || name.isEmpty()) && (address == null || address.isEmpty())) {
-            return proveedorRepository.findAll();
-        }
-        if ((name != null && !name.isEmpty()) && (address == null || address.isEmpty())) {
-            return proveedorRepository.getByNameContainingIgnoreCase(name);
-        }
-        if (name == null || name.isEmpty()) {
-            return proveedorRepository.getByAddressContainingIgnoreCase(address);
-        }
-        return proveedorRepository.getByNameAndAddressContainingIgnoreCase(name, address);
+    public Page<ProveedorResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable) {
+        Specification<Proveedor> specProveedorCategory = (root, query, criteriaBuilder) ->
+                category.map(c -> {
+                    Join<Proveedor, Category> categoriaJoin = root.join("category");
+                    return criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("name")), "%" + c.toLowerCase() + "%");
+                }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Proveedor> specProveedorName = (root, query, criteriaBuilder) ->
+                name.map(n -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + n.toLowerCase() + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+        Specification<Proveedor> specProveedorContact = (root, query, criteriaBuilder) ->
+                contact.map(c -> criteriaBuilder.equal(root.get("contact"), c))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Proveedor> spec = Specification.where(specProveedorCategory).and(specProveedorName).and(specProveedorContact);
+        return proveedorRepository.findAll(spec, pageable).map(proveedorMapper::toProveedorDto);
     }
 
 
@@ -76,7 +87,7 @@ public class ProveedorServiceImpl implements ProveedorService {
                     () -> new ProveedorNotFound(uuid)
             );
         } catch (IllegalArgumentException e) {
-            throw new ProveedorBadRequest(idProveedor + " no es un UUID válido");
+            throw new ProveedorBadRequest(idProveedor + " is not a valid UUID");
         }
     }
 
@@ -89,6 +100,7 @@ public class ProveedorServiceImpl implements ProveedorService {
         sendNotification(Notification.Tipo.CREATE, proveedorToSave);
         return proveedorRepository.save(proveedorToSave);
     }
+
 
     @Override
     @CachePut(key = "#idProveedor")
@@ -109,7 +121,7 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     void sendNotification(Notification.Tipo tipo, Proveedor data) {
         if (webSocketService == null) {
-            log.warn("No se ha configurado el servicio de websockets");
+            log.warn("WebSocket service is not configured");
             webSocketService = this.webSocketConfig.webSocketProveedorHandler();
         }
         try {
@@ -121,18 +133,18 @@ public class ProveedorServiceImpl implements ProveedorService {
             );
 
             String json = mapper.writeValueAsString((notificacion));
-            log.info("Enviando notificación mensaje..");
+            log.info("Sending notification..");
 
             Thread senderThread = new Thread(() -> {
                 try {
                     webSocketService.sendMessage(json);
                 } catch (Exception e) {
-                    log.error("Error al enviar el mensaje a través del servicio WebSocket", e);
+                    log.error("Error while sending the message", e);
                 }
             });
             senderThread.start();
         } catch (JsonProcessingException e) {
-            log.error("Error al convertir la notificación a JSON", e);
+            log.error("Error while parsing the notification", e);
         }
     }
 
