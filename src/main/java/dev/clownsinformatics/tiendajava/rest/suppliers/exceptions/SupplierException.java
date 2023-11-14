@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.exceptions;
+package dev.clownsinformatics.tiendajava.rest.suppliers.exceptions;
 
 
 public abstract class SupplierException extends RuntimeException {

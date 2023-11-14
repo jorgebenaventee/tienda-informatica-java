@@ -83,8 +83,8 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    void existsProveedorById() {
-        Boolean exists = categoryRepository.existsProveedorById(uuid);
+    void existsSupplierById() {
+        Boolean exists = categoryRepository.existsSupplierById(uuid);
         assertAll(
                 () -> assertNotNull(exists),
                 () -> assertFalse(exists)

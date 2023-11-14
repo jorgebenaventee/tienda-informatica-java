@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.models;
+package dev.clownsinformatics.tiendajava.rest.suppliers.models;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import jakarta.persistence.*;

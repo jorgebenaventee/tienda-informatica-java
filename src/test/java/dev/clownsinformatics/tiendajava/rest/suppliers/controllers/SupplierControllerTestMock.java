@@ -1,12 +1,11 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.controllers;
+package dev.clownsinformatics.tiendajava.rest.suppliers.controllers;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.proveedores.controllers.SupplierController;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierCreateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierResponseDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
-import dev.clownsinformatics.tiendajava.rest.proveedores.services.SupplierService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierCreateDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierResponseDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.services.SupplierService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +45,7 @@ class SupplierControllerTestMock {
 
     private final Supplier supplier1 = Supplier.builder()
             .id(UUID.randomUUID())
-            .name("Proveedor 1")
+            .name("Supplier 1")
             .contact(1)
             .address("Calle 1")
             .dateOfHire(LocalDateTime.now())
@@ -56,7 +55,7 @@ class SupplierControllerTestMock {
 
     private final Supplier supplier2 = Supplier.builder()
             .id(UUID.randomUUID())
-            .name("Proveedor 2")
+            .name("Supplier 2")
             .contact(2)
             .address("Calle 2")
             .dateOfHire(LocalDateTime.now())
@@ -65,7 +64,7 @@ class SupplierControllerTestMock {
 
     private final SupplierResponseDto supplierResponseDto1 = new SupplierResponseDto(
             UUID.randomUUID(),
-            "Proveedor 1",
+            "Supplier 1",
             1,
             "Calle 1",
             LocalDateTime.now(),
@@ -74,7 +73,7 @@ class SupplierControllerTestMock {
 
     private final SupplierResponseDto supplierResponseDto2 = new SupplierResponseDto(
             UUID.randomUUID(),
-            "Proveedor 2",
+            "Supplier 2",
             2,
             "Calle 2",
             LocalDateTime.now(),
@@ -137,7 +136,7 @@ class SupplierControllerTestMock {
     @Test
     void getAllByName() {
         Optional<String> category = Optional.empty();
-        Optional<String> name = Optional.of("Proveedor 1");
+        Optional<String> name = Optional.of("Supplier 1");
         Optional<Integer> contact = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
@@ -195,7 +194,7 @@ class SupplierControllerTestMock {
     @Test
     void createSupplier() {
         SupplierCreateDto supplierCreateDto = new SupplierCreateDto(
-                "Proveedor 1",
+                "Supplier 1",
                 1,
                 "Calle 1",
                 category1
@@ -213,26 +212,26 @@ class SupplierControllerTestMock {
     @Test
     void updateSupplier() {
         UUID uuid = supplier2.getId();
-        SupplierUpdateDto proveedorUpdateDto = new SupplierUpdateDto(
-                "Proveedor 2",
+        SupplierUpdateDto supplierUpdateDto = new SupplierUpdateDto(
+                "Supplier 2",
                 2,
                 "Calle 2",
                 category2
         );
-        when(supplierService.update(proveedorUpdateDto, uuid.toString())).thenReturn(supplierResponseDto2);
-        ResponseEntity<SupplierResponseDto> responseEntity = supplierController.updateSupplier(uuid.toString(), proveedorUpdateDto);
+        when(supplierService.update(supplierUpdateDto, uuid.toString())).thenReturn(supplierResponseDto2);
+        ResponseEntity<SupplierResponseDto> responseEntity = supplierController.updateSupplier(uuid.toString(), supplierUpdateDto);
         assertAll(
                 () -> assertNotNull(responseEntity),
                 () -> assertEquals(200, responseEntity.getStatusCode().value()),
                 () -> assertEquals(supplierResponseDto2, responseEntity.getBody())
         );
-        verify(supplierService, times(1)).update(proveedorUpdateDto, uuid.toString());
+        verify(supplierService, times(1)).update(supplierUpdateDto, uuid.toString());
     }
 
     @Test
     void updateSupplierPatch() {
         SupplierUpdateDto supplierUpdateDto = new SupplierUpdateDto(
-                "Proveedor 2",
+                "Supplier 2",
                 2,
                 "Calle 2",
                 category2

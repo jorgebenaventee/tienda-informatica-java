@@ -21,5 +21,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSp
     Boolean existsProductById(UUID id);
 
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Supplier p WHERE p.category.uuid = :id")
-    Boolean existsProveedorById(UUID id);
+    Boolean existsSupplierById(UUID id);
 }

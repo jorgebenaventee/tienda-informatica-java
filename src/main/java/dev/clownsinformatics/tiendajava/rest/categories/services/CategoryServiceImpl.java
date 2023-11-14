@@ -101,13 +101,13 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Deleting category with id: {}", id);
         Category categoryToUpdate = categoryRepository.findByUuid(id).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
         boolean hasProducts = categoryRepository.existsProductById(id);
-        boolean hasProveedores = categoryRepository.existsProveedorById(id);
+        boolean hasSuppliers = categoryRepository.existsSupplierById(id);
         if (hasProducts) {
             log.warn("Not deleting category with id: {} because it has products", id);
             throw new CategoryConflict("Category has products");
-        } else if (hasProveedores) {
-            log.warn("Not deleting category with id: {} because it has proveedores", id);
-            throw new CategoryConflict("Category has proveedores");
+        } else if (hasSuppliers) {
+            log.warn("Not deleting category with id: {} because it has suppliers", id);
+            throw new CategoryConflict("Category has suppliers");
         } else {
             onChange(Notification.Tipo.DELETE, categoryToUpdate);
             categoryRepository.delete(categoryToUpdate);

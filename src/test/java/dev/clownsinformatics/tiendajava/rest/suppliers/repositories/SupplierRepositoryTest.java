@@ -1,7 +1,7 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.repositories;
+package dev.clownsinformatics.tiendajava.rest.suppliers.repositories;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +27,18 @@ class SupplierRepositoryTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-    private final Supplier proveedor1 = Supplier.builder()
+    private final Supplier supplier1 = Supplier.builder()
             .id(UUID.randomUUID())
-            .name("Proveedor 1")
+            .name("Supplier 1")
             .contact(1)
             .address("Calle 1")
             .dateOfHire(LocalDateTime.now())
             .category(category)
             .build();
 
-    private final Supplier proveedor2 = Supplier.builder()
+    private final Supplier supplier2 = Supplier.builder()
             .id(UUID.randomUUID())
-            .name("Proveedor 2")
+            .name("Supplier 2")
             .contact(2)
             .address("Calle 2")
             .dateOfHire(LocalDateTime.now())
@@ -46,46 +46,46 @@ class SupplierRepositoryTest {
             .build();
 
     @Autowired
-    private SupplierRepository proveedorRepository;
+    private SupplierRepository supplierRepository;
     @Autowired
     private TestEntityManager entityManager;
 
     @BeforeEach
     void setUp() {
-        proveedorRepository.deleteAll();
+        supplierRepository.deleteAll();
         entityManager.merge(category);
         entityManager.flush();
 
-        entityManager.merge(proveedor1);
-        entityManager.merge(proveedor2);
+        entityManager.merge(supplier1);
+        entityManager.merge(supplier2);
         entityManager.flush();
     }
 
 
     @Test
     void getByNameContainingIgnoreCase() {
-        proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1");
+        supplierRepository.getByNameContainingIgnoreCase("Supplier 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByNameContainingIgnoreCase("Proveedor 1")),
-                () -> assertNotNull(proveedorRepository.getByNameContainingIgnoreCase("Proveedor 2"))
+                () -> assertNotNull(supplierRepository.getByNameContainingIgnoreCase("Supplier 1")),
+                () -> assertNotNull(supplierRepository.getByNameContainingIgnoreCase("Supplier 2"))
         );
     }
 
     @Test
     void getByAddressContainingIgnoreCase() {
-        proveedorRepository.getByAddressContainingIgnoreCase("Calle 1");
+        supplierRepository.getByAddressContainingIgnoreCase("Calle 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByAddressContainingIgnoreCase("Calle 1")),
-                () -> assertNotNull(proveedorRepository.getByAddressContainingIgnoreCase("Calle 2"))
+                () -> assertNotNull(supplierRepository.getByAddressContainingIgnoreCase("Calle 1")),
+                () -> assertNotNull(supplierRepository.getByAddressContainingIgnoreCase("Calle 2"))
         );
     }
 
     @Test
     void getByNameAndAddressContainingIgnoreCase() {
-        proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1");
+        supplierRepository.getByNameAndAddressContainingIgnoreCase("Supplier 1", "Calle 1");
         assertAll(
-                () -> assertNotNull(proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 1", "Calle 1")),
-                () -> assertNotNull(proveedorRepository.getByNameAndAddressContainingIgnoreCase("Proveedor 2", "Calle 2"))
+                () -> assertNotNull(supplierRepository.getByNameAndAddressContainingIgnoreCase("Supplier 1", "Calle 1")),
+                () -> assertNotNull(supplierRepository.getByNameAndAddressContainingIgnoreCase("Supplier 2", "Calle 2"))
         );
     }
 

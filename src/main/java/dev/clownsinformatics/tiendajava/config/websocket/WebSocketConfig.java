@@ -14,11 +14,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketProductHandler(), "/ws/product");
         registry.addHandler(webSocketCategoryHandler(), "/ws/category");
-        registry.addHandler(webSocketProveedorHandler(), "/ws/suppliers");
+        registry.addHandler(webSocketSupplierHandler(), "/ws/suppliers");
     }
 
     @Bean
-    public WebSocketHandler webSocketProveedorHandler() {
+    public WebSocketHandler webSocketSupplierHandler() {
         return new WebSocketHandler("Suppliers");
     }
 

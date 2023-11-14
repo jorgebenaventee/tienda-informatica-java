@@ -1,6 +1,6 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.repositories;
+package dev.clownsinformatics.tiendajava.rest.suppliers.repositories;
 
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

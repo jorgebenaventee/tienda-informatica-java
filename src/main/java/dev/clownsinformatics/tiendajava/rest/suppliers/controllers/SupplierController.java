@@ -1,9 +1,9 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.controllers;
+package dev.clownsinformatics.tiendajava.rest.suppliers.controllers;
 
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierCreateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierResponseDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.services.SupplierService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierCreateDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierResponseDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.services.SupplierService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,23 +65,23 @@ public class SupplierController {
 
     @NonNull
     @PostMapping()
-    public ResponseEntity<SupplierResponseDto> createSupplier(@Valid @RequestBody SupplierCreateDto proveedorCreateDto) {
+    public ResponseEntity<SupplierResponseDto> createSupplier(@Valid @RequestBody SupplierCreateDto supplierCreateDto) {
         log.info("Creating suppliers...");
-        return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.save(proveedorCreateDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(supplierService.save(supplierCreateDto));
     }
 
     @NonNull
     @PutMapping("/{id}")
-    public ResponseEntity<SupplierResponseDto> updateSupplier(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto proveedorUpdateDto) {
+    public ResponseEntity<SupplierResponseDto> updateSupplier(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto supplierUpdateDto) {
         log.info("Updating suppliers with ID: " + id);
-        return ResponseEntity.ok(supplierService.update(proveedorUpdateDto, id));
+        return ResponseEntity.ok(supplierService.update(supplierUpdateDto, id));
     }
 
     @NonNull
     @PatchMapping("/{id}")
-    public ResponseEntity<SupplierResponseDto> updateSupplierPatch(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto proveedorUpdateDto) {
-        log.info("Updating suppliers with ID: " + id);
-        return ResponseEntity.ok(supplierService.update(proveedorUpdateDto, id));
+    public ResponseEntity<SupplierResponseDto> updateSupplierPatch(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto supplierUpdateDto) {
+        log.info("Updating suppliers partially with ID: " + id);
+        return ResponseEntity.ok(supplierService.update(supplierUpdateDto, id));
     }
 
 
@@ -96,7 +96,7 @@ public class SupplierController {
     public Map<String, String> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);

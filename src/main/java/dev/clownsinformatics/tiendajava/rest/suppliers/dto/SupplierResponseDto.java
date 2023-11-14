@@ -1,4 +1,4 @@
-package dev.clownsinformatics.tiendajava.rest.proveedores.dto;
+package dev.clownsinformatics.tiendajava.rest.suppliers.dto;
 
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;

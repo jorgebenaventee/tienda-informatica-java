@@ -1,19 +1,19 @@
 package dev.clownsinformatics.tiendajava.websockets.notifications.mapper;
 
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.SuppliersNotificationDto;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SuppliersNotificationMapper {
-    public SuppliersNotificationDto toProveedoresNotificationDto(Supplier proveedor) {
+    public SuppliersNotificationDto toSupplierNotificationDto(Supplier supplier) {
         return new SuppliersNotificationDto(
-                proveedor.getId(),
-                proveedor.getName(),
-                proveedor.getContact(),
-                proveedor.getAddress(),
-                proveedor.getDateOfHire().toString(),
-                proveedor.getCategory().toString()
+                supplier.getId(),
+                supplier.getName(),
+                supplier.getContact(),
+                supplier.getAddress(),
+                supplier.getDateOfHire().toString(),
+                supplier.getCategory().toString()
         );
     }
 }
