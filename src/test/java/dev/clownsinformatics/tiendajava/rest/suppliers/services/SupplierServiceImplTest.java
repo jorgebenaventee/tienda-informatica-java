@@ -33,19 +33,20 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
+    LocalDateTime now = LocalDateTime.now();
 
     private final Category category1 = Category.builder()
             .uuid(UUID.randomUUID())
             .name("Category 1")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .createdAt(now)
+            .updatedAt(now)
             .build();
 
     private final Category category2 = Category.builder()
             .uuid(UUID.randomUUID())
             .name("Category 2")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
+            .createdAt(now)
+            .updatedAt(now)
             .build();
 
     private final Supplier supplier = Supplier.builder()
@@ -53,7 +54,7 @@ class SupplierServiceImplTest {
             .name("Supplier 1")
             .contact(1)
             .address("Calle 1")
-            .dateOfHire(LocalDateTime.now())
+            .dateOfHire(now)
             .category(category1)
             .build();
 
@@ -63,7 +64,7 @@ class SupplierServiceImplTest {
             .name("Supplier 2")
             .contact(2)
             .address("Calle 2")
-            .dateOfHire(LocalDateTime.now())
+            .dateOfHire(now)
             .category(category2)
             .build();
 
@@ -72,7 +73,7 @@ class SupplierServiceImplTest {
             "Supplier 1",
             1,
             "Calle 1",
-            LocalDateTime.now(),
+            now,
             category1
     );
 
@@ -81,7 +82,7 @@ class SupplierServiceImplTest {
             "Supplier 2",
             2,
             "Calle 2",
-            LocalDateTime.now(),
+            now,
             category2
     );
 
@@ -237,7 +238,7 @@ class SupplierServiceImplTest {
                 .name(supplierCreateDto.name())
                 .contact(supplierCreateDto.contact())
                 .address(supplierCreateDto.address())
-                .dateOfHire(LocalDateTime.now())
+                .dateOfHire(now)
                 .category(supplierCreateDto.category())
                 .build();
 
@@ -246,7 +247,7 @@ class SupplierServiceImplTest {
                 supplierCreateDto.name(),
                 supplierCreateDto.contact(),
                 supplierCreateDto.address(),
-                LocalDateTime.now(),
+                now,
                 supplierCreateDto.category()
         );
 
