@@ -134,7 +134,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -164,7 +165,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -194,7 +196,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -205,7 +208,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void getAllProductsByMaxPrice() throws Exception{
+    void getAllProductsByMaxPrice() throws Exception {
         var LOCAL_URL = "/api/products?maxPrice=50";
         var funkolist = List.of(productResponseDto1, productResponseDto2);
         var page = new PageImpl<>(funkolist);
@@ -224,7 +227,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -235,7 +239,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void getAllProductsByMinStock() throws Exception{
+    void getAllProductsByMinStock() throws Exception {
         var LOCAL_URL = "/api/products?minStock=10";
         var funkolist = List.of(productResponseDto1, productResponseDto2);
         var page = new PageImpl<>(funkolist);
@@ -254,7 +258,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -265,7 +270,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void getAllProductsByCategory() throws Exception{
+    void getAllProductsByCategory() throws Exception {
         var LOCAL_URL = "/api/products?category=Category 1";
         var funkolist = List.of(productResponseDto1);
         var page = new PageImpl<>(funkolist);
@@ -284,7 +289,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
@@ -295,7 +301,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    void getAllProductsByAllParams() throws Exception{
+    void getAllProductsByAllParams() throws Exception {
         var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1";
         var funkolist = List.of(productResponseDto1);
         var page = new PageImpl<>(funkolist);
@@ -314,7 +320,8 @@ class ProductRestControllerTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
-        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>(){});
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),

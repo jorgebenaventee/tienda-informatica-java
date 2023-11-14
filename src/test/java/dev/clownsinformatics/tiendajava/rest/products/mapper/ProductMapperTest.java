@@ -3,13 +3,13 @@ package dev.clownsinformatics.tiendajava.rest.products.mapper;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProductMapperTest {
     private final ProductMapper mapper = new ProductMapper();

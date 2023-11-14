@@ -4,7 +4,6 @@ import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
@@ -15,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -25,7 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,16 +34,12 @@ class ProductRestControllerTestMock {
     private final Category category1 = Category.builder().uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461")).name("Category 1").build();
     private final Category category2 = Category.builder().uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467")).name("Category 2").build();
 
-    private final Product product1 = Product.builder().id(idProduct1).name("Product 1").weight(2.5).price(50.0).img("imagen1.jpg").stock(10).description("Descripción del producto 1").category(category1).build();
-    private final Product product2 = Product.builder().id(idProduct2).name("Product 2").weight(3.2).price(50.0).img("imagen2.jpg").category(category2).build();
-
     private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
     private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now());
-
-    @Mock
-    private ProductServiceImpl productService;
     @Mock
     PaginationLinksUtils paginationLinksUtils;
+    @Mock
+    private ProductServiceImpl productService;
     @InjectMocks
     private ProductRestController productRestController;
 
@@ -86,7 +79,7 @@ class ProductRestControllerTestMock {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
-        List<ProductResponseDto> expectedProducts = Arrays.asList(productResponseDto1);
+        List<ProductResponseDto> expectedProducts = List.of(productResponseDto1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -112,7 +105,7 @@ class ProductRestControllerTestMock {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
-        List<ProductResponseDto> expectedProducts = Arrays.asList(productResponseDto1);
+        List<ProductResponseDto> expectedProducts = List.of(productResponseDto1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -155,7 +148,7 @@ class ProductRestControllerTestMock {
     }
 
     @Test
-    void getAllProductsByMinStock(){
+    void getAllProductsByMinStock() {
         Optional<String> name = Optional.empty();
         Optional<Double> maxWeight = Optional.empty();
         Optional<Double> maxPrice = Optional.empty();
@@ -181,7 +174,7 @@ class ProductRestControllerTestMock {
     }
 
     @Test
-    void getAllProductsByCategory(){
+    void getAllProductsByCategory() {
         Optional<String> name = Optional.empty();
         Optional<Double> maxWeight = Optional.empty();
         Optional<Double> maxPrice = Optional.empty();
@@ -190,7 +183,7 @@ class ProductRestControllerTestMock {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
-        List<ProductResponseDto> expectedProducts = Arrays.asList(productResponseDto1);
+        List<ProductResponseDto> expectedProducts = List.of(productResponseDto1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -207,7 +200,7 @@ class ProductRestControllerTestMock {
     }
 
     @Test
-    void getAllProductsByAllParams(){
+    void getAllProductsByAllParams() {
         Optional<String> name = Optional.of("Product 1");
         Optional<Double> maxWeight = Optional.of(2.5);
         Optional<Double> maxPrice = Optional.of(50.0);
@@ -216,7 +209,7 @@ class ProductRestControllerTestMock {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
-        List<ProductResponseDto> expectedProducts = Arrays.asList(productResponseDto1);
+        List<ProductResponseDto> expectedProducts = List.of(productResponseDto1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 

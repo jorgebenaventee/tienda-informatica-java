@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
+import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
@@ -13,13 +13,10 @@ import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound
 import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
-import dev.clownsinformatics.tiendajava.rest.products.services.ProductServiceImpl;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProductNotificationMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,10 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -82,7 +76,7 @@ class ProductServiceImplTest {
     @Mock
     private ProductMapper mapper;
     @Mock
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
     @Mock
     private StorageService storageService;
     @Mock
@@ -129,7 +123,7 @@ class ProductServiceImplTest {
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
 
-        List<Product> expectedProducts = Arrays.asList(product1);
+        List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<Product> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -156,7 +150,7 @@ class ProductServiceImplTest {
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
 
-        List<Product> expectedProducts = Arrays.asList(product1);
+        List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<Product> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -237,7 +231,7 @@ class ProductServiceImplTest {
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
 
-        List<Product> expectedProducts = Arrays.asList(product1);
+        List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<Product> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -257,14 +251,14 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void findAllByCategoryAllParams(){
+    void findAllByCategoryAllParams() {
         Optional<String> name = Optional.of("Product 1");
         Optional<Double> maxWeight = Optional.of(2.5);
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.of("Category 1");
 
-        List<Product> expectedProducts = Arrays.asList(product1);
+        List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<Product> expectedPage = new PageImpl<>(expectedProducts);
 
@@ -359,7 +353,7 @@ class ProductServiceImplTest {
                 productExpected.getUpdatedAt()
         );
 
-        when(categoryRepository.findByNameEqualsIgnoreCase("Category 1")).thenReturn(Optional.of(category1));
+        when(categoryService.findById(productCreateDto.category().getUuid())).thenReturn(category1);
         when(mapper.toProduct(productCreateDto, category1)).thenReturn(productExpected);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
@@ -378,7 +372,7 @@ class ProductServiceImplTest {
                 () -> assertNotNull(actualProduct.updatedAt()),
                 () -> assertEquals(category1, actualProduct.category())
         );
-        verify(categoryRepository, times(1)).findByNameEqualsIgnoreCase("Category 1");
+        verify(categoryService, times(1)).findById(productCreateDto.category().getUuid());
         verify(repository, times(1)).save(productExpected);
         verify(mapper, times(1)).toProduct(productCreateDto, category1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);

@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.products.services;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

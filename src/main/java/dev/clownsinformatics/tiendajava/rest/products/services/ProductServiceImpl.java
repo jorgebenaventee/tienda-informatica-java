@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.categories.repositories.CategoryRepository;
+import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
@@ -41,7 +41,7 @@ import java.util.UUID;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
     private final ProductMapper productMapper;
     private final StorageService storageService;
 
@@ -51,9 +51,9 @@ public class ProductServiceImpl implements ProductService {
     private WebSocketHandler webSocketHandler;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper, StorageService storageService, WebSocketConfig webSocketConfig, ObjectMapper mapper, ProductNotificationMapper productNotificationMapper) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, ProductMapper productMapper, StorageService storageService, WebSocketConfig webSocketConfig, ObjectMapper mapper, ProductNotificationMapper productNotificationMapper) {
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
         this.productMapper = productMapper;
         this.storageService = storageService;
         this.webSocketConfig = webSocketConfig;
@@ -107,19 +107,11 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseDto(product);
     }
 
-    private Category findCategory(String categoryName) {
-        var category = categoryRepository.findByNameEqualsIgnoreCase(categoryName);
-        if (category.isEmpty()) {
-            throw new ProductBadRequest("Category not found");
-        }
-        return category.get();
-    }
-
     @Override
     @Cacheable
     public ProductResponseDto save(ProductCreateDto productCreateDto) {
         log.info("Saving product: " + productCreateDto);
-        Category category = findCategory(productCreateDto.category().getName());
+        Category category = categoryService.findById(productCreateDto.category().getUuid());
         Product productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
         onChange(Notification.Tipo.CREATE, productSaved);
         return productMapper.toProductResponseDto(productSaved);
@@ -131,10 +123,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDto update(String id, ProductUpdateDto productUpdateDto) {
         log.info("Updating product with id: " + id);
         var actualProduct = productRepository.findById(getUUID(id)).orElseThrow(() -> new ProductNotFound(id));
-        Category category = null;
+        Category category;
 
         if (productUpdateDto.category() != null && productUpdateDto.category().getName().isEmpty()) {
-            category = findCategory(productUpdateDto.category().getName());
+            category = categoryService.findById(productUpdateDto.category().getUuid());
         } else {
             category = actualProduct.getCategory();
         }

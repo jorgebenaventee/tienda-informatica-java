@@ -29,4 +29,4 @@ values (1000, 'Paco Pancetas', 'Técnico de sistemas', current_timestamp, curren
 
 INSERT INTO CLIENTS (USERNAME, NAME, BALANCE, EMAIL, ADDRESS, PHONE, BIRTHDATE, IMAGE, IS_DELETED)
 VALUES ('cliente1', 'Cliente 1', 0, 'hola@gmail.com', 'Direccion 1', 123456789, CURRENT_TIMESTAMP, null, false),
-       ('cliente2', 'Cliente 2', 0, 'adios@gmail.com' , 'Direccion 2', 987654321, CURRENT_TIMESTAMP, null, false);
+       ('cliente2', 'Cliente 2', 0, 'adios@gmail.com', 'Direccion 2', 987654321, CURRENT_TIMESTAMP, null, false);
