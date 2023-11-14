@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.UUID;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ProveedorNotFound extends ProveedorException {
+public class SupplierNotFound extends SupplierException {
 
-    public ProveedorNotFound(UUID idProveedor) {
+    public SupplierNotFound(UUID idProveedor) {
         super("There is not any proveedor with ID: " + idProveedor);
 
     }

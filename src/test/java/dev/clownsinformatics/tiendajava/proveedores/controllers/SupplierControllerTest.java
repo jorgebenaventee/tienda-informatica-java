@@ -4,13 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorResponseDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorBadRequest;
-import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorNotFound;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.rest.proveedores.services.ProveedorServiceImpl;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierResponseDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.SupplierBadRequest;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.SupplierNotFound;
+import dev.clownsinformatics.tiendajava.rest.proveedores.services.SupplierServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
 @ExtendWith(MockitoExtension.class)
-class ProveedorControllerTest {
+class SupplierControllerTest {
     private final String myEndpoint = "/api/suppliers";
 
 
@@ -59,17 +58,8 @@ class ProveedorControllerTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-    private final Proveedor proveedor1 = Proveedor.builder()
-            .idProveedor(UUID.randomUUID())
-            .name("Proveedor 1")
-            .contact(1)
-            .address("Calle 1")
-            .dateOfHire(LocalDateTime.now())
-            .category(category1)
-            .build();
 
-
-    private final ProveedorResponseDto proveedorResponseDto1 = new ProveedorResponseDto(
+    private final SupplierResponseDto supplierResponseDto = new SupplierResponseDto(
             UUID.randomUUID(),
             "Proveedor 1",
             1,
@@ -78,7 +68,7 @@ class ProveedorControllerTest {
             category1
     );
 
-    private final ProveedorResponseDto proveedorResponseDto2 = new ProveedorResponseDto(
+    private final SupplierResponseDto supplierResponseDto2 = new SupplierResponseDto(
             UUID.randomUUID(),
             "Proveedor 2",
             2,
@@ -90,31 +80,31 @@ class ProveedorControllerTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    ProveedorServiceImpl proveedorService;
+    SupplierServiceImpl supplierService;
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
-    public ProveedorControllerTest(ProveedorServiceImpl proveedorService) {
-        this.proveedorService = proveedorService;
+    public SupplierControllerTest(SupplierServiceImpl supplierService) {
+        this.supplierService = supplierService;
         mapper.registerModule(new JavaTimeModule());
     }
 
 
     @Test
     void getAll() throws Exception {
-        var proveedorList = List.of(proveedorResponseDto1, proveedorResponseDto2);
-        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
+        var proveedorList = List.of(supplierResponseDto, supplierResponseDto2);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(myEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        PageResponse<ProveedorResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        PageResponse<SupplierResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertAll(
@@ -122,25 +112,25 @@ class ProveedorControllerTest {
                 () -> assertEquals(2, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
     void getAllByName() throws Exception {
-        var proveedorList = List.of(proveedorResponseDto1);
+        var proveedorList = List.of(supplierResponseDto);
         var localEndpoint = myEndpoint + "?name=Proveedor 1";
         Optional<String> name = Optional.of("Proveedor 1");
-        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(Optional.empty(), name, Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), name, Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        PageResponse<ProveedorResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        PageResponse<SupplierResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertAll(
@@ -148,25 +138,25 @@ class ProveedorControllerTest {
                 () -> assertEquals(1, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(Optional.empty(), name, Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), name, Optional.empty(), pageable);
     }
 
     @Test
     void getAllByCategory() throws Exception {
-        var proveedorList = List.of(proveedorResponseDto1);
+        var proveedorList = List.of(supplierResponseDto);
         var localEndpoint = myEndpoint + "?category=Category 1";
         Optional<String> categoryName = Optional.of("Category 1");
-        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(categoryName, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(categoryName, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        PageResponse<ProveedorResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        PageResponse<SupplierResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertAll(
@@ -174,25 +164,25 @@ class ProveedorControllerTest {
                 () -> assertEquals(1, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
     void getAllByContact() throws Exception {
-        var proveedorList = List.of(proveedorResponseDto1);
+        var proveedorList = List.of(supplierResponseDto);
         var localEndpoint = myEndpoint + "?contact= 1";
         Optional<Integer> contactNumber = Optional.of(1);
-        var pageable = PageRequest.of(0, 10, Sort.by("idProveedor").ascending());
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(proveedorList);
 
-        when(proveedorService.findAll(Optional.empty(), Optional.empty(), contactNumber, pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        PageResponse<ProveedorResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        PageResponse<SupplierResponseDto> proveedor = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertAll(
@@ -200,33 +190,33 @@ class ProveedorControllerTest {
                 () -> assertEquals(1, proveedor.content().size())
         );
 
-        verify(proveedorService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, pageable);
     }
 
     @Test
     void getProveedorByUUID() throws Exception {
-        var localEndpoint = myEndpoint + "/" + proveedor1.getIdProveedor();
-        when(proveedorService.findByUUID(proveedor1.getIdProveedor().toString())).thenReturn(proveedor1);
+        var localEndpoint = myEndpoint + "/" + supplierResponseDto.id();
+        when(supplierService.findByUUID(supplierResponseDto.id().toString())).thenReturn(supplierResponseDto);
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
-        ProveedorResponseDto proveedorResponseDto = mapper.readValue(response.getContentAsString(), ProveedorResponseDto.class);
+        SupplierResponseDto proveedorResponseDto = mapper.readValue(response.getContentAsString(), SupplierResponseDto.class);
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(proveedor1.getIdProveedor(), proveedorResponseDto.idProveedor()),
-                () -> assertEquals(proveedor1.getName(), proveedorResponseDto.name()),
-                () -> assertEquals(proveedor1.getContact(), proveedorResponseDto.contact()),
-                () -> assertEquals(proveedor1.getAddress(), proveedorResponseDto.address()),
-                () -> assertEquals(proveedor1.getDateOfHire(), proveedorResponseDto.dateOfHire())
+                () -> assertEquals(supplierResponseDto.id(), proveedorResponseDto.id()),
+                () -> assertEquals(supplierResponseDto.name(), proveedorResponseDto.name()),
+                () -> assertEquals(supplierResponseDto.contact(), proveedorResponseDto.contact()),
+                () -> assertEquals(supplierResponseDto.address(), proveedorResponseDto.address()),
+                () -> assertEquals(supplierResponseDto.dateOfHire(), proveedorResponseDto.dateOfHire())
         );
     }
 
     @Test
     void getProveedorByUUIDNotFound() throws Exception {
-        var localEndpoint = myEndpoint + "/" + proveedor1.getIdProveedor();
-        when(proveedorService.findByUUID(proveedor1.getIdProveedor().toString())).thenThrow(new ProveedorNotFound(proveedor1.getIdProveedor()));
+        var localEndpoint = myEndpoint + "/" + supplierResponseDto.id();
+        when(supplierService.findByUUID(supplierResponseDto.id().toString())).thenThrow(new SupplierNotFound(supplierResponseDto.id()));
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
@@ -234,13 +224,13 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(404, response.getStatus())
         );
-        verify(proveedorService, times(1)).findByUUID(proveedor1.getIdProveedor().toString());
+        verify(supplierService, times(1)).findByUUID(supplierResponseDto.id().toString());
     }
 
     @Test
     void getProveedorByUUIDBadRequest() throws Exception {
-        var localEndpoint = myEndpoint + "/"+"123";
-        when(proveedorService.findByUUID(proveedor1.getIdProveedor().toString())).thenThrow(new ProveedorBadRequest("123"));
+        var localEndpoint = myEndpoint + "/" + "not a uuid";
+        when(supplierService.findByUUID("not a uuid")).thenThrow(new SupplierBadRequest("not a uuid is not a valid UUID"));
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
                         .accept(MediaType.APPLICATION_JSON)
@@ -248,18 +238,18 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
-        verify(proveedorService, times(0)).findByUUID("123");
+        verify(supplierService, times(1)).findByUUID("not a uuid");
     }
 
     @Test
     void createProveedor() throws Exception {
-        var proveedorDto = new ProveedorCreateDto(
+        var proveedorDto = new SupplierCreateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
                 category1
         );
-        when(proveedorService.save(any(ProveedorCreateDto.class))).thenReturn(proveedor1);
+        when(supplierService.save(any(SupplierCreateDto.class))).thenReturn(supplierResponseDto);
 
         MockHttpServletResponse response = mockMvc.perform(
                 post(myEndpoint)
@@ -268,27 +258,27 @@ class ProveedorControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        ProveedorResponseDto proveedor = mapper.readValue(response.getContentAsString(), ProveedorResponseDto.class);
+        SupplierResponseDto proveedor = mapper.readValue(response.getContentAsString(), SupplierResponseDto.class);
 
         assertAll(
                 () -> assertEquals(201, response.getStatus()),
-                () -> assertEquals(proveedor1.getIdProveedor(), proveedor.idProveedor()),
-                () -> assertEquals(proveedor1.getName(), proveedor.name()),
-                () -> assertEquals(proveedor1.getContact(), proveedor.contact()),
-                () -> assertEquals(proveedor1.getAddress(), proveedor.address()),
-                () -> assertEquals(proveedor1.getDateOfHire(), proveedor.dateOfHire())
+                () -> assertEquals(supplierResponseDto.id(), proveedor.id()),
+                () -> assertEquals(supplierResponseDto.name(), proveedor.name()),
+                () -> assertEquals(supplierResponseDto.contact(), proveedor.contact()),
+                () -> assertEquals(supplierResponseDto.address(), proveedor.address()),
+                () -> assertEquals(supplierResponseDto.dateOfHire(), proveedor.dateOfHire())
         );
     }
 
     @Test
     void proveedorCreatedBadRequestName() throws Exception {
-        var proveedorDto = new ProveedorCreateDto(
+        var proveedorDto = new SupplierCreateDto(
                 "",
                 1,
                 "Calle 1",
                 category1
         );
-        when(proveedorService.save(any(ProveedorCreateDto.class))).thenThrow(new ProveedorBadRequest(""));
+        when(supplierService.save(proveedorDto)).thenThrow(new SupplierBadRequest(""));
 
         MockHttpServletResponse response = mockMvc.perform(
                 post(myEndpoint)
@@ -300,17 +290,18 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
+        verify(supplierService, times(0)).save(proveedorDto);
     }
 
     @Test
     void proveedorCreatedBadRequestContact() throws Exception {
-        var proveedorDto = new ProveedorCreateDto(
+        var proveedorDto = new SupplierCreateDto(
                 "Proveedor 1",
-                0,
+                -1,
                 "Calle 1",
                 category1
         );
-        when(proveedorService.save(any(ProveedorCreateDto.class))).thenThrow(new ProveedorBadRequest(""));
+        when(supplierService.save(proveedorDto)).thenThrow(new SupplierBadRequest(""));
 
         MockHttpServletResponse response = mockMvc.perform(
                 post(myEndpoint)
@@ -322,17 +313,18 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
+        verify(supplierService, times(0)).save(proveedorDto);
     }
 
     @Test
     void proveedorCreatedBadRequestAddress() throws Exception {
-        var proveedorDto = new ProveedorCreateDto(
+        var proveedorDto = new SupplierCreateDto(
                 "Proveedor 1",
                 1,
                 "",
                 category1
         );
-        when(proveedorService.save(any(ProveedorCreateDto.class))).thenThrow(new ProveedorBadRequest(""));
+        when(supplierService.save(proveedorDto)).thenThrow(new SupplierBadRequest(""));
 
         MockHttpServletResponse response = mockMvc.perform(
                 post(myEndpoint)
@@ -344,17 +336,18 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
+        verify(supplierService, times(0)).save(proveedorDto);
     }
 
     @Test
     void proveedorCreatedBadRequestCategory() throws Exception {
-        var proveedorDto = new ProveedorCreateDto(
+        var proveedorDto = new SupplierCreateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
                 null
         );
-        when(proveedorService.save(any(ProveedorCreateDto.class))).thenThrow(new ProveedorBadRequest(""));
+        when(supplierService.save(proveedorDto)).thenThrow(new SupplierBadRequest(""));
 
         MockHttpServletResponse response = mockMvc.perform(
                 post(myEndpoint)
@@ -366,19 +359,21 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(400, response.getStatus())
         );
+        verify(supplierService, times(0)).save(proveedorDto);
     }
 
     @Test
     void updateProveedor() throws Exception {
-        var myLocalEndpoint = myEndpoint + "/1";
-        var proveedorDto = new ProveedorUpdateDto(
+        var uuid = UUID.randomUUID().toString();
+        var myLocalEndpoint = myEndpoint + "/"+uuid;
+        var proveedorDto = new SupplierUpdateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
                 category1
         );
 
-        when(proveedorService.update(any(ProveedorUpdateDto.class), UUID.randomUUID().toString())).thenReturn(proveedor1);
+        when(supplierService.update(proveedorDto,uuid)).thenReturn(supplierResponseDto);
 
         MockHttpServletResponse response = mockMvc.perform(
                 put(myLocalEndpoint)
@@ -387,31 +382,32 @@ class ProveedorControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
-        ProveedorResponseDto funko = mapper.readValue(response.getContentAsString(), ProveedorResponseDto.class);
+        SupplierResponseDto supplier = mapper.readValue(response.getContentAsString(), SupplierResponseDto.class);
 
         assertAll(
                 () -> assertEquals(200, response.getStatus()),
-                () -> assertEquals(proveedor1.getIdProveedor(), funko.idProveedor()),
-                () -> assertEquals(proveedor1.getName(), funko.name()),
-                () -> assertEquals(proveedor1.getContact(), funko.contact()),
-                () -> assertEquals(proveedor1.getAddress(), funko.address()),
-                () -> assertEquals(proveedor1.getDateOfHire(), funko.dateOfHire())
+                () -> assertEquals(supplierResponseDto.id(), supplier.id()),
+                () -> assertEquals(supplierResponseDto.name(), supplier.name()),
+                () -> assertEquals(supplierResponseDto.contact(), supplier.contact()),
+                () -> assertEquals(supplierResponseDto.address(), supplier.address()),
+                () -> assertEquals(supplierResponseDto.dateOfHire(), supplier.dateOfHire())
         );
 
-        verify(proveedorService, times(1)).update(any(ProveedorUpdateDto.class), UUID.randomUUID().toString());
+      verify(supplierService, times(1)).update(proveedorDto, uuid);
     }
 
     @Test
     void updateProveedorNotFound() throws Exception {
-        var myLocalEndpoint = myEndpoint + "/99";
-        var proveedorDto = new ProveedorUpdateDto(
+        var uuid = UUID.randomUUID().toString();
+        var myLocalEndpoint = myEndpoint + "/"+uuid;
+        var proveedorDto = new SupplierUpdateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
                 category1
         );
 
-        when(proveedorService.update(any(ProveedorUpdateDto.class), "99")).thenThrow(new ProveedorNotFound(UUID.fromString("99")));
+        when(supplierService.update(proveedorDto, uuid)).thenThrow(new SupplierNotFound(UUID.fromString(uuid)));
 
         MockHttpServletResponse response = mockMvc.perform(
                 put(myLocalEndpoint)
@@ -423,19 +419,80 @@ class ProveedorControllerTest {
         assertAll(
                 () -> assertEquals(404, response.getStatus())
         );
-
-        verify(proveedorService, times(1)).update(any(ProveedorUpdateDto.class), UUID.randomUUID().toString());
+        verify(supplierService, times(1)).update(proveedorDto, uuid);
     }
 
     @Test
-    void updateProveedorPatch() {
+    void updateProveedorPatch() throws Exception {
+        var uuid = UUID.randomUUID().toString();
+        var myLocalEndpoint = myEndpoint + "/"+uuid;
+        var proveedorDto = new SupplierUpdateDto(
+                "Proveedor 1",
+                1,
+                "Calle 1",
+                category1
+        );
+        when(supplierService.update(proveedorDto, uuid)).thenReturn(supplierResponseDto);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        patch(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(proveedorDto))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        SupplierResponseDto supplier = mapper.readValue(response.getContentAsString(), SupplierResponseDto.class);
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(supplierResponseDto.id(), supplier.id()),
+                () -> assertEquals(supplierResponseDto.name(), supplier.name()),
+                () -> assertEquals(supplierResponseDto.contact(), supplier.contact()),
+                () -> assertEquals(supplierResponseDto.address(), supplier.address()),
+                () -> assertEquals(supplierResponseDto.dateOfHire(), supplier.dateOfHire())
+        );
+
+        verify(supplierService, times(1)).update(proveedorDto, uuid);
+    }
+
+
+    @Test
+    void deleteProveedor() throws Exception {
+        var uuid = UUID.randomUUID().toString();
+        var myLocalEndpoint = myEndpoint + "/"+uuid;
+
+        doNothing().when(supplierService).deleteByUUID(uuid);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertAll(
+                () -> assertEquals(204, response.getStatus())
+        );
+
+        verify(supplierService, times(1)).deleteByUUID(uuid);
     }
 
     @Test
-    void deleteProveedor() {
-    }
+    void deleteProveedorNotFound() throws Exception {
+        var uuid = UUID.randomUUID().toString();
+        var myLocalEndpoint = myEndpoint + "/"+uuid;
 
-    @Test
-    void handleValidationExceptions() {
+        doThrow(new SupplierNotFound(UUID.fromString(uuid))).when(supplierService).deleteByUUID(uuid);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        delete(myLocalEndpoint)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        assertAll(
+                () -> assertEquals(404, response.getStatus())
+        );
+
+        verify(supplierService, times(1)).deleteByUUID(uuid);
     }
 }

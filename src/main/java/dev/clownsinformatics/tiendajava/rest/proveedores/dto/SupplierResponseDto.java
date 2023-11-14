@@ -6,8 +6,8 @@ import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record ProveedorResponseDto(
-        UUID idProveedor,
+public record SupplierResponseDto(
+        UUID id,
         String name,
         Integer contact,
         String address,

@@ -1,8 +1,8 @@
 package dev.clownsinformatics.tiendajava.proveedores.repositories;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.SupplierRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @DataJpaTest
-class ProveedorRepositoryImplTest {
+class SupplierRepositoryTest {
 
     private final Category category = Category.builder()
             .uuid(UUID.randomUUID())
@@ -26,8 +26,8 @@ class ProveedorRepositoryImplTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-    private final Proveedor proveedor1 = Proveedor.builder()
-            .idProveedor(UUID.randomUUID())
+    private final Supplier proveedor1 = Supplier.builder()
+            .id(UUID.randomUUID())
             .name("Proveedor 1")
             .contact(1)
             .address("Calle 1")
@@ -35,8 +35,8 @@ class ProveedorRepositoryImplTest {
             .category(category)
             .build();
 
-    private final Proveedor proveedor2 = Proveedor.builder()
-            .idProveedor(UUID.randomUUID())
+    private final Supplier proveedor2 = Supplier.builder()
+            .id(UUID.randomUUID())
             .name("Proveedor 2")
             .contact(2)
             .address("Calle 2")
@@ -45,7 +45,7 @@ class ProveedorRepositoryImplTest {
             .build();
 
     @Autowired
-    private ProveedorRepository proveedorRepository;
+    private SupplierRepository proveedorRepository;
     @Autowired
     private TestEntityManager entityManager;
 
@@ -60,14 +60,6 @@ class ProveedorRepositoryImplTest {
         entityManager.flush();
     }
 
-    @Test
-    void getByIdProveedor() {
-        proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor());
-        assertAll(
-                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor())),
-                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor2.getIdProveedor()))
-        );
-    }
 
     @Test
     void getByNameContainingIgnoreCase() {
@@ -96,12 +88,4 @@ class ProveedorRepositoryImplTest {
         );
     }
 
-    @Test
-    void deleteByIdProveedor() {
-        proveedorRepository.deleteByIdProveedor(proveedor1.getIdProveedor());
-        assertAll(
-                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor1.getIdProveedor())),
-                () -> assertNotNull(proveedorRepository.getByIdProveedor(proveedor2.getIdProveedor()))
-        );
-    }
 }

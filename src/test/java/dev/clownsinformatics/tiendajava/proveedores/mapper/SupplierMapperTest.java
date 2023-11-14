@@ -1,10 +1,10 @@
 package dev.clownsinformatics.tiendajava.proveedores.mapper;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.ProveedorMapper;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.SupplierMapper;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ProveedorMapperTest {
+class SupplierMapperTest {
 
     private final Category category = Category.builder()
             .uuid(UUID.randomUUID())
@@ -22,8 +22,8 @@ class ProveedorMapperTest {
             .updatedAt(LocalDateTime.now())
             .build();
 
-    private final Proveedor proveedor = Proveedor.builder()
-            .idProveedor(UUID.randomUUID())
+    private final Supplier proveedor = Supplier.builder()
+            .id(UUID.randomUUID())
             .name("Proveedor 1")
             .contact(1)
             .address("Calle 1")
@@ -31,11 +31,11 @@ class ProveedorMapperTest {
             .category(category)
             .build();
 
-    private final ProveedorMapper proveedorMapper = new ProveedorMapper();
+    private final SupplierMapper proveedorMapper = new SupplierMapper();
 
     @Test
     void toProveedor() {
-        ProveedorCreateDto proveedorCreateDto = new ProveedorCreateDto(
+        SupplierCreateDto proveedorCreateDto = new SupplierCreateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
@@ -43,17 +43,16 @@ class ProveedorMapperTest {
         );
 
         assertAll(
-                () -> assertEquals(proveedor.getIdProveedor(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getIdProveedor()),
-                () -> assertEquals(proveedorCreateDto.name(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getName()),
-                () -> assertEquals(proveedorCreateDto.contact(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getContact()),
-                () -> assertEquals(proveedorCreateDto.address(), proveedorMapper.toProveedor(proveedorCreateDto, proveedor.getIdProveedor()).getAddress())
+                () -> assertEquals(proveedorCreateDto.name(), proveedorMapper.toProveedor(proveedorCreateDto).getName()),
+                () -> assertEquals(proveedorCreateDto.contact(), proveedorMapper.toProveedor(proveedorCreateDto).getContact()),
+                () -> assertEquals(proveedorCreateDto.address(), proveedorMapper.toProveedor(proveedorCreateDto).getAddress())
         );
     }
 
     @Test
     void testToProveedor() {
         UUID uuid = UUID.randomUUID();
-        ProveedorUpdateDto proveedorUpdateDto = new ProveedorUpdateDto(
+        SupplierUpdateDto proveedorUpdateDto = new SupplierUpdateDto(
                 "Proveedor 1",
                 1,
                 "Calle 1",
@@ -61,8 +60,8 @@ class ProveedorMapperTest {
 
         );
 
-        Proveedor proveedor1 = Proveedor.builder()
-                .idProveedor(uuid)
+        Supplier proveedor1 = Supplier.builder()
+                .id(uuid)
                 .name("Proveedor 1")
                 .contact(1)
                 .address("Calle 1")
@@ -71,7 +70,7 @@ class ProveedorMapperTest {
                 .build();
 
         assertAll(
-                () -> assertEquals(proveedor1.getIdProveedor(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getIdProveedor()),
+                () -> assertEquals(proveedor1.getId(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getId()),
                 () -> assertEquals(proveedor1.getName(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getName()),
                 () -> assertEquals(proveedor1.getContact(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getContact()),
                 () -> assertEquals(proveedor1.getAddress(), proveedorMapper.toProveedor(proveedorUpdateDto, proveedor1).getAddress())
@@ -80,8 +79,8 @@ class ProveedorMapperTest {
 
     @Test
     void toProveedorDto() {
-        Proveedor proveedor1 = Proveedor.builder()
-                .idProveedor(UUID.randomUUID())
+        Supplier proveedor1 = Supplier.builder()
+                .id(UUID.randomUUID())
                 .name("Proveedor 1")
                 .contact(1)
                 .address("Calle 1")

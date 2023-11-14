@@ -5,7 +5,7 @@ VALUES ('d69cf3db-b77d-4181-b3cd-5ca8107fb6a9', 'SOBREMESA'),
        ('8c5c06ba-49d6-46b6-85cc-8246c0f362bc', 'PLACAS BASE'),
        ('bb51d00d-13fb-4b09-acc9-948185636f79', 'OTROS');
 
-INSERT INTO proveedores(id_Proveedor, name, contact, address, date_Of_Hire, category_id)
+INSERT INTO supplier(id, name, contact, address, date_Of_Hire, category_id)
 VALUES ('f47a2544-5b87-49c7-8931-1b9d5cfbdf01', 'Proveedor 1', 1, 'Direccion 1', CURRENT_TIMESTAMP(),
         'd69cf3db-b77d-4181-b3cd-5ca8107fb6a9'),
        ('f47a2544-5b87-49c7-8931-1b9d5cfbdf02', 'Proveedor 2', 2, 'Direccion 2', CURRENT_TIMESTAMP(),

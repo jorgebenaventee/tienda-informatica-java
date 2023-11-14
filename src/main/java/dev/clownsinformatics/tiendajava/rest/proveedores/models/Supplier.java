@@ -18,13 +18,13 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
-@Table(name = "proveedores")
+@Table(name = "supplier")
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class Proveedor {
+public class Supplier {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID idProveedor;
+    private UUID id;
     @Column
     @NotBlank(message = "The name cannot be empty")
     private String name;

@@ -6,16 +6,16 @@ import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
 import dev.clownsinformatics.tiendajava.config.websocket.WebSocketHandler;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorCreateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorResponseDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.dto.ProveedorUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorBadRequest;
-import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.ProveedorNotFound;
-import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.ProveedorMapper;
-import dev.clownsinformatics.tiendajava.rest.proveedores.models.Proveedor;
-import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.ProveedorRepository;
-import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProveedoresNotificationDto;
-import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProveedoresNotificationMapper;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierCreateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierResponseDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.dto.SupplierUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.SupplierBadRequest;
+import dev.clownsinformatics.tiendajava.rest.proveedores.exceptions.SupplierNotFound;
+import dev.clownsinformatics.tiendajava.rest.proveedores.mapper.SupplierMapper;
+import dev.clownsinformatics.tiendajava.rest.proveedores.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.proveedores.repositories.SupplierRepository;
+import dev.clownsinformatics.tiendajava.websockets.notifications.dto.SuppliersNotificationDto;
+import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.SuppliersNotificationMapper;
 import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
 import jakarta.persistence.criteria.Join;
 import lombok.extern.slf4j.Slf4j;
@@ -25,30 +25,30 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Slf4j
-@CacheConfig(cacheNames = "proveedores")
-public class ProveedorServiceImpl implements ProveedorService {
+@CacheConfig(cacheNames = "suppliers")
+public class SupplierServiceImpl implements SupplierService {
 
-    private final ProveedorRepository proveedorRepository;
-    private final ProveedorMapper proveedorMapper;
+    private final SupplierRepository proveedorRepository;
+    private final SupplierMapper proveedorMapper;
     private final CategoryService categoryService;
     private final WebSocketConfig webSocketConfig;
     private WebSocketHandler webSocketService;
-    private final ProveedoresNotificationMapper proveedoresNotificationMapper;
+    private final SuppliersNotificationMapper proveedoresNotificationMapper;
     private final ObjectMapper mapper;
 
     @Autowired
-    public ProveedorServiceImpl(ProveedorRepository proveedoresRepository, ProveedorMapper proveedorMapper, CategoryService categoryService, WebSocketConfig webSocketConfig, ProveedoresNotificationMapper proveedoresNotificationMapper, ObjectMapper mapper) {
+    public SupplierServiceImpl(SupplierRepository proveedoresRepository, SupplierMapper proveedorMapper, CategoryService categoryService, WebSocketConfig webSocketConfig, SuppliersNotificationMapper proveedoresNotificationMapper, ObjectMapper mapper) {
         this.proveedorRepository = proveedoresRepository;
         this.proveedorMapper = proveedorMapper;
         this.categoryService = categoryService;
@@ -59,73 +59,83 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
-    public Page<ProveedorResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable) {
-        Specification<Proveedor> specProveedorCategory = (root, query, criteriaBuilder) ->
+    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable) {
+        Specification<Supplier> specProveedorCategory = (root, query, criteriaBuilder) ->
                 category.map(c -> {
-                    Join<Proveedor, Category> categoriaJoin = root.join("category");
+                    Join<Supplier, Category> categoriaJoin = root.join("category");
                     return criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("name")), "%" + c.toLowerCase() + "%");
                 }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Proveedor> specProveedorName = (root, query, criteriaBuilder) ->
+        Specification<Supplier> specProveedorName = (root, query, criteriaBuilder) ->
                 name.map(n -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + n.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
-        Specification<Proveedor> specProveedorContact = (root, query, criteriaBuilder) ->
+        Specification<Supplier> specProveedorContact = (root, query, criteriaBuilder) ->
                 contact.map(c -> criteriaBuilder.equal(root.get("contact"), c))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Proveedor> spec = Specification.where(specProveedorCategory).and(specProveedorName).and(specProveedorContact);
+        Specification<Supplier> spec = Specification.where(specProveedorCategory).and(specProveedorName).and(specProveedorContact);
         return proveedorRepository.findAll(spec, pageable).map(proveedorMapper::toProveedorDto);
     }
 
 
     @Override
     @Cacheable(key = "#idProveedor")
-    public Proveedor findByUUID(String idProveedor) {
+    public SupplierResponseDto findByUUID(String idProveedor) {
+        UUID uuid = getUUID(idProveedor);
+        return proveedorRepository.findById(uuid)
+                .map(proveedorMapper::toProveedorDto)
+                .orElseThrow(() -> new SupplierNotFound(uuid));
+    }
+
+    public UUID getUUID(String uuid) {
         try {
-            UUID uuid = UUID.fromString(idProveedor);
-            return proveedorRepository.getByIdProveedor(uuid).orElseThrow(
-                    () -> new ProveedorNotFound(uuid)
-            );
+            return UUID.fromString(uuid);
         } catch (IllegalArgumentException e) {
-            throw new ProveedorBadRequest(idProveedor + " is not a valid UUID");
+            throw new SupplierBadRequest(uuid + " is not a valid UUID");
         }
     }
 
+
     @Transactional
     @Override
-    @CachePut(key = "#result.idProveedor")
-    public Proveedor save(ProveedorCreateDto proveedorCreateDto) {
+    @CachePut(key = "#result.id")
+    public SupplierResponseDto save(SupplierCreateDto proveedorCreateDto) {
         categoryService.findById(proveedorCreateDto.category().getUuid());
-        Proveedor proveedorToSave = proveedorMapper.toProveedor(proveedorCreateDto, UUID.randomUUID());
+        var proveedorToSave = proveedorMapper.toProveedor(proveedorCreateDto);
         sendNotification(Notification.Tipo.CREATE, proveedorToSave);
-        return proveedorRepository.save(proveedorToSave);
+        return proveedorMapper.toProveedorDto(proveedorRepository.save(proveedorToSave));
     }
 
 
     @Override
     @CachePut(key = "#idProveedor")
-    public Proveedor update(ProveedorUpdateDto proveedorUpdateDto, String idProveedor) {
-        Proveedor proveedorActual = findByUUID(idProveedor);
-        sendNotification(Notification.Tipo.UPDATE, proveedorActual);
-        return proveedorRepository.save(proveedorMapper.toProveedor(proveedorUpdateDto, proveedorActual));
+    public SupplierResponseDto update(SupplierUpdateDto proveedorUpdateDto, String idProveedor) {
+        UUID uuid = getUUID(idProveedor);
+        var proveedorToUpdate = proveedorRepository.findById(uuid)
+                .orElseThrow(() -> new SupplierNotFound(getUUID(idProveedor)));
+        var proveedor = proveedorMapper.toProveedor(proveedorUpdateDto, proveedorToUpdate);
+        sendNotification(Notification.Tipo.UPDATE, proveedor);
+        return proveedorMapper.toProveedorDto(proveedorRepository.save(proveedor));
     }
 
     @Transactional
     @Override
     @CacheEvict(key = "#idProveedor")
     public void deleteByUUID(String idProveedor) {
-        Proveedor proveedor = findByUUID(idProveedor);
-        proveedorRepository.deleteByIdProveedor(UUID.fromString(idProveedor));
-        sendNotification(Notification.Tipo.DELETE, proveedor);
+        UUID uuid = getUUID(idProveedor);
+        Supplier proveedorToDelete = proveedorRepository.findById(uuid)
+                .orElseThrow(() -> new SupplierNotFound(uuid));
+        sendNotification(Notification.Tipo.DELETE, proveedorToDelete);
+        proveedorRepository.deleteById(uuid);
     }
 
-    void sendNotification(Notification.Tipo tipo, Proveedor data) {
+    void sendNotification(Notification.Tipo tipo, Supplier data) {
         if (webSocketService == null) {
             log.warn("WebSocket service is not configured");
             webSocketService = this.webSocketConfig.webSocketProveedorHandler();
         }
         try {
-            Notification<ProveedoresNotificationDto> notificacion = new Notification<>(
+            Notification<SuppliersNotificationDto> notificacion = new Notification<>(
                     "PROVEEDORES",
                     tipo,
                     proveedoresNotificationMapper.toProveedoresNotificationDto(data),
