@@ -16,8 +16,6 @@ public interface ClientService {
 
     ClientResponse findById(Long id);
 
-    ClientResponse findByUsername(String name);
-
     ClientResponse save(ClientCreateRequest productoCreateRequest);
 
     ClientResponse update(Long id, ClientUpdateRequest productoUpdateRequest);

@@ -59,15 +59,19 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public Page<ClientResponse> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable) {
 
-        Specification<Client> specUsername = (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("username"), "%" + username.orElse("") + "%");
+        Specification<Client> specUsername = (root, query, criteriaBuilder) ->
+                username.map(m -> criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), "%" + m.toLowerCase() + "%"))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Client> specIsDeleted = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isDeleted"), isDeleted.orElse(false));
+        Specification<Client> specIsDeleted = (root, query, criteriaBuilder) ->
+                isDeleted.map(d -> criteriaBuilder.equal(root.get("isDeleted"), d))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
         Specification<Client> specs = Specification.where(specUsername).and(specIsDeleted);
 
         Page<ClientResponse> response = clientRepository.findAll(specs, pageable).map(clientMapper::toClientResponse);
 
-//        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response.getContent()));
+//        sendNotification(Notification.Tipo.READ, response.getContent().stream().map(clientMapper::toClient).toList());
 
         return response;
 
@@ -79,13 +83,6 @@ public class ClientServiceImpl implements ClientService{
         ClientResponse response = clientMapper.toClientResponse(clientRepository.findByIdAndIsDeletedFalse(id).orElseThrow(
                 () -> new ClientNotFound(id)
         ));
-        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response));
-        return response;
-    }
-
-    @Override
-    public ClientResponse findByUsername(String username) {
-        ClientResponse response = clientMapper.toClientResponse(clientRepository.findByUsernameAndIsDeletedFalse(username));
         sendNotification(Notification.Tipo.READ, clientMapper.toClient(response));
         return response;
     }
@@ -156,7 +153,7 @@ public class ClientServiceImpl implements ClientService{
     @CachePut(key = "#id")
     public void deleteById(Long id) {
         findById(id);
-        clientRepository.logicalDeleteById(id);
+        clientRepository.deleteById(id);
     }
 
     @Override

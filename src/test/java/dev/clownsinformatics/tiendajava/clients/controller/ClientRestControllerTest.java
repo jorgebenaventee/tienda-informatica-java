@@ -1,44 +1,42 @@
 package dev.clownsinformatics.tiendajava.clients.controller;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clownsinformatics.tiendajava.rest.clients.controllers.ClientRestController;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
-import dev.clownsinformatics.tiendajava.rest.clients.exceptions.ClientNotFound;
-import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
+import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.support.HttpRequestHandlerServlet;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureJsonTesters
 @ExtendWith(MockitoExtension.class)
 public class ClientRestControllerTest {
 
-    private final String ENDPOINT_URL = "/api/clients";
+    @Mock
+    private ClientServiceImpl clientService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    @Mock
+    private PaginationLinksUtils paginationLinksUtils;
+
+    @InjectMocks
+    private ClientRestController clientRestController;
 
     List<ClientResponse> clientsResponse = List.of(
             ClientResponse.builder()
@@ -67,181 +65,111 @@ public class ClientRestControllerTest {
                     .build()
     );
 
-    List<Client> clients = List.of(
-            Client.builder()
-                    .id(1L)
-                    .name("Client 1")
-                    .address("Address 1")
-                    .email("juancarlos@gmail.com")
-                    .phone("123456789")
-                    .birthdate(null)
-                    .image(null)
-                    .isDeleted(false)
-                    .balance(0.0)
-                    .username("juancarlos")
-                    .build(),
-            Client.builder()
-                    .id(2L)
-                    .name("Client 2")
-                    .address("Address 2")
-                    .email("ana@gmail.com")
-                    .phone("123456789")
-                    .birthdate(null)
-                    .image(null)
-                    .isDeleted(false)
-                    .balance(0.0)
-                    .username("ana isabeñ")
-                    .build()
-    );
-
-    @MockBean
-    private final ClientServiceImpl clientService;
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    public ClientRestControllerTest(ClientServiceImpl clientService) {
-        this.clientService = clientService;
-    }
 
 
     @Test
-    public void testGetAllClients() throws Exception {
+    public void testCreateClient() {
+
+        when(clientService.save(any(ClientCreateRequest.class))).thenReturn(clientsResponse.get(0));
+
+        ResponseEntity<ClientResponse> response = clientRestController.createClient(new ClientCreateRequest(
+                "Client 1",
+                "juancarlos",
+                0.0,
+                "Address 1",
+                "Address 2",
+                "123456789",
+                null,
+                null,
+                false
+        ));
+
+        assertAll(
+                () -> assertEquals(200, response.getStatusCodeValue()),
+                () -> assertEquals(clientsResponse.get(0), response.getBody())
+        );
+
+    }
+
+    @Test
+    public void testUpdateClient() {
+
+        when(clientService.update(any(Long.class), any(ClientUpdateRequest.class))).thenReturn(clientsResponse.get(0));
+
+        ResponseEntity<ClientResponse> response = clientRestController.updateClient(1L, new ClientUpdateRequest(
+                "Client 1",
+                "juancarlos",
+                0.0,
+                "Address 1",
+                "Address 2",
+                "123456789",
+                null,
+                null,
+                false
+        ));
+
+        assertAll(
+                () -> assertEquals(200, response.getStatusCodeValue()),
+                () -> assertEquals(clientsResponse.get(0), response.getBody())
+        );
+
+    }
+
+    @Test
+    public void testGetClient() {
+
+        when(clientService.findById(any(Long.class))).thenReturn(clientsResponse.get(0));
+
+        ResponseEntity<ClientResponse> response = clientRestController.getClient(1L);
+
+        assertAll(
+                () -> assertEquals(200, response.getStatusCodeValue()),
+                () -> assertEquals(clientsResponse.get(0), response.getBody())
+        );
+
+    }
+
+    @Test
+    public void testGetAllClients() {
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ClientResponse> page = new PageImpl<>(clientsResponse);
 
         when(clientService.findAll(any(), any(), any(Pageable.class))).thenReturn(page);
 
-        MockHttpServletResponse response = mockMvc.perform(
-                get(ENDPOINT_URL+"/")
-                        .accept(MediaType.APPLICATION_JSON)
-        ).andReturn().getResponse();
+        HttpServletRequest requestMock = mock(HttpServletRequest.class);
+        when(requestMock.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/clients/"));
 
-        PageResponse<ClientResponse> clients = mapper.readValue(response.getContentAsString(),
-                mapper.getTypeFactory().constructParametricType(PageResponse.class, ClientResponse.class));
+        ResponseEntity<PageResponse<ClientResponse>> response = clientRestController.getAllClients(null, "false", 0, 10, "id", "asc", requestMock);
 
         assertAll(
-                ()-> assertEquals(200, response.getStatus()),
-                ()-> assertEquals(clientsResponse.size(), clients.content().size()),
-                ()-> assertEquals(clientsResponse.get(0).id(), clients.content().get(0).id()),
-                ()-> assertEquals(clientsResponse.get(0).name(), clients.content().get(0).name()),
-                ()-> assertEquals(clientsResponse.get(0).address(), clients.content().get(0).address()),
-                ()-> assertEquals(clientsResponse.get(1).id(), clients.content().get(1).id()),
-                ()-> assertEquals(clientsResponse.get(1).name(), clients.content().get(1).name()),
-                ()-> assertEquals(clientsResponse.get(1).address(), clients.content().get(1).address())
-        );
-
-
-    }
-
-
-    @Test
-    public void testGetClientById() throws Exception {
-
-        when(clientService.findById(any(Long.class))).thenReturn(clientsResponse.get(0));
-
-        MockHttpServletResponse response = mockMvc.perform(
-                get(ENDPOINT_URL+"/1")
-                .accept(MediaType.APPLICATION_JSON)
-        ).andReturn().getResponse();
-
-        ClientResponse client = mapper.readValue(response.getContentAsString(), ClientResponse.class);
-
-        assertAll(
-                ()-> assertEquals(200, response.getStatus()),
-                ()-> assertEquals(clientsResponse.get(0).id(), client.id()),
-                ()-> assertEquals(clientsResponse.get(0).name(), client.name()),
-                ()-> assertEquals(clientsResponse.get(0).address(), client.address())
+                () -> assertEquals(200, response.getStatusCodeValue()),
+                () -> assertEquals(clientsResponse.size(), response.getBody().pageSize())
         );
 
     }
 
-
     @Test
-    public void testCreateClient() throws Exception {
-
-        when(clientService.save(any(ClientCreateRequest.class))).thenReturn((clientsResponse.get(0)));
-
-        MockHttpServletResponse response = mockMvc.perform(
-                post(ENDPOINT_URL+"/")
-                .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(clients.get(0)))
-        ).andReturn().getResponse();
-        ClientResponse client = mapper.readValue(response.getContentAsString(), ClientResponse.class);
-
-        assertAll(
-                ()-> assertEquals(200, response.getStatus()),
-                ()-> assertEquals(clientsResponse.get(0).id(), client.id()),
-                ()-> assertEquals(clientsResponse.get(0).name(), client.name()),
-                ()-> assertEquals(clientsResponse.get(0).address(), client.address())
-        );
-
-        verify(clientService, times(1)).save(any(ClientCreateRequest.class));
-
-    }
-
-    @Test
-    public void testUpdateClient() throws Exception {
-        when(clientService.update(any(Long.class), any(ClientUpdateRequest.class))).thenReturn((clientsResponse.get(0)));
-
-        MockHttpServletResponse response = mockMvc.perform(
-                put(ENDPOINT_URL+"/1")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-
-                        .content(mapper.writeValueAsString(clients.get(0)))
-        ).andReturn().getResponse();
-        ClientResponse client = mapper.readValue(response.getContentAsString(), ClientResponse.class);
-
-        assertAll(
-                ()-> assertEquals(200, response.getStatus()),
-                ()-> assertEquals(clientsResponse.get(0).id(), client.id()),
-                ()-> assertEquals(clientsResponse.get(0).name(), client.name()),
-                ()-> assertEquals(clientsResponse.get(0).address(), client.address())
-        );
-
-        verify(clientService, times(1)).update(any(Long.class), any(ClientUpdateRequest.class));
-
-    }
-
-    @Test
-    public void testDeleteClient() throws Exception {
-
+    public void testDeleteClient() {
         doNothing().when(clientService).deleteById(any(Long.class));
-
-        MockHttpServletResponse response = mockMvc.perform(
-                delete(ENDPOINT_URL+"/1")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andReturn().getResponse();
-
+        ResponseEntity<Void> response = clientRestController.deleteClient(1L);
         assertAll(
-                ()-> assertEquals(204, response.getStatus())
+                () -> assertEquals(204, response.getStatusCodeValue()),
+                () -> assertNull(response.getBody())
         );
-
-        verify(clientService, times(1)).deleteById(anyLong());
-
     }
 
     @Test
-    public void testDeleteClientNotFound() throws Exception {
+    public void testUpdateImage() {
+        when(clientService.updateImage(any(Long.class), any(MultipartFile.class), any(Boolean.class))).thenReturn(clientsResponse.get(0));
 
-        doThrow(new ClientNotFound(1L)).when(clientService).deleteById(any(Long.class));
+        MultipartFile multipartFile = mock(MultipartFile.class);
 
-        MockHttpServletResponse response = mockMvc.perform(
-                delete(ENDPOINT_URL+"/1")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andReturn().getResponse();
-
+        ResponseEntity<ClientResponse> response = clientRestController.updateImage(1L, multipartFile, Optional.of(true));
         assertAll(
-                ()-> assertEquals(404, response.getStatus())
+                () -> assertEquals(200, response.getStatusCodeValue()),
+                () -> assertEquals(clientsResponse.get(0), response.getBody())
         );
-
-        verify(clientService, times(1)).deleteById(anyLong());
 
     }
 

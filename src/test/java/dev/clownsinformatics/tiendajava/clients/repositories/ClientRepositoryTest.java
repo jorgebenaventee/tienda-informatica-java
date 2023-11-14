@@ -96,7 +96,7 @@ public class ClientRepositoryTest {
     @Test
     void deleteByIdTest() {
 
-        clientRepository.logicalDeleteById(1L);
+        clientRepository.deleteById(1L);
 
         Client client = clientRepository.findById(1L).orElse(null);
 

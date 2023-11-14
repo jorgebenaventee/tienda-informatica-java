@@ -25,20 +25,6 @@ public class ClientMapper {
                 .build();
     }
 
-    public Client toClient(ClientUpdateRequest clientUpdateRequest) {
-        return Client.builder()
-                .name(clientUpdateRequest.name())
-                .username(clientUpdateRequest.username())
-                .email(clientUpdateRequest.email())
-                .address(clientUpdateRequest.address())
-                .phone(clientUpdateRequest.phone())
-                .birthdate(clientUpdateRequest.birthdate())
-                .image(clientUpdateRequest.image())
-                .balance(clientUpdateRequest.balance())
-                .isDeleted(clientUpdateRequest.isDeleted() != null ? clientUpdateRequest.isDeleted() : Boolean.FALSE)
-                .build();
-    }
-
     public Client toClient(ClientResponse clientResponse) {
         return Client.builder()
                 .name(clientResponse.name())

@@ -25,7 +25,7 @@ public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecif
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Client c SET c.isDeleted = true WHERE c.id = :id")
-    void logicalDeleteById(@Param("id") Long id);
+    void deleteById(@Param("id") Long id);
 
 
 }
