@@ -3,18 +3,25 @@ package dev.clownsinformatics.tiendajava.rest.categories.controllers;
 import dev.clownsinformatics.tiendajava.rest.categories.dto.CategoryResponseDto;
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService;
+import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
+import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,15 +29,28 @@ import java.util.UUID;
 @Slf4j
 public class CategoryRestController {
     private final CategoryService categoryService;
+    private final PaginationLinksUtils paginationLinksUtils;
 
     @Autowired
-    public CategoryRestController(CategoryService categoryService) {
+    public CategoryRestController(CategoryService categoryService, PaginationLinksUtils paginationLinksUtils) {
         this.categoryService = categoryService;
+        this.paginationLinksUtils = paginationLinksUtils;
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAll(@RequestParam(required = false) String name) {
-        return ResponseEntity.ok(categoryService.findAll(name));
+    public ResponseEntity<PageResponse<Category>> getAll(@RequestParam(required = false) Optional<String> name,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "uuid") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String direction,
+                                                         HttpServletRequest request
+    ) {
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
+        Page<Category> categoriaPage = categoryService.findAll(name, PageRequest.of(page, size, sort));
+        return ResponseEntity.ok()
+                .header("link", paginationLinksUtils.createLinkHeader(categoriaPage, uriBuilder))
+                .body(PageResponse.of(categoriaPage, sortBy, direction));
     }
 
     @GetMapping("/{id}")

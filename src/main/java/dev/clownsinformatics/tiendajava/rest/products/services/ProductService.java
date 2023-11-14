@@ -3,25 +3,26 @@ package dev.clownsinformatics.tiendajava.rest.products.services;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductResponseDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.products.models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductService {
 
     UUID getUUID(String id);
 
-    List<Product> findAll(Double weight, String name);
+    Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Pageable pageable);
 
-    Product findById(String id);
+    ProductResponseDto findById(String id);
 
     ProductResponseDto save(ProductCreateDto productCreateDto);
 
     ProductResponseDto update(String id, ProductUpdateDto productUpdateDto);
 
-    Product updateImage(String id, MultipartFile image);
+    ProductResponseDto updateImage(String id, MultipartFile image);
 
     void deleteById(String id);
 }

@@ -4,7 +4,6 @@ package dev.clownsinformatics.tiendajava.rest.clients.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -23,7 +22,6 @@ public record ClientCreateRequest(
         ) String phone,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
         String image) {
-
 
 
 }

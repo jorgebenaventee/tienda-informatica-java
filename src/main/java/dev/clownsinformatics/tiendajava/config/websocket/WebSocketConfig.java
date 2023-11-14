@@ -12,16 +12,27 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketProveedorHandler(), "/ws/proveedor");
+        registry.addHandler(webSocketProductHandler(), "/ws/product");
+        registry.addHandler(webSocketCategoryHandler(), "/ws/category");
+        registry.addHandler(webSocketSupplierHandler(), "/ws/suppliers");
         registry.addHandler(webSocketEmployeeHandler(), "/ws/employee");
     }
 
-    //ws://localhost:8080/ws/proveedor
+    @Bean
+    public WebSocketHandler webSocketSupplierHandler() {
+        return new WebSocketHandler("Suppliers");
+    }
 
     @Bean
-    public WebSocketHandler webSocketProveedorHandler() {
-        return new WebSocketHandler("Proveedor");
+    public WebSocketHandler webSocketProductHandler() {
+        return new WebSocketHandler("Product");
     }
+
+    @Bean
+    public WebSocketHandler webSocketCategoryHandler() {
+        return new WebSocketHandler("Category");
+    }
+
 
     @Bean
     public WebSocketHandler webSocketEmployeeHandler() {

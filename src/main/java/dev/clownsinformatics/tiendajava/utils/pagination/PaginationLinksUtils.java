@@ -1,10 +1,8 @@
 package dev.clownsinformatics.tiendajava.utils.pagination;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-
 
 @Component
 public class PaginationLinksUtils {

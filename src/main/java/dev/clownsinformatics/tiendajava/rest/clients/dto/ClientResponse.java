@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 
-
 public record ClientResponse(
         Long id,
         @NotBlank(message = "El usuario no puede estar vacio.") String username,
@@ -19,8 +18,6 @@ public record ClientResponse(
         @NotBlank(message = "El telefono no puede estar vacio.") String phone,
         @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
         String image, Boolean isDeleted) {
-
-
 
 
 }
