@@ -23,6 +23,10 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation("org.springframework.boot:spring-boot-starter-cache:3.1.0")
@@ -30,9 +34,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
-    implementation("com.h2database:h2:2.1.214")
+    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-websocket:3.0.4")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 }
 
 tasks.withType<Test> {

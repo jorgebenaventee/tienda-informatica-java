@@ -43,9 +43,9 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierMapper proveedorMapper;
     private final CategoryService categoryService;
     private final WebSocketConfig webSocketConfig;
-    private WebSocketHandler webSocketService;
     private final SuppliersNotificationMapper proveedoresNotificationMapper;
     private final ObjectMapper mapper;
+    private WebSocketHandler webSocketService;
 
     @Autowired
     public SupplierServiceImpl(SupplierRepository proveedoresRepository, SupplierMapper proveedorMapper, CategoryService categoryService, WebSocketConfig webSocketConfig, SuppliersNotificationMapper proveedoresNotificationMapper, ObjectMapper mapper) {

@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Slf4j
-public class WebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, WebSocketSender{
+public class WebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, WebSocketSender {
     private final String entity;
 
     private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
@@ -50,6 +50,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
             }
         }
     }
+
     @Scheduled(fixedRate = 1000)
     @Override
     public void sendPeriodicMessages() throws IOException {

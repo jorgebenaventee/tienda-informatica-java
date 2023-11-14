@@ -17,6 +17,7 @@ public record PageResponse<T>(
         String sortBy,
         String direction
 ) {
+
     public static <T> PageResponse<T> of(Page<T> page, String sortBy, String direction) {
         return new PageResponse<>(
                 page.getContent(),
