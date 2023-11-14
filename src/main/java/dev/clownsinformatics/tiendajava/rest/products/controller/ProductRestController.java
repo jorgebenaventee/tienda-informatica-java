@@ -64,7 +64,7 @@ public class ProductRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable String id) {
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable String id) {
         log.info("Searching product with id: {}", id);
         return ResponseEntity.ok(productService.findById(id));
     }
@@ -88,7 +88,7 @@ public class ProductRestController {
     }
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Product> patchProductImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ProductResponseDto> patchProductImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         log.info("Updating product image with id: {}", id);
         return ResponseEntity.ok(productService.updateImage(id, file));
     }

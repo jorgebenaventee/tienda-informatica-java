@@ -327,7 +327,7 @@ class ProductRestControllerTest {
     @Test
     void getProductById() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + idProduct1;
-        when(productService.findById(idProduct1.toString())).thenReturn(product1);
+        when(productService.findById(idProduct1.toString())).thenReturn(productResponseDto1);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -788,7 +788,7 @@ class ProductRestControllerTest {
     @Test
     void patchProductImage() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + idProduct1 + "/image";
-        when(productService.updateImage(anyString(), any(MultipartFile.class))).thenReturn(product1);
+        when(productService.updateImage(anyString(), any(MultipartFile.class))).thenReturn(productResponseDto1);
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",

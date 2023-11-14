@@ -286,20 +286,23 @@ class ProductServiceImplTest {
     @Test
     void findById() {
         when(repository.findById(idProduct1)).thenReturn(Optional.of(product1));
-        Product actualProduct = service.findById(idProduct1.toString());
+        when(mapper.toProductResponseDto(product1)).thenReturn(productResponseDto1);
+
+        ProductResponseDto actualProduct = service.findById(idProduct1.toString());
         assertAll(
-                () -> assertEquals(idProduct1, actualProduct.getId()),
-                () -> assertEquals("Product 1", actualProduct.getName()),
-                () -> assertEquals(2.5, actualProduct.getWeight()),
-                () -> assertEquals(50.0, actualProduct.getPrice()),
-                () -> assertEquals("imagen1.jpg", actualProduct.getImg()),
-                () -> assertEquals(10, actualProduct.getStock()),
-                () -> assertEquals("Descripción del producto 1", actualProduct.getDescription()),
-                () -> assertNotNull(actualProduct.getCreatedAt()),
-                () -> assertNotNull(actualProduct.getUpdatedAt()),
-                () -> assertEquals(category1, actualProduct.getCategory())
+                () -> assertEquals(idProduct1, actualProduct.id()),
+                () -> assertEquals("Product 1", actualProduct.name()),
+                () -> assertEquals(2.5, actualProduct.weight()),
+                () -> assertEquals(50.0, actualProduct.price()),
+                () -> assertEquals("imagen1.jpg", actualProduct.img()),
+                () -> assertEquals(10, actualProduct.stock()),
+                () -> assertEquals("Descripcion del producto 1", actualProduct.description()),
+                () -> assertNotNull(actualProduct.createdAt()),
+                () -> assertNotNull(actualProduct.updatedAt()),
+                () -> assertEquals(category1, actualProduct.category())
         );
         verify(repository, times(1)).findById(idProduct1);
+        verify(mapper, times(1)).toProductResponseDto(product1);
     }
 
     @Test
@@ -451,16 +454,18 @@ class ProductServiceImplTest {
         when(storageService.store(multipartFile)).thenReturn(imageUrl);
         when(storageService.getUrl(imageUrl)).thenReturn(imageUrl);
         when(repository.save(any(Product.class))).thenReturn(product1);
+        when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
         doNothing().when(webSocketHandlerMock).sendMessage(any());
 
-        Product updatedProduct = service.updateImage(idProduct1.toString(), multipartFile);
+        ProductResponseDto updatedProduct = service.updateImage(idProduct1.toString(), multipartFile);
 
         // Assert
-        assertEquals(imageUrl, updatedProduct.getImg());
+        assertEquals(imageUrl, updatedProduct.img());
 
         verify(repository, times(1)).save(any(Product.class));
         verify(storageService, times(1)).delete(product1.getImg());
         verify(storageService, times(1)).store(multipartFile);
+        verify(storageService, times(1)).getUrl(imageUrl);
     }
 
     @Test

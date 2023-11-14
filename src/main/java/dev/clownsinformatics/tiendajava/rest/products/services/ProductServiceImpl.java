@@ -101,9 +101,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Cacheable
-    public Product findById(String id) {
+    public ProductResponseDto findById(String id) {
         log.info("Searching product by id: " + id);
-        return productRepository.findById(getUUID(id)).orElseThrow(() -> new ProductNotFound(id));
+        Product product = productRepository.findById(getUUID(id)).orElseThrow(() -> new ProductNotFound(id));
+        return productMapper.toProductResponseDto(product);
     }
 
     private Category findCategory(String categoryName) {
@@ -118,8 +119,8 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable
     public ProductResponseDto save(ProductCreateDto productCreateDto) {
         log.info("Saving product: " + productCreateDto);
-        var category = findCategory(productCreateDto.category().getName());
-        var productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
+        Category category = findCategory(productCreateDto.category().getName());
+        Product productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
         onChange(Notification.Tipo.CREATE, productSaved);
         return productMapper.toProductResponseDto(productSaved);
     }
@@ -138,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
             category = actualProduct.getCategory();
         }
 
-        var productUpdated = productRepository.save(productMapper.toProduct(productUpdateDto, actualProduct, category));
+        Product productUpdated = productRepository.save(productMapper.toProduct(productUpdateDto, actualProduct, category));
         onChange(Notification.Tipo.UPDATE, productUpdated);
         return productMapper.toProductResponseDto(productUpdated);
     }
@@ -146,16 +147,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @CachePut(key = "#id")
     @Transactional
-    public Product updateImage(String id, MultipartFile file) {
+    public ProductResponseDto updateImage(String id, MultipartFile file) {
         if (!file.isEmpty()) {
             String image = storageService.store(file);
             String urlImage = storageService.getUrl(image);
 
-            Product product = findById(id);
+            Product product = productRepository.findById(getUUID(id)).orElseThrow(() -> new ProductNotFound(id));
             storageService.delete(product.getImg());
             product.setImg(urlImage);
             onChange(Notification.Tipo.UPDATE, product);
-            return productRepository.save(product);
+            Product productSaved = productRepository.save(product);
+            return productMapper.toProductResponseDto(productSaved);
         } else {
             throw new ProductBadRequest("Image is empty");
         }

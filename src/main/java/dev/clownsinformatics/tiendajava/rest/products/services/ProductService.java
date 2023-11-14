@@ -17,13 +17,13 @@ public interface ProductService {
 
     Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Pageable pageable);
 
-    Product findById(String id);
+    ProductResponseDto findById(String id);
 
     ProductResponseDto save(ProductCreateDto productCreateDto);
 
     ProductResponseDto update(String id, ProductUpdateDto productUpdateDto);
 
-    Product updateImage(String id, MultipartFile image);
+    ProductResponseDto updateImage(String id, MultipartFile image);
 
     void deleteById(String id);
 }
