@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.rest.employees.services;
 
+import dev.clownsinformatics.tiendajava.config.websocket.WebSocketConfig;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.CreateEmployeeRequestDto;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.EmployeeResponseDto;
 import dev.clownsinformatics.tiendajava.rest.employees.dto.UpdateEmployeeRequestDto;
@@ -32,6 +33,8 @@ class EmployeeServiceImplTest {
     private EmployeeMapper employeeMapper;
     @Mock
     private EmployeeRepository employeeRepository;
+    @Mock
+    private WebSocketConfig webSocketConfig;
     @InjectMocks
     private EmployeeServiceImpl employeeService;
     List<Employee> employees = List.of(
