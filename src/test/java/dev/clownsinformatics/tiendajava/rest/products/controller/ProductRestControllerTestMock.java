@@ -15,12 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -295,9 +294,10 @@ class ProductRestControllerTestMock {
 
     @Test
     void patchProductImage() {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "imagen3.jpg", "image/jpeg", "imagen3.jpg".getBytes());
         ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
-        when(productService.updateImage(anyString(), any())).thenReturn(productResponseDto);
-        ResponseEntity<ProductResponseDto> response = productRestController.patchProductImage(idProduct1.toString(), null);
+        when(productService.updateImage(anyString(), eq(mockFile))).thenReturn(productResponseDto);
+        ResponseEntity<ProductResponseDto> response = productRestController.patchProductImage(idProduct1.toString(), mockFile);
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(productResponseDto.name(), response.getBody().name()),
@@ -308,7 +308,7 @@ class ProductRestControllerTestMock {
                 () -> assertEquals(productResponseDto.description(), response.getBody().description()),
                 () -> assertEquals(productResponseDto.category(), response.getBody().category())
         );
-        verify(productService, times(1)).updateImage(idProduct1.toString(), null);
+        verify(productService, times(1)).updateImage(idProduct1.toString(), mockFile);
     }
 
     @Test
