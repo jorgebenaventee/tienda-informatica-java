@@ -233,7 +233,7 @@ public class ClientServiceTest {
                 "juancarlos",
                 "si",
                 "23123123",
-                LocalDate.now(),
+                LocalDate.now().toString(),
                 "prueba",
                 false
         );
@@ -265,7 +265,7 @@ public class ClientServiceTest {
                 "juancarlos",
                 "si",
                 "23123123",
-                LocalDate.now(),
+                LocalDate.now().toString(),
                 "imagen.jpg",
                 false
         );

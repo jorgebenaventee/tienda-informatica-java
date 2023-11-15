@@ -7,6 +7,8 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class ClientMapper {
 
@@ -18,7 +20,7 @@ public class ClientMapper {
                 .email(clientCreateRequest.email())
                 .address(clientCreateRequest.address())
                 .phone(clientCreateRequest.phone())
-                .birthdate(clientCreateRequest.birthdate())
+                .birthdate(LocalDate.parse(clientCreateRequest.birthdate()))
                 .image(clientCreateRequest.image())
                 .balance(clientCreateRequest.balance())
                 .isDeleted(clientCreateRequest.isDeleted() != null ? clientCreateRequest.isDeleted() : Boolean.FALSE)

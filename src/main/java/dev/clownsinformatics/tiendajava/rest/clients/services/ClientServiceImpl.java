@@ -130,7 +130,7 @@ public class ClientServiceImpl implements ClientService{
             clientToSave.setPhone(productoUpdateRequest.phone());
         }
         if (productoUpdateRequest.birthdate() != null){
-            clientToSave.setBirthdate(productoUpdateRequest.birthdate());
+            clientToSave.setBirthdate(LocalDate.parse(productoUpdateRequest.birthdate()));
         }
         if (productoUpdateRequest.image() != null){
             clientToSave.setImage(productoUpdateRequest.image());

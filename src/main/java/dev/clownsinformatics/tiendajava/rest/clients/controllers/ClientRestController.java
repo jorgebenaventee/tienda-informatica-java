@@ -15,11 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -32,7 +37,6 @@ public class ClientRestController {
     private final PaginationLinksUtils paginationLinksUtils;
 
 
-
     @Autowired
     public ClientRestController(ClientServiceImpl clientService, PaginationLinksUtils paginationLinksUtils) {
         this.clientService = clientService;
@@ -40,13 +44,14 @@ public class ClientRestController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ClientResponse> createClient(@RequestBody @Valid ClientCreateRequest clientCreateRequest) {
+    public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientCreateRequest clientCreateRequest) {
         log.info("Creating client");
-        return ResponseEntity.ok(clientService.save(clientCreateRequest));
+        ClientResponse clientResponse = clientService.save(clientCreateRequest);
+        return ResponseEntity.ok(clientResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @RequestBody @Valid ClientUpdateRequest clientUpdateRequest) {
+    public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest clientUpdateRequest) {
         log.info("Updating client");
         return ResponseEntity.ok(clientService.update(id, clientUpdateRequest));
     }
@@ -59,8 +64,8 @@ public class ClientRestController {
 
     @GetMapping("/")
     public ResponseEntity<PageResponse<ClientResponse>> getAllClients(@RequestParam(required = false) Optional<String> username, @RequestParam(defaultValue = "false") String isDeleted,
-                                                        @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
-                                                        @RequestParam(defaultValue = "asc") String direction, HttpServletRequest request) {
+                                                                      @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
+                                                                      @RequestParam(defaultValue = "asc") String direction, HttpServletRequest request) {
         log.info("Getting all clients");
 
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -86,5 +91,17 @@ public class ClientRestController {
         return ResponseEntity.ok(clientService.updateImage(id, file, withUrl.orElse(true)));
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 
 }

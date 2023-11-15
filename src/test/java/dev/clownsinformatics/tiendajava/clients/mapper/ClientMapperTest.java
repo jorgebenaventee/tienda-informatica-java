@@ -6,6 +6,8 @@ import dev.clownsinformatics.tiendajava.rest.clients.mappers.ClientMapper;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -72,7 +74,7 @@ public class ClientMapperTest {
                 "",
                 "",
                 null,
-                null,
+                LocalDate.now().toString(),
                 "",
                 false
         );
@@ -96,7 +98,7 @@ public class ClientMapperTest {
                 "",
                 "",
                 null,
-                null,
+                LocalDate.now().toString(),
                 "",
                 false
         );

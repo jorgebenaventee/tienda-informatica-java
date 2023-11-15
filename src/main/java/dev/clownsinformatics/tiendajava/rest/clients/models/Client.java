@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.rest.clients.models;
 
 
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,25 +28,22 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El usuario no puede estar vacio.")
+    @NotBlank(message = "User can not be empty.")
     private String username;
 
-    @NotBlank(message = "El nombre no puede estar vacio.")
+    @NotBlank(message = "Name can not be empty.")
     private String name;
 
-    @PositiveOrZero(message = "El balance no puede ser negativo.")
+    @PositiveOrZero(message = "Balance must be positive or zero.")
     private Double balance;
 
     @NotBlank(message = "El email no puede estar vacio.")
     private String email;
 
-    @NotBlank(message = "La direccion no puede estar vacia.")
+    @NotBlank(message = "Address can not be empty.")
     private String address;
 
-    @NotBlank(message = "El telefono no puede estar vacio.") @NumberFormat(
-            style = NumberFormat.Style.NUMBER,
-            pattern = "########"
-    )
+    @NotBlank(message = "Phone number must have 9 digits.") @Pattern(regexp = "^[0-9]{9}$", message = "Phone number must have 9 digits.")
     private String phone;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

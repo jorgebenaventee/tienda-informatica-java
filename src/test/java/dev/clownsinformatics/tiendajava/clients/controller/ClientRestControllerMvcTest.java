@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.clients.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
@@ -23,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,7 +78,7 @@ public class ClientRestControllerMvcTest {
                     .address("Address 1")
                     .email("juancarlos@gmail.com")
                     .phone("123456789")
-                    .birthdate(null)
+                    .birthdate(LocalDate.now())
                     .image(null)
                     .isDeleted(false)
                     .balance(0.0)
@@ -87,7 +90,7 @@ public class ClientRestControllerMvcTest {
                     .address("Address 2")
                     .email("ana@gmail.com")
                     .phone("123456789")
-                    .birthdate(null)
+                    .birthdate(LocalDate.now())
                     .image(null)
                     .isDeleted(false)
                     .balance(0.0)
@@ -197,11 +200,23 @@ public class ClientRestControllerMvcTest {
 
         when(clientService.save(any(ClientCreateRequest.class))).thenReturn((clientsResponse.get(0)));
 
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
         MockHttpServletResponse response = mockMvc.perform(
                 post(ENDPOINT_URL+"/")
                 .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(clients.get(0)))
+                .content(mapper.writeValueAsString(clientCreateRequest))
         ).andReturn().getResponse();
         ClientResponse client = mapper.readValue(response.getContentAsString(), ClientResponse.class);
 
@@ -216,19 +231,230 @@ public class ClientRestControllerMvcTest {
 
     }
 
-//    @Test
-//    public void testCreateClientWithBad
+    @Test
+    public void testCreateClientWithBadPhone() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "Address 1",
+                "12345678",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"phone\":\"Phone number must have 9 digits.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBadEmail() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juangmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"email\":\"Email must have a valid format.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBadName() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "",
+                0.0,
+                "juan@gmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"name\":\"Name can not be empty.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBalanceNegative() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                -1.0,
+                "juan@gmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"balance\":\"Balance must be positive or zero.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBadUsername() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"username\":\"User can not be empty.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBadAddress() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"address\":\"Address can not be empty.\"}", response.getContentAsString())
+        );
+
+    }
+
+    @Test
+    public void testCreateClientWithBadBirthdate() throws Exception {
+
+        ClientCreateRequest clientCreateRequest = new ClientCreateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "asdasdasd",
+                "123456789",
+                "22-22-22",
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                post(ENDPOINT_URL+"/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientCreateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(400, response.getStatus()),
+                ()-> assertEquals("{\"birthdate\":\"Birthday must have this format yyyy-MM-dd.\"}", response.getContentAsString())
+        );
+
+    }
 
     @Test
     public void testUpdateClient() throws Exception {
         when(clientService.update(any(Long.class), any(ClientUpdateRequest.class))).thenReturn((clientsResponse.get(0)));
 
+        ClientUpdateRequest clientUpdateRequest = new ClientUpdateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juangmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
         MockHttpServletResponse response = mockMvc.perform(
                 put(ENDPOINT_URL+"/1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-
-                        .content(mapper.writeValueAsString(clients.get(0)))
+                        .content(mapper.writeValueAsString(clientUpdateRequest))
         ).andReturn().getResponse();
         ClientResponse client = mapper.readValue(response.getContentAsString(), ClientResponse.class);
 
