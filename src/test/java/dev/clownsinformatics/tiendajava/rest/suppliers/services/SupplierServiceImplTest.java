@@ -33,8 +33,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
-    
-    private LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now();
 
     private final Category category1 = Category.builder()
             .uuid(UUID.randomUUID())
