@@ -7,6 +7,8 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class ClientMapper {
 
@@ -18,22 +20,26 @@ public class ClientMapper {
                 .email(clientCreateRequest.email())
                 .address(clientCreateRequest.address())
                 .phone(clientCreateRequest.phone())
-                .birthdate(clientCreateRequest.birthdate())
+                .birthdate(LocalDate.parse(clientCreateRequest.birthdate()))
                 .image(clientCreateRequest.image())
                 .balance(clientCreateRequest.balance())
+                .isDeleted(clientCreateRequest.isDeleted() != null ? clientCreateRequest.isDeleted() : Boolean.FALSE)
                 .build();
     }
 
-    public Client toClient(ClientUpdateRequest clientUpdateRequest) {
+    public Client toClient(ClientResponse clientResponse) {
         return Client.builder()
-                .name(clientUpdateRequest.name())
-                .username(clientUpdateRequest.username())
-                .email(clientUpdateRequest.email())
-                .address(clientUpdateRequest.address())
-                .phone(clientUpdateRequest.phone())
-                .birthdate(clientUpdateRequest.birthdate())
-                .image(clientUpdateRequest.image())
-                .balance(clientUpdateRequest.balance())
+                .name(clientResponse.name())
+                .username(clientResponse.username())
+                .email(clientResponse.email())
+                .address(clientResponse.address())
+                .phone(clientResponse.phone())
+                .birthdate(clientResponse.birthdate())
+                .image(clientResponse.image())
+                .balance(clientResponse.balance())
+                .isDeleted(clientResponse.isDeleted() != null ? clientResponse.isDeleted() : Boolean.FALSE)
+                .createdAt(clientResponse.createdAt())
+                .updatedAt(clientResponse.updatedAt())
                 .build();
     }
 
@@ -48,7 +54,9 @@ public class ClientMapper {
                 client.getPhone(),
                 client.getBirthdate(),
                 client.getImage(),
-                client.getIsDeleted()
+                client.getIsDeleted(),
+                client.getCreatedAt(),
+                client.getUpdatedAt()
         );
     }
 

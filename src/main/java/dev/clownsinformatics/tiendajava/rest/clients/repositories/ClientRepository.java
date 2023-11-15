@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,13 +17,15 @@ public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecif
 
     Optional<Client> findByIdAndIsDeletedFalse(Long id);
 
-    Client findAllByIsDeletedFalse();
+    Client findByUsernameAndIsDeletedFalse(String name);
 
-    Client findByNameAndIsDeletedFalse(String name);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE Client c SET c.image = :image WHERE c.id = :id")
+    Integer updateImageById(@Param("id") Long id, @Param("image") String image);
 
-    @Modifying
-    @Query("UPDATE Client c SET c.image = ?2 WHERE c.id = ?1")
-    Client updateImageById(Long id, String image);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE Client c SET c.isDeleted = true WHERE c.id = :id")
+    void deleteById(@Param("id") Long id);
 
 
 }

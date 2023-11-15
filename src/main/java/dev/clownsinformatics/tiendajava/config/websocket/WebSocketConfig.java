@@ -16,6 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(webSocketCategoryHandler(), "/ws/category");
         registry.addHandler(webSocketSupplierHandler(), "/ws/suppliers");
         registry.addHandler(webSocketEmployeeHandler(), "/ws/employee");
+        registry.addHandler(webSocketClientHandler(), "/ws/clients");
     }
 
     @Bean
@@ -38,4 +39,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public WebSocketHandler webSocketEmployeeHandler() {
         return new WebSocketHandler("Employee");
     }
+
+    //ws://localhost:8080/ws/clients
+    @Bean
+    public WebSocketHandler webSocketClientHandler() {
+        return new WebSocketHandler("Client");
+    }
+
 }
