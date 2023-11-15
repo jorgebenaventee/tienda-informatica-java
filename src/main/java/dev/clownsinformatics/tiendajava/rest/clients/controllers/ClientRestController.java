@@ -7,10 +7,14 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,12 +22,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +42,6 @@ public class ClientRestController {
 
     private final ClientServiceImpl clientService;
     private final PaginationLinksUtils paginationLinksUtils;
-
 
     @Autowired
     public ClientRestController(ClientServiceImpl clientService, PaginationLinksUtils paginationLinksUtils) {
@@ -87,6 +94,9 @@ public class ClientRestController {
     @PatchMapping("/{id}/image")
     public ResponseEntity<ClientResponse> updateImage(@PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestParam("withUrl") Optional<Boolean> withUrl) {
         log.info("Updating image");
+        if (!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(clientService.updateImage(id, file, withUrl.orElse(true)));
     }
 
