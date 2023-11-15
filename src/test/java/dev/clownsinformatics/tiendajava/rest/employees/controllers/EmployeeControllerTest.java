@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EmployeeControllerTest {
+class EmployeeControllerTest {
     LocalDateTime now = LocalDateTime.now();
     private Employee employee = Employee.builder()
             .id(1)
