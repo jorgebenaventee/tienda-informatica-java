@@ -4,7 +4,6 @@ package dev.clownsinformatics.tiendajava.rest.clients.controllers;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
-import dev.clownsinformatics.tiendajava.rest.clients.services.ClientService;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;

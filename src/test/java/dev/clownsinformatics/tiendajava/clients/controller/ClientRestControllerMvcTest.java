@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -190,6 +191,24 @@ public class ClientRestControllerMvcTest {
                 ()-> assertEquals(clientsResponse.get(0).id(), client.id()),
                 ()-> assertEquals(clientsResponse.get(0).name(), client.name()),
                 ()-> assertEquals(clientsResponse.get(0).address(), client.address())
+        );
+
+    }
+
+    @Test
+    public void testFindClientByIdNotFound() throws Exception {
+
+        when(clientService.findById(any(Long.class))).thenThrow(new ClientNotFound(1L));
+
+        MockHttpServletResponse response = mockMvc.perform(
+                get(ENDPOINT_URL+"/1")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+
+
+        assertAll(
+                ()-> assertEquals(404, response.getStatus())
         );
 
     }
@@ -442,7 +461,7 @@ public class ClientRestControllerMvcTest {
                 "Client 1",
                 "client1",
                 0.0,
-                "juangmail.com",
+                "juan@gmail.com",
                 "Address 1",
                 "123456789",
                 LocalDate.now().toString(),
@@ -463,6 +482,37 @@ public class ClientRestControllerMvcTest {
                 ()-> assertEquals(clientsResponse.get(0).id(), client.id()),
                 ()-> assertEquals(clientsResponse.get(0).name(), client.name()),
                 ()-> assertEquals(clientsResponse.get(0).address(), client.address())
+        );
+
+        verify(clientService, times(1)).update(any(Long.class), any(ClientUpdateRequest.class));
+
+    }
+
+    @Test
+    public void testUpdateNotFound() throws Exception {
+        when(clientService.update(any(Long.class), any(ClientUpdateRequest.class))).thenThrow(new ClientNotFound(1L));
+
+        ClientUpdateRequest clientUpdateRequest = new ClientUpdateRequest(
+                "Client 1",
+                "client1",
+                0.0,
+                "juan@gmail.com",
+                "Address 1",
+                "123456789",
+                LocalDate.now().toString(),
+                null,
+                false
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                put(ENDPOINT_URL+"/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(clientUpdateRequest))
+        ).andReturn().getResponse();
+
+        assertAll(
+                ()-> assertEquals(404, response.getStatus())
         );
 
         verify(clientService, times(1)).update(any(Long.class), any(ClientUpdateRequest.class));
@@ -504,6 +554,42 @@ public class ClientRestControllerMvcTest {
         );
 
         verify(clientService, times(1)).deleteById(anyLong());
+
+    }
+
+    @Test
+    public void testUpdateImage() throws Exception {
+
+        when(clientService.updateImage(any(Long.class), any(), any())).thenReturn((clientsResponse.get(0)));
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "prueba.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "ALGO".getBytes()
+        );
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        multipart(ENDPOINT_URL+"/1/image")
+                                .file(file)
+                                .with(req -> {
+                                    req.setMethod("PATCH");
+                                    return req;
+                                })
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+
+        ClientResponse res = mapper.readValue(response.getContentAsString(), ClientResponse.class);
+
+        assertAll(
+                ()-> assertEquals(200, response.getStatus()),
+                ()-> assertEquals(clientsResponse.get(0).id(), res.id()),
+                ()-> assertEquals(clientsResponse.get(0).name(), res.name()),
+                ()-> assertEquals(clientsResponse.get(0).address(), res.address())
+        );
+
+        verify(clientService, times(1)).updateImage(any(Long.class), any(), any());
 
     }
 

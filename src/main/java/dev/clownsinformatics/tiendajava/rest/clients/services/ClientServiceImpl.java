@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -71,8 +72,6 @@ public class ClientServiceImpl implements ClientService{
 
         Page<ClientResponse> response = clientRepository.findAll(specs, pageable).map(clientMapper::toClientResponse);
 
-//        sendNotification(Notification.Tipo.READ, response.getContent().stream().map(clientMapper::toClient).toList());
-
         return response;
 
     }
@@ -83,7 +82,7 @@ public class ClientServiceImpl implements ClientService{
         ClientResponse response = clientMapper.toClientResponse(clientRepository.findByIdAndIsDeletedFalse(id).orElseThrow(
                 () -> new ClientNotFound(id)
         ));
-        sendNotification(Notification.Tipo.READ, clientMapper.toClient(response));
+
         return response;
     }
 
@@ -150,7 +149,7 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    @CachePut(key = "#id")
+    @CacheEvict(key = "#id")
     public void deleteById(Long id) {
         findById(id);
         clientRepository.deleteById(id);
