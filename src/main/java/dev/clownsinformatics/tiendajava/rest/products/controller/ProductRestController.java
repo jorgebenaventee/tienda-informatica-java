@@ -24,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -89,6 +90,9 @@ public class ProductRestController {
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponseDto> patchProductImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         log.info("Updating product image with id: {}", id);
+        if (!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(productService.updateImage(id, file));
     }
 
