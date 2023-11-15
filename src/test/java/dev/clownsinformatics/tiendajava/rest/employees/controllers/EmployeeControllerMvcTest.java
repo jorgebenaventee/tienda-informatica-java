@@ -253,7 +253,7 @@ class EmployeeControllerMvcTest {
 
         assertAll(
                 () -> assertEquals(400, response.getStatus()),
-                () -> assertTrue(body.contains("The name must be between 3 and 50 characters"))
+                () -> assertTrue(body.contains("The name cannot be blank"))
         );
     }
 
