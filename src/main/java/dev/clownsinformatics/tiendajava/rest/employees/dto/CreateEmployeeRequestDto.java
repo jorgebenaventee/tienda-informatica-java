@@ -13,8 +13,8 @@ public record CreateEmployeeRequestDto(
         @NotNull(message = "The salary cannot be null")
         @DecimalMin(value = "0.0", message = "The salary must be greater than or equal to 0")
         Double salary,
-        @NotBlank(message = "The position cannot be blank")
         @Size(min = 3, max = 50, message = "The position must be between 3 and 50 characters")
+        @NotBlank(message = "The position cannot be blank")
         String position
 ) {
 }
