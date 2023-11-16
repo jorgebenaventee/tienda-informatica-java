@@ -240,7 +240,7 @@ class EmployeeControllerMvcTest {
     void createEmployeeWithBlankName() throws Exception {
         String localUrl = BASE_URL;
 
-        CreateEmployeeRequestDto employee = new CreateEmployeeRequestDto("", 1000.0, "Manager");
+        CreateEmployeeRequestDto employee = new CreateEmployeeRequestDto(null, 1000.0, "Manager");
 
         MockHttpServletResponse response = mockMvc.perform(
                         post(localUrl)
@@ -329,7 +329,7 @@ class EmployeeControllerMvcTest {
 
         String localUrl = BASE_URL;
 
-        CreateEmployeeRequestDto employee = new CreateEmployeeRequestDto("Pepe", 1000.0, "");
+        CreateEmployeeRequestDto employee = new CreateEmployeeRequestDto("Pepe", 1000.0, null);
 
         MockHttpServletResponse response = mockMvc.perform(
                         post(localUrl)
