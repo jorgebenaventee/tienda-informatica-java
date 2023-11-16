@@ -113,31 +113,31 @@ public class ClientServiceImpl implements ClientService {
                 .isDeleted(currentClient.isDeleted())
                 .build();
 
-        if (productoUpdateRequest.name() != null){
+        if (productoUpdateRequest.name() != null) {
             clientToSave.setName(productoUpdateRequest.name());
         }
-        if (productoUpdateRequest.username() != null){
+        if (productoUpdateRequest.username() != null) {
             clientToSave.setUsername(productoUpdateRequest.username());
         }
-        if (productoUpdateRequest.email() != null){
+        if (productoUpdateRequest.email() != null) {
             clientToSave.setEmail(productoUpdateRequest.email());
         }
-        if (productoUpdateRequest.address() != null){
+        if (productoUpdateRequest.address() != null) {
             clientToSave.setAddress(productoUpdateRequest.address());
         }
-        if (productoUpdateRequest.phone() != null){
+        if (productoUpdateRequest.phone() != null) {
             clientToSave.setPhone(productoUpdateRequest.phone());
         }
-        if (productoUpdateRequest.birthdate() != null){
+        if (productoUpdateRequest.birthdate() != null) {
             clientToSave.setBirthdate(LocalDate.parse(productoUpdateRequest.birthdate()));
         }
-        if (productoUpdateRequest.image() != null){
+        if (productoUpdateRequest.image() != null) {
             clientToSave.setImage(productoUpdateRequest.image());
         }
-        if (productoUpdateRequest.balance() != null){
+        if (productoUpdateRequest.balance() != null) {
             clientToSave.setBalance(productoUpdateRequest.balance());
         }
-        if (productoUpdateRequest.isDeleted() != null){
+        if (productoUpdateRequest.isDeleted() != null) {
             clientToSave.setIsDeleted(productoUpdateRequest.isDeleted());
         }
 
@@ -151,8 +151,12 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @CacheEvict(key = "#id")
     public void deleteById(Long id) {
-        findById(id);
+        var client = clientRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ClientNotFound(id));
         clientRepository.deleteById(id);
+        if (client.getImage() != null && !client.getImage().isEmpty() && fileSystemStorageService.getUrl(client.getImage()) != null) {
+            fileSystemStorageService.delete(client.getImage());
+        }
+        sendNotification(Notification.Tipo.DELETE, client);
     }
 
     @Override
@@ -164,13 +168,13 @@ public class ClientServiceImpl implements ClientService {
 
         imageUrl = withUrl ? fileSystemStorageService.getUrl(imageUrl) : imageUrl;
 
-        if (currentClient.image() != null && !currentClient.image().isEmpty() && fileSystemStorageService.getUrl(currentClient.image()) != null){
+        if (currentClient.image() != null && !currentClient.image().isEmpty() && fileSystemStorageService.getUrl(currentClient.image()) != null) {
             fileSystemStorageService.delete(currentClient.image());
         }
 
         Integer rowsAffected = clientRepository.updateImageById(id, imageUrl);
 
-        if (rowsAffected == 0){
+        if (rowsAffected == 0) {
             throw new ClientNotFound(id);
         }
 
