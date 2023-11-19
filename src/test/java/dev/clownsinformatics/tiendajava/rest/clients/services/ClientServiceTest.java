@@ -338,15 +338,14 @@ public class ClientServiceTest {
         doNothing().when(webSocketHandlerMock).sendMessage(any());
         when(clientRepository.findByIdAndIsDeletedFalse(anyLong())).thenReturn(Optional.of(clients.get(0)));
         doNothing().when(clientRepository).deleteById(anyLong());
-        when(clientMapper.toClientResponse(clients.get(0))).thenReturn(clientsResponse.get(0));
+        when(fileSystemStorageService.getUrl(anyString())).thenReturn("si");
 
         clientService.deleteById(1L);
 
         verify(clientRepository, times(1)).findByIdAndIsDeletedFalse(anyLong());
         verify(clientRepository, times(1)).deleteById(anyLong());
+        verify(fileSystemStorageService, times(1)).delete(anyString());
+        verify(fileSystemStorageService, times(1)).getUrl(anyString());
 
     }
-
-
-
 }
