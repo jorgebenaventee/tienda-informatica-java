@@ -8,9 +8,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
-    List<Product> findAllByWeight(Double weight);
-
-    List<Product> findAllByName(String name);
-
-    List<Product> findAllByNameAndWeight(String name, Double weight);
 }
