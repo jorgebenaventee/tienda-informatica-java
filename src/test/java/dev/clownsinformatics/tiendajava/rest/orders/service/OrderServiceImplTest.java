@@ -53,8 +53,8 @@ class OrderServiceImplTest {
     final UUID idProduct = UUID.randomUUID();
     private final Order order = new Order(new ObjectId("6536518de9b0d305f193b5ef"), 1L, null, List.of(new OrderLine()), 1, 10.0, null, null, false);
     private final Order order2 = new Order(new ObjectId("6536518de9b0d305f193b5ee"), 2L, null, List.of(new OrderLine()), 2, 15.0, null, null, false);
-    private final OrderResponseDto orderResponseDto = new OrderResponseDto(new ObjectId("6536518de9b0d305f193b5ef"), 1L, null, List.of(new OrderLine()), 1, 10.0, null, null, false);
-    private final OrderResponseDto orderResponseDto2 = new OrderResponseDto(new ObjectId("6536518de9b0d305f193b5ee"), 2L, null, List.of(new OrderLine()), 2, 15.0, null, null, false);
+    private final OrderResponseDto orderResponseDto = new OrderResponseDto("6536518de9b0d305f193b5ef", 1L, null, List.of(new OrderLine()), 1, 10.0, null, null, false);
+    private final OrderResponseDto orderResponseDto2 = new OrderResponseDto("6536518de9b0d305f193b5ee", 2L, null, List.of(new OrderLine()), 2, 15.0, null, null, false);
 
     @Test
     void findAll() {

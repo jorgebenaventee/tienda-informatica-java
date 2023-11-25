@@ -28,7 +28,7 @@ public class OrderMapper {
 
     public OrderResponseDto toOrderResponseDto(Order order) {
         return new OrderResponseDto(
-                order.getId(),
+                order.getId().toHexString(),
                 order.getIdUser(),
                 order.getClient(),
                 order.getOrderLines(),
