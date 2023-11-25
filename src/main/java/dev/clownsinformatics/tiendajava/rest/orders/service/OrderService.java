@@ -1,20 +1,23 @@
 package dev.clownsinformatics.tiendajava.rest.orders.service;
 
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
-    Page<Order> findAll(Pageable pageable);
+    Page<OrderResponseDto> findAll(Pageable pageable);
 
-    Order findById(ObjectId id);
+    OrderResponseDto findById(ObjectId id);
 
-    Page<Order> findByUserId(Long idUser, Pageable pageable);
+    Page<OrderResponseDto> findByUserId(Long idUser, Pageable pageable);
 
-    Order save(Order order);
+    OrderResponseDto save(OrderCreateDto order);
 
     void delete(ObjectId objectId);
 
-    Order update(ObjectId objectId, Order order);
+    OrderResponseDto update(ObjectId objectId, OrderUpdateDto order);
 }

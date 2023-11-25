@@ -1,7 +1,13 @@
 package dev.clownsinformatics.tiendajava.rest.orders.service;
 
+import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
+import dev.clownsinformatics.tiendajava.rest.clients.services.ClientService;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.exceptions.OrderNotFound;
 import dev.clownsinformatics.tiendajava.rest.orders.exceptions.OrderNotItems;
+import dev.clownsinformatics.tiendajava.rest.orders.mappers.OrderMapper;
 import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import dev.clownsinformatics.tiendajava.rest.orders.models.OrderLine;
 import dev.clownsinformatics.tiendajava.rest.orders.repository.OrderRepository;
@@ -28,43 +34,50 @@ import java.time.LocalDateTime;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
+    private final ClientService clientService;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductRepository productRepository, OrderMapper orderMapper, ClientService clientService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.orderMapper = orderMapper;
+        this.clientService = clientService;
     }
 
     @Override
-    public Page<Order> findAll(Pageable pageable) {
+    public Page<OrderResponseDto> findAll(Pageable pageable) {
         log.info("Find all orders");
-        return orderRepository.findAll(pageable);
+        return orderRepository.findAll(pageable).map(orderMapper::toOrderResponseDto);
     }
 
     @Override
     @Cacheable(key = "#id")
-    public Order findById(ObjectId id) {
+    public OrderResponseDto findById(ObjectId id) {
         log.info("Find order by id: {}", id);
-        return orderRepository.findById(id).orElseThrow(() -> new OrderNotFound(id.toHexString()));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFound(id.toHexString()));
+        return orderMapper.toOrderResponseDto(order);
     }
 
     @Override
-    public Page<Order> findByUserId(Long idUser, Pageable pageable) {
+    public Page<OrderResponseDto> findByUserId(Long idUser, Pageable pageable) {
         log.info("Find order by customer id: {}", idUser);
-        return orderRepository.findByIdUser(idUser, pageable);
+        return orderRepository.findByIdUser(idUser, pageable).map(orderMapper::toOrderResponseDto);
     }
 
     @Override
     @Transactional
     @CachePut(key = "#result.id")
-    public Order save(Order order) {
+    public OrderResponseDto save(OrderCreateDto order) {
         log.info("Save order: {}", order);
-        checkOrder(order);
-        var orderToSave = reserveStockOrder(order);
+        ClientResponse client = clientService.findById(order.idUser());
+        Order orderMapped = orderMapper.toOrder(order, client);
+        checkOrder(orderMapped);
 
+        var orderToSave = reserveStockOrder(orderMapped);
         orderToSave.setCreatedAt(LocalDateTime.now());
         orderToSave.setUpdatedAt(LocalDateTime.now());
 
-        return orderRepository.save(orderToSave);
+        return orderMapper.toOrderResponseDto(orderRepository.save(orderToSave));
     }
 
     @Override
@@ -81,15 +94,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     @CachePut(key = "#objectId")
-    public Order update(ObjectId objectId, Order order) {
+    public OrderResponseDto update(ObjectId objectId, OrderUpdateDto order) {
         log.info("Update order by id: {}", objectId);
         Order orderToUpdate = orderRepository.findById(objectId).orElseThrow(() -> new OrderNotFound(objectId.toHexString()));
-
         returnStockOrders(orderToUpdate);
+
+        ClientResponse client = clientService.findById(order.idUser());
+        Order orderMapped = orderMapper.toOrder(order, orderToUpdate, client);
+        checkOrder(orderMapped);
+
+        var orderToSave = reserveStockOrder(orderMapped);
+        orderToSave.setUpdatedAt(LocalDateTime.now());
+
+        return orderMapper.toOrderResponseDto(orderRepository.save(orderToSave));
+
+        /*returnStockOrders(orderToUpdate);
         checkOrder(order);
         var orderToSave = reserveStockOrder(order);
         orderToSave.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(orderToSave);
+        return orderRepository.save(orderToSave);*/
     }
 
     Order reserveStockOrder(Order order) {

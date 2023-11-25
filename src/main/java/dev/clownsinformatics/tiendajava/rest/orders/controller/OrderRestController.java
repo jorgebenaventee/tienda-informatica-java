@@ -1,5 +1,8 @@
 package dev.clownsinformatics.tiendajava.rest.orders.controller;
 
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
@@ -38,7 +41,7 @@ public class OrderRestController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<Order>> getAllOrders(
+    public ResponseEntity<PageResponse<OrderResponseDto>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -48,20 +51,20 @@ public class OrderRestController {
         log.info("Getting all orders");
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<Order> pageResult = orderService.findAll(PageRequest.of(page, size, sort));
+        Page<OrderResponseDto> pageResult = orderService.findAll(PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") ObjectId id) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") ObjectId id) {
         log.info("Getting order with id {}", id);
         return ResponseEntity.ok(orderService.findById(id));
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<PageResponse<Order>> getOrdersByUserId(
+    public ResponseEntity<PageResponse<OrderResponseDto>> getOrdersByUserId(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -76,13 +79,13 @@ public class OrderRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) {
+    public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderCreateDto order) {
         log.info("Creating order {}", order);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(order));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") ObjectId id, @Valid @RequestBody Order order) {
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable("id") ObjectId id, @Valid @RequestBody OrderUpdateDto order) {
         log.info("Updating order with id {}", id);
         return ResponseEntity.ok(orderService.update(id, order));
     }
