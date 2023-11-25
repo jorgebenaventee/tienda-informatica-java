@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/products")
+@PreAuthorize("hasRole('USER')")
 public class ProductRestController {
     private final ProductService productService;
     private final PaginationLinksUtils paginationLinksUtils;
@@ -64,30 +66,35 @@ public class ProductRestController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable String id) {
         log.info("Searching product with id: {}", id);
         return ResponseEntity.ok(productService.findById(id));
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDto> postProduct(@Valid @RequestBody ProductCreateDto product) {
         log.info("Creating product: {}", product);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDto> putProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Updating product with id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDto> patchProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Updating partial product with id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponseDto> patchProductImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         log.info("Updating product image with id: {}", id);
         if (!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
@@ -97,6 +104,7 @@ public class ProductRestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.info("Deleting product with id: {}", id);
         productService.deleteById(id);

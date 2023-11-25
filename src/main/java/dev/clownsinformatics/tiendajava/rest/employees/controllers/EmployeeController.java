@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @RequestMapping("/api/employee")
 @Slf4j
 @AllArgsConstructor(onConstructor = @__(@Autowired))
+@PreAuthorize("hasRole('USER')")
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final PaginationLinksUtils paginationLinksUtils;
@@ -64,12 +66,14 @@ public class EmployeeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> createEmployee(@Valid @RequestBody CreateEmployeeRequestDto employee) {
         log.info("Creating employee: {}", employee);
         return ResponseEntity.ok(employeeService.save(employee));
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> updateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
         log.info("Updating employee with id: {}", id);
         EmployeeResponseDto employeeDto = employeeService.update(id, employee);
@@ -77,6 +81,7 @@ public class EmployeeController {
     }
 
     @PatchMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> partialUpdateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
         log.info("Partially updating employee with id: {}", id);
         EmployeeResponseDto employeeDto = employeeService.update(id, employee);
@@ -84,6 +89,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {
         log.info("Deleting employee with id: {}", id);
         employeeService.delete(id);

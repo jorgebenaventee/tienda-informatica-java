@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -37,6 +38,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/clients")
 @Slf4j
+@PreAuthorize("hasRole('USER')")
 public class ClientRestController {
 
 
@@ -50,6 +52,7 @@ public class ClientRestController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientCreateRequest clientCreateRequest) {
         log.info("Creating client");
         ClientResponse clientResponse = clientService.save(clientCreateRequest);
@@ -57,6 +60,7 @@ public class ClientRestController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest clientUpdateRequest) {
         log.info("Updating client");
         return ResponseEntity.ok(clientService.update(id, clientUpdateRequest));
@@ -85,6 +89,7 @@ public class ClientRestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         log.info("Deleting client");
         clientService.deleteById(id);
