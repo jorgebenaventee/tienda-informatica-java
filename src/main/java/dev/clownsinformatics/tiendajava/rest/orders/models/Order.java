@@ -2,7 +2,6 @@ package dev.clownsinformatics.tiendajava.rest.orders.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
-import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;

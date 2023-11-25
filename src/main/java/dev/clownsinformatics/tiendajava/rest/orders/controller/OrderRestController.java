@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.orders.controller;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;

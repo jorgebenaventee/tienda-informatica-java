@@ -26,15 +26,6 @@ public class OrderMapper {
                 .build();
     }
 
-    public Order toOrder(OrderUpdateDto orderUpdateDto, Order order) {
-        return Order.builder()
-                .id(order.getId())
-                .idUser(orderUpdateDto.idUser() != null ? orderUpdateDto.idUser() : order.getIdUser())
-                .client(order.getClient())
-                .orderLines(orderUpdateDto.orderLines() != null ? orderUpdateDto.orderLines() : order.getOrderLines())
-                .build();
-    }
-
     public OrderResponseDto toOrderResponseDto(Order order) {
         return new OrderResponseDto(
                 order.getId(),

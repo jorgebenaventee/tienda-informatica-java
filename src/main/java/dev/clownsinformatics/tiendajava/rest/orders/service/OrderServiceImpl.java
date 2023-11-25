@@ -107,12 +107,6 @@ public class OrderServiceImpl implements OrderService {
         orderToSave.setUpdatedAt(LocalDateTime.now());
 
         return orderMapper.toOrderResponseDto(orderRepository.save(orderToSave));
-
-        /*returnStockOrders(orderToUpdate);
-        checkOrder(order);
-        var orderToSave = reserveStockOrder(order);
-        orderToSave.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(orderToSave);*/
     }
 
     Order reserveStockOrder(Order order) {

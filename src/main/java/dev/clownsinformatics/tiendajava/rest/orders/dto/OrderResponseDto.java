@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record OrderResponseDto (
+public record OrderResponseDto(
         ObjectId id,
         Long idUser,
         ClientResponse client,
@@ -17,5 +17,5 @@ public record OrderResponseDto (
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         Boolean isDeleted
-){
+) {
 }
