@@ -119,8 +119,8 @@ class ProductRestControllerTest {
 
     @Test
     void getAllProducts() throws Exception {
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -150,8 +150,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByName() throws Exception {
         var LOCAL_URL = "/api/products?name=Product 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.of("Product 1");
@@ -181,8 +181,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByWeight() throws Exception {
         var LOCAL_URL = "/api/products?maxWeight=2";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -212,8 +212,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByMaxPrice() throws Exception {
         var LOCAL_URL = "/api/products?maxPrice=50";
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -243,8 +243,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByMinStock() throws Exception {
         var LOCAL_URL = "/api/products?minStock=10";
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -274,8 +274,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByCategory() throws Exception {
         var LOCAL_URL = "/api/products?category=Category 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -305,8 +305,8 @@ class ProductRestControllerTest {
     @Test
     void getAllProductsByAllParams() throws Exception {
         var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.of("Product 1");
