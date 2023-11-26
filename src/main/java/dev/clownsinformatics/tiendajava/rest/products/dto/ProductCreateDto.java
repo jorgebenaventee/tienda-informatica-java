@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.rest.products.dto;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,9 @@ public record ProductCreateDto(
         String description,
 
         @NotNull(message = "The category cannot be empty")
-        Category category
+        Category category,
+
+        @NotNull(message = "The supplier cannot be empty")
+        Supplier supplier
 ) {
 }

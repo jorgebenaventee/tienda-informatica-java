@@ -87,6 +87,13 @@ public class SupplierServiceImpl implements SupplierService {
                 .orElseThrow(() -> new SupplierNotFound(uuid));
     }
 
+    @Override
+    public SupplierResponseDto findByName(String name) {
+        return supplierRepository.findByNameEqualsIgnoreCase(name)
+                .map(supplierMapper::toSupplierDto)
+                .orElseThrow(() -> new SupplierNotFound(name));
+    }
+
     public UUID getUUID(String uuid) {
         try {
             return UUID.fromString(uuid);

@@ -27,6 +27,15 @@ public class SupplierMapper {
                 .build();
     }
 
+    public Supplier toSupplier(SupplierResponseDto supplierResponseDto) {
+        return Supplier.builder()
+                .id(supplierResponseDto.id())
+                .name(supplierResponseDto.name())
+                .contact(supplierResponseDto.contact())
+                .address(supplierResponseDto.address())
+                .category(supplierResponseDto.category())
+                .build();
+    }
 
     public SupplierResponseDto toSupplierDto(Supplier supplier) {
         return new SupplierResponseDto(
@@ -38,4 +47,6 @@ public class SupplierMapper {
                 supplier.getCategory()
         );
     }
+
+
 }

@@ -13,4 +13,9 @@ public class SupplierNotFound extends SupplierException {
 
     }
 
+    public SupplierNotFound(String name) {
+        super("There is not any supplier with name: " + name);
+
+    }
+
 }

@@ -10,6 +10,7 @@ import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,6 +58,26 @@ class ProductRestControllerTest {
             .name("Category 2")
             .build();
 
+    private final Supplier supplier1 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 1")
+            .contact(1)
+            .address("Calle 1")
+            .dateOfHire(LocalDateTime.now())
+            .category(category1)
+            .build();
+
+
+    private final Supplier supplier2 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 2")
+            .contact(2)
+            .address("Calle 2")
+            .dateOfHire(LocalDateTime.now())
+            .category(category2)
+            .build();
+
+
     private final Product product1 = Product.builder()
             .id(idProduct1)
             .name("Product 1")
@@ -66,6 +87,7 @@ class ProductRestControllerTest {
             .stock(10)
             .description("Descripcion del producto 1")
             .category(category1)
+            .supplier(supplier1)
             .build();
 
     private final Product product2 = Product.builder()
@@ -77,6 +99,7 @@ class ProductRestControllerTest {
             .stock(10)
             .description("Descripcion del producto 2")
             .category(category2)
+            .supplier(supplier2)
             .build();
 
     private final ProductResponseDto productResponseDto1 = new ProductResponseDto(
@@ -88,6 +111,7 @@ class ProductRestControllerTest {
             10,
             "Descripcion del producto 1",
             category1,
+            supplier1,
             LocalDateTime.now(),
             LocalDateTime.now(),
             false
@@ -102,6 +126,7 @@ class ProductRestControllerTest {
             10,
             "Descripcion del producto 2",
             category2,
+            supplier2,
             LocalDateTime.now(),
             LocalDateTime.now(),
             false
@@ -130,7 +155,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -162,7 +187,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -194,7 +219,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -226,7 +251,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -258,7 +283,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -290,7 +315,7 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
@@ -419,7 +444,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.save(any(ProductCreateDto.class))).thenReturn(productResponseDto1);
@@ -449,7 +475,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -474,7 +501,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -499,7 +527,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -524,7 +553,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -549,7 +579,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -574,7 +605,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -599,7 +631,8 @@ class ProductRestControllerTest {
                 "",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -624,7 +657,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 null,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -649,7 +683,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 -10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -674,7 +709,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 null,
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -700,7 +736,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "D",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -728,7 +765,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
@@ -759,7 +797,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.update(anyString(), any())).thenThrow(new ProductNotFound(idProduct1.toString()));
@@ -783,7 +822,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -810,7 +850,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
 
@@ -883,7 +924,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Producto no encontrado"));
         assertAll(

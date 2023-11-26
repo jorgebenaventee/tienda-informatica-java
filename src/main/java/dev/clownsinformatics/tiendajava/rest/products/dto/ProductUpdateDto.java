@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.rest.products.dto;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import jakarta.validation.constraints.Min;
 import org.hibernate.validator.constraints.Length;
 
@@ -22,6 +23,8 @@ public record ProductUpdateDto(
         @Length(min = 3, max = 100, message = "The description must be between 3 and 100 characters")
         String description,
 
-        Category category
+        Category category,
+
+        Supplier supplier
 ) {
 }

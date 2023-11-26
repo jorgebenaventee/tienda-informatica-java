@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.rest.products.models;
 
 import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -73,6 +74,10 @@ public class Product {
     @Column(columnDefinition = "boolean default false")
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

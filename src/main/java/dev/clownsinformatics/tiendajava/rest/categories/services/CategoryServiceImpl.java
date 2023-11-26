@@ -75,6 +75,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable
+    public Category findByName(String name) {
+        log.info("Getting category with name: {}", name);
+        return categoryRepository.findByNameEqualsIgnoreCase(name).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
+    }
+
+    @Override
+    @Cacheable
     public Category save(CategoryResponseDto category) {
         log.info("Saving category");
         categoryRepository.findByName(category.name()).ifPresent(c -> {

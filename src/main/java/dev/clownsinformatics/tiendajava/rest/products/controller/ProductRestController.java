@@ -49,7 +49,7 @@ public class ProductRestController {
             @RequestParam(required = false) Optional<Double> maxPrice,
             @RequestParam(required = false) Optional<Double> minStock,
             @RequestParam(required = false) Optional<String> category,
-            @RequestParam(required = false) Optional<Boolean> isDeleted,
+            @RequestParam(defaultValue = "false", required = false) Optional<Boolean> isDeleted,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,

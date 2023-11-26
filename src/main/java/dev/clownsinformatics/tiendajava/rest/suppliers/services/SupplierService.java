@@ -3,6 +3,7 @@ package dev.clownsinformatics.tiendajava.rest.suppliers.services;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierCreateDto;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierResponseDto;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierUpdateDto;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,6 +13,8 @@ public interface SupplierService {
     Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable);
 
     SupplierResponseDto findByUUID(String id);
+
+    SupplierResponseDto findByName(String name);
 
     SupplierResponseDto save(SupplierCreateDto supplierCreateDto);
 

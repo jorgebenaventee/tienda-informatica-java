@@ -15,6 +15,9 @@ import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.mapper.SupplierMapper;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.services.SupplierService;
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ProductsNotificationDto;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProductNotificationMapper;
 import dev.clownsinformatics.tiendajava.websockets.notifications.models.Notification;
@@ -42,7 +45,9 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final SupplierService supplierService;
     private final ProductMapper productMapper;
+    private final SupplierMapper supplierMapper;
     private final StorageService storageService;
 
     private final WebSocketConfig webSocketConfig;
@@ -51,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     private WebSocketHandler webSocketHandler;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, ProductMapper productMapper, StorageService storageService, WebSocketConfig webSocketConfig, ObjectMapper mapper, ProductNotificationMapper productNotificationMapper) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, ProductMapper productMapper, StorageService storageService, WebSocketConfig webSocketConfig, ObjectMapper mapper, ProductNotificationMapper productNotificationMapper, SupplierService supplierService, SupplierMapper supplierMapper) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.productMapper = productMapper;
@@ -59,6 +64,8 @@ public class ProductServiceImpl implements ProductService {
         this.webSocketConfig = webSocketConfig;
         this.mapper = mapper;
         this.productNotificationMapper = productNotificationMapper;
+        this.supplierService = supplierService;
+        this.supplierMapper = supplierMapper;
         webSocketHandler = webSocketConfig.webSocketProductHandler();
     }
 
@@ -115,8 +122,10 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable
     public ProductResponseDto save(ProductCreateDto productCreateDto) {
         log.info("Saving product: " + productCreateDto);
-        Category category = categoryService.findById(productCreateDto.category().getUuid());
-        Product productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category));
+        log.info("Category: " + productCreateDto.category());
+        Category category = categoryService.findByName(productCreateDto.category().getName());
+        Supplier supplier = supplierMapper.toSupplier(supplierService.findByName(productCreateDto.supplier().getName()));
+        Product productSaved = productRepository.save(productMapper.toProduct(productCreateDto, category, supplier));
         onChange(Notification.Tipo.CREATE, productSaved);
         return productMapper.toProductResponseDto(productSaved);
     }
@@ -134,8 +143,8 @@ public class ProductServiceImpl implements ProductService {
         } else {
             category = actualProduct.getCategory();
         }
-
-        Product productUpdated = productRepository.save(productMapper.toProduct(productUpdateDto, actualProduct, category));
+        Supplier supplier = supplierMapper.toSupplier(supplierService.findByName(productUpdateDto.supplier().getName()));
+        Product productUpdated = productRepository.save(productMapper.toProduct(productUpdateDto, actualProduct, category, supplier));
         onChange(Notification.Tipo.UPDATE, productUpdated);
         return productMapper.toProductResponseDto(productUpdated);
     }
