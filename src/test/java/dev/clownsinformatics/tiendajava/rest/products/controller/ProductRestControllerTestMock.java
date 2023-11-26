@@ -16,10 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +51,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -56,16 +59,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -75,6 +78,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -82,16 +86,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -101,6 +105,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -108,16 +113,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -127,6 +132,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -134,16 +140,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -153,6 +159,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -160,16 +167,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -179,6 +186,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.empty();
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -186,16 +194,43 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
+    }
+
+    @Test
+    void getAllProductsByIsDeleted() {
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(true);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
+
+        List<ProductResponseDto> expectedProducts = List.of(productResponseDto1);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
+
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
+
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertEquals(expectedPage.getContent(), response.content())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -205,6 +240,7 @@ class ProductRestControllerTestMock {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/products"));
 
@@ -212,16 +248,16 @@ class ProductRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<ProductResponseDto> expectedPage = new PageImpl<>(expectedProducts);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(expectedPage);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, 0, 10, "id", "asc", request).getBody();
+        PageResponse<ProductResponseDto> response = productRestController.getAllProducts(name, maxWeight, maxPrice, minStock, category, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(response),
                 () -> assertEquals(expectedPage.getContent(), response.content())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test

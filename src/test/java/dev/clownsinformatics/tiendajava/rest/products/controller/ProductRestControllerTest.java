@@ -130,8 +130,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(BASE_URL)
@@ -146,7 +147,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -161,8 +162,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -177,7 +179,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -192,8 +194,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -208,7 +211,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -223,8 +226,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -239,7 +243,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -254,8 +258,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -270,7 +275,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -285,8 +290,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.empty();
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -301,12 +307,44 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
+    }
+
+    @Test
+    void getAllProductsByIsDeleted() throws Exception {
+        var LOCAL_URL = "/api/products?isDeleted=false";
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByAllParams() throws Exception {
-        var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1";
+        var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1&isDeleted=true";
         var productlist = List.of(productResponseDto1);
         var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -316,8 +354,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.of("Category 1");
-
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        Optional<Boolean> isDeleted = Optional.of(true);
+        
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -332,7 +371,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test

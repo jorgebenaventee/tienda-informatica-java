@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Pageable pageable) {
+    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category,Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Product> specName = (root, query, criteriaBuilder) ->
                 name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
@@ -95,7 +95,11 @@ public class ProductServiceImpl implements ProductService {
                     return criteriaBuilder.like(criteriaBuilder.lower(categoryJoin.get("name")), "%" + value.toLowerCase() + "%");
                 }).orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Product> spec = Specification.where(specName).and(specMaxWeight).and(specMaxPrice).and(spectMinStock).and(specCategory);
+        Specification<Product> specIsDeleted = (root, query, criteriaBuilder) ->
+                isDeleted.map(value -> criteriaBuilder.equal(root.get("isDeleted"), value))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(false)));
+
+        Specification<Product> spec = Specification.where(specName).and(specMaxWeight).and(specMaxPrice).and(spectMinStock).and(specCategory).and(specIsDeleted);
         return productRepository.findAll(spec, pageable).map(productMapper::toProductResponseDto);
     }
 

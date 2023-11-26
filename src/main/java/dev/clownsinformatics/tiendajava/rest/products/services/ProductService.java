@@ -14,7 +14,7 @@ public interface ProductService {
 
     UUID getUUID(String id);
 
-    Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Pageable pageable);
+    Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Optional<Boolean> isDeleted,Pageable pageable);
 
     ProductResponseDto findById(String id);
 

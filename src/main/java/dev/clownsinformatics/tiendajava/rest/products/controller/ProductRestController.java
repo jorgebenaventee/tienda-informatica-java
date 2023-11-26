@@ -49,6 +49,7 @@ public class ProductRestController {
             @RequestParam(required = false) Optional<Double> maxPrice,
             @RequestParam(required = false) Optional<Double> minStock,
             @RequestParam(required = false) Optional<String> category,
+            @RequestParam(required = false) Optional<Boolean> isDeleted,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -59,7 +60,7 @@ public class ProductRestController {
                 name, maxWeight, maxPrice, minStock, category, page, size, sortBy, direction);
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<ProductResponseDto> pageResult = productService.findAll(name, maxWeight, maxPrice, minStock, category, PageRequest.of(page, size, sort));
+        Page<ProductResponseDto> pageResult = productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(pageResult, uriBuilder))
                 .body(PageResponse.of(pageResult, sortBy, direction));

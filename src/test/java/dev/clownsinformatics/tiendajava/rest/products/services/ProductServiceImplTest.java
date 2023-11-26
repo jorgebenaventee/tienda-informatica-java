@@ -95,6 +95,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Arrays.asList(product1, product2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -103,7 +104,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -122,6 +123,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -130,7 +132,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -149,6 +151,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -157,7 +160,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -176,6 +179,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Arrays.asList(product1, product2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -184,7 +188,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -203,6 +207,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Arrays.asList(product1, product2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -211,7 +216,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -230,6 +235,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.empty();
 
         List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -238,7 +244,35 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
+
+        assertAll(
+                () -> assertNotNull(actualPage),
+                () -> assertFalse(actualPage.isEmpty()),
+                () -> assertTrue(actualPage.getTotalElements() > 0)
+        );
+
+        verify(repository, times(1)).findAll(any(Specification.class), any(Pageable.class));
+        verify(mapper, times(1)).toProductResponseDto(any(Product.class));
+    }
+
+    @Test
+    void findAllByIsDeleted() {
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.of(50.0);
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(true);
+
+        List<Product> expectedProducts = Collections.singletonList(product1);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        Page<Product> expectedPage = new PageImpl<>(expectedProducts);
+
+        when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
+        when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
+
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
@@ -257,6 +291,7 @@ class ProductServiceImplTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.of(false);
 
         List<Product> expectedProducts = Collections.singletonList(product1);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
@@ -265,7 +300,7 @@ class ProductServiceImplTest {
         when(repository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(mapper.toProductResponseDto(any(Product.class))).thenReturn(productResponseDto1);
 
-        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        Page<ProductResponseDto> actualPage = service.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(actualPage),
