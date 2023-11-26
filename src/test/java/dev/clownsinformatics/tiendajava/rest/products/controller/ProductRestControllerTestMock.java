@@ -33,8 +33,8 @@ class ProductRestControllerTestMock {
     private final Category category1 = Category.builder().uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785461")).name("Category 1").build();
     private final Category category2 = Category.builder().uuid(UUID.fromString("cdf61632-181e-4006-9f4f-694e00785467")).name("Category 2").build();
 
-    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
-    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now());
+    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now(), false);
+    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now(), false);
     @Mock
     PaginationLinksUtils paginationLinksUtils;
     @Mock
@@ -238,7 +238,7 @@ class ProductRestControllerTestMock {
     @Test
     void postProduct() {
         ProductCreateDto productCreateDto = new ProductCreateDto("Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1);
-        ProductResponseDto productResponseDto = new ProductResponseDto(UUID.randomUUID(), "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now());
+        ProductResponseDto productResponseDto = new ProductResponseDto(UUID.randomUUID(), "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now(), false);
         when(productService.save(any(ProductCreateDto.class))).thenReturn(productResponseDto);
         ResponseEntity<ProductResponseDto> response = productRestController.postProduct(productCreateDto);
         assertAll(
@@ -257,7 +257,7 @@ class ProductRestControllerTestMock {
     @Test
     void putProduct() {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto("Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1);
-        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now());
+        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now(), false);
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto);
         ResponseEntity<ProductResponseDto> response = productRestController.putProduct(idProduct1.toString(), productUpdateDto);
         assertAll(
@@ -276,7 +276,7 @@ class ProductRestControllerTestMock {
     @Test
     void patchProduct() {
         ProductUpdateDto productUpdateDto = new ProductUpdateDto("Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1);
-        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now());
+        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 3", 2.5, 50.0, "imagen3.jpg", 10, "Descripcion del producto 3", category1, LocalDateTime.now(), LocalDateTime.now(), false);
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto);
         ResponseEntity<ProductResponseDto> response = productRestController.patchProduct(idProduct1.toString(), productUpdateDto);
         assertAll(
@@ -295,7 +295,7 @@ class ProductRestControllerTestMock {
     @Test
     void patchProductImage() {
         MockMultipartFile mockFile = new MockMultipartFile("file", "imagen3.jpg", "image/jpeg", "imagen3.jpg".getBytes());
-        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
+        ProductResponseDto productResponseDto = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now(), false);
         when(productService.updateImage(anyString(), eq(mockFile))).thenReturn(productResponseDto);
         ResponseEntity<ProductResponseDto> response = productRestController.patchProductImage(idProduct1.toString(), mockFile);
         assertAll(

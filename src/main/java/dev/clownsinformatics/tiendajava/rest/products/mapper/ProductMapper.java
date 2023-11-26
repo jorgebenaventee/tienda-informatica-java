@@ -51,7 +51,8 @@ public class ProductMapper {
                 product.getDescription(),
                 product.getCategory(),
                 product.getCreatedAt(),
-                product.getUpdatedAt()
+                product.getUpdatedAt(),
+                product.getIsDeleted()
         );
     }
 }

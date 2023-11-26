@@ -67,8 +67,8 @@ class ProductServiceImplTest {
             .category(category2)
             .build();
 
-    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now());
-    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now());
+    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now(), false);
+    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now(), false);
 
     WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
     @Mock
@@ -350,7 +350,8 @@ class ProductServiceImplTest {
                 "Descripción del producto 3",
                 category1,
                 productExpected.getCreatedAt(),
-                productExpected.getUpdatedAt()
+                productExpected.getUpdatedAt(),
+                false
         );
 
         when(categoryService.findById(productCreateDto.category().getUuid())).thenReturn(category1);
@@ -410,7 +411,8 @@ class ProductServiceImplTest {
                 "Descripción del producto 3",
                 category1,
                 productExpected.getCreatedAt(),
-                productExpected.getUpdatedAt()
+                productExpected.getUpdatedAt(),
+                false
         );
 
         when(repository.findById(id)).thenReturn(Optional.of(productExpected));

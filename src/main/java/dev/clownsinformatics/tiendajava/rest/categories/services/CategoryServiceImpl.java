@@ -51,13 +51,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<Category> findAll(Optional<String> name, Pageable pageable) {
+    public Page<Category> findAll(Optional<String> name, Optional<Boolean> isDeleted, Pageable pageable) {
         log.info("Getting all categories with name: {}", name);
         Specification<Category> specName = (root, criteriaQuery, criteriaBuilder) ->
                 name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Category> spec = Specification.where(specName);
+        Specification<Category> specIsDeleted = (root, criteriaQuery, criteriaBuilder) ->
+                isDeleted.map(value -> criteriaBuilder.equal(root.get("isDeleted"), value))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+
+        Specification<Category> spec = Specification.where(specName)
+                .and(specIsDeleted);
         return categoryRepository.findAll(spec, pageable);
     }
 

@@ -212,7 +212,7 @@ class AuthenticationRestControllerTest {
         // Datos de prueba
         UserSignInRequest request = new UserSignInRequest();
         request.setUsername("");
-        request.setPassword("");
+        request.setPassword(null);
 
         // Consulto el endpoint
         MockHttpServletResponse response = mockMvc.perform(

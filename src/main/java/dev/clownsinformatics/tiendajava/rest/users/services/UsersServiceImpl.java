@@ -1,6 +1,7 @@
 package dev.clownsinformatics.tiendajava.rest.users.services;
 
 
+import dev.clownsinformatics.tiendajava.rest.orders.repository.OrderRepository;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserInfoResponse;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserRequest;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserResponse;
@@ -30,10 +31,12 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
     private final UsersMapper usersMapper;
+    private final OrderRepository orderRepository;
 
-    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper) {
+    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper usersMapper, OrderRepository orderRepository) {
         this.usersRepository = usersRepository;
         this.usersMapper = usersMapper;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -63,8 +66,8 @@ public class UsersServiceImpl implements UsersService {
     public UserInfoResponse findById(Long id) {
         log.info("Buscando usuario por id: " + id);
         var user = usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
-        // TODO: Cambiar el arraylist para que use los pedidos para usar los pedidos
-        return usersMapper.toUserInfoResponse(user, new ArrayList<>());
+        var order = orderRepository.findOrderIdsByIdUser(id).stream().map(p -> p.getId().toHexString()).toList();
+        return usersMapper.toUserInfoResponse(user, order);
     }
 
     @Override
@@ -99,16 +102,14 @@ public class UsersServiceImpl implements UsersService {
     public void deleteById(Long id) {
         log.info("Borrando usuario por id: " + id);
         User user = usersRepository.findById(id).orElseThrow(() -> new UserNotFound(id));
-        // TODO: Poner esto cuando haya pedidos
-/*
-        if (pedidosRepository.existsByIdUsuario(id)) {
+
+        if (orderRepository.existsByIdUser(id)) {
             log.info("Borrado lógico de usuario por id: " + id);
             usersRepository.updateIsDeletedToTrueById(id);
         } else {
-*/
             // Si hay pedidos, lo borramos físicamente
             log.info("Borrado físico de usuario por id: " + id);
             usersRepository.delete(user);
-//        }
+       }
     }
 }

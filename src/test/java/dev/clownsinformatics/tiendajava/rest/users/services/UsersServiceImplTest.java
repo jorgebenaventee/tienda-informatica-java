@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.rest.users.services;
 
+import dev.clownsinformatics.tiendajava.rest.orders.repository.OrderRepository;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserInfoResponse;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserRequest;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserResponse;
@@ -35,10 +36,10 @@ class UsersServiceImplTest {
     private final UserInfoResponse userIResponse = UserInfoResponse.builder().username("test").email("test@test.com").build();
     @Mock
     private UsersRepository usersRepository;
-/* TODO: Pedidos
+
     @Mock
-    private PedidosRepository pedidosRepository;
-*/
+    private OrderRepository orderRepository;
+
     @Mock
     private UsersMapper usersMapper;
     @InjectMocks
@@ -74,7 +75,7 @@ class UsersServiceImplTest {
         // Arrange
         Long userId = 1L;
         when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(pedidosRepository.findPedidosIdsByIdUsuario(userId)).thenReturn(List.of());
+        when(orderRepository.findOrderIdsByIdUser(userId)).thenReturn(List.of());
         when(usersMapper.toUserInfoResponse(any(User.class), anyList())).thenReturn(userIResponse);
 
 
@@ -89,7 +90,7 @@ class UsersServiceImplTest {
 
         // Verify
         verify(usersRepository, times(1)).findById(userId);
-//        verify(pedidosRepository, times(1)).findPedidosIdsByIdUsuario(userId);
+        verify(orderRepository, times(1)).findOrderIdsByIdUser(userId);
         verify(usersMapper, times(1)).toUserInfoResponse(user, List.of());
 
     }
@@ -110,8 +111,6 @@ class UsersServiceImplTest {
     @Test
     public void testSave_ValidUserRequest_ReturnsUserResponse() {
         // Arrange
-
-
         when(usersRepository.findByUsernameEqualsIgnoreCaseOrEmailEqualsIgnoreCase(anyString(), anyString())).thenReturn(Optional.empty());
         when(usersMapper.toUser(userRequest)).thenReturn(user);
         when(usersMapper.toUserResponse(user)).thenReturn(userResponse);
@@ -199,23 +198,22 @@ class UsersServiceImplTest {
         // Arrange
         Long userId = 1L;
         when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(pedidosRepository.existsByIdUsuario(userId)).thenReturn(false);
+        when(orderRepository.existsByIdUser(userId)).thenReturn(false);
 
         // Act
         usersService.deleteById(userId);
 
         // Verify
         verify(usersRepository, times(1)).delete(user);
-//        verify(pedidosRepository, times(1)).existsByIdUsuario(userId);
+        verify(orderRepository, times(1)).existsByIdUser(userId);
     }
 
     @Test
-    // TODO: Pedidos
     public void testDeleteById_LogicalDelete() {
         // Arrange
         Long userId = 1L;
         when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(pedidosRepository.existsByIdUsuario(userId)).thenReturn(true);
+        when(orderRepository.existsByIdUser(userId)).thenReturn(true);
         doNothing().when(usersRepository).updateIsDeletedToTrueById(userId);
 
         // Act
@@ -225,23 +223,22 @@ class UsersServiceImplTest {
 
         // Verify
         verify(usersRepository, times(1)).updateIsDeletedToTrueById(userId);
-//        verify(pedidosRepository, times(1)).existsByIdUsuario(userId);
+        verify(orderRepository, times(1)).existsByIdUser(userId);
     }
 
     @Test
-    // TODO: Pedidos
     public void testDeleteByIdNotExists() {
         // Arrange
         Long userId = 1L;
         User user = new User();
         when(usersRepository.findById(userId)).thenReturn(Optional.of(user));
-//        when(pedidosRepository.existsByIdUsuario(userId)).thenReturn(true);
+        when(orderRepository.existsByIdUser(userId)).thenReturn(true);
 
         // Act
         usersService.deleteById(userId);
 
         // Verify
         verify(usersRepository, times(1)).updateIsDeletedToTrueById(userId);
-//        verify(pedidosRepository, times(1)).existsByIdUsuario(userId);
+        verify(orderRepository, times(1)).existsByIdUser(userId);
     }
 }

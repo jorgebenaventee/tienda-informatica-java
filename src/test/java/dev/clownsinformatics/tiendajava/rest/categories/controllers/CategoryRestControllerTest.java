@@ -66,7 +66,7 @@ class CategoryRestControllerTest {
         Page<Category> page = new PageImpl<>(categoryList);
         var pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
 
-        when(categoryService.findAll(Optional.empty(), pageable)).thenReturn(page);
+        when(categoryService.findAll(Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(BASE_URL)
@@ -83,7 +83,7 @@ class CategoryRestControllerTest {
                 () -> assertEquals("Category 2", res.content().get(1).getName())
 
         );
-        verify(categoryService, times(1)).findAll(Optional.empty(), pageable);
+        verify(categoryService, times(1)).findAll(Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
@@ -94,7 +94,7 @@ class CategoryRestControllerTest {
         Page<Category> page = new PageImpl<>(categoryList);
         var pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
 
-        when(categoryService.findAll(name, pageable)).thenReturn(page);
+        when(categoryService.findAll(name, Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -110,8 +110,64 @@ class CategoryRestControllerTest {
                 () -> assertEquals("Category 1", res.content().get(0).getName())
 
         );
-        verify(categoryService, times(1)).findAll(name, pageable);
+        verify(categoryService, times(1)).findAll(name, Optional.empty(), pageable);
     }
+
+    @Test
+    void getAllByIsDeleted() throws Exception {
+        var LOCAL_URL = BASE_URL + "?isDeleted=true";
+        var categoryList = List.of(categoria);
+        Optional<Boolean> isDeleted = Optional.of(true);
+        Page<Category> page = new PageImpl<>(categoryList);
+        var pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
+
+        when(categoryService.findAll(Optional.empty(), isDeleted, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Category> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size()),
+                () -> assertEquals("Category 1", res.content().get(0).getName())
+
+        );
+        verify(categoryService, times(1)).findAll(Optional.empty(), isDeleted, pageable);
+    }
+
+    @Test
+    void getAllByIsDeletedAndName() throws Exception {
+        var LOCAL_URL = BASE_URL + "?isDeleted=true&name=Category 1";
+        var categoryList = List.of(categoria);
+        Optional<Boolean> isDeleted = Optional.of(true);
+        Optional<String> name = Optional.of("Category 1");
+        Page<Category> page = new PageImpl<>(categoryList);
+        var pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
+
+        when(categoryService.findAll(name, isDeleted, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<Category> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, res.content().size()),
+                () -> assertEquals("Category 1", res.content().get(0).getName())
+
+        );
+        verify(categoryService, times(1)).findAll(name, isDeleted, pageable);
+    }
+
 
     @Test
     void getById() throws Exception {
@@ -151,7 +207,7 @@ class CategoryRestControllerTest {
 
     @Test
     void save() throws Exception {
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1", false);
         when(categoryService.save(categoryResponseDto)).thenReturn(categoria);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -172,7 +228,7 @@ class CategoryRestControllerTest {
 
     @Test
     void saveBadRequest() throws Exception {
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("", false);
         when(categoryService.save(categoryResponseDto)).thenReturn(categoria);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -191,7 +247,7 @@ class CategoryRestControllerTest {
     @Test
     void update() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + categoria.getUuid().toString();
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1", false);
         when(categoryService.update(categoryResponseDto, categoria.getUuid())).thenReturn(categoria);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -213,7 +269,7 @@ class CategoryRestControllerTest {
     @Test
     void putBadRequest() throws Exception {
         var LOCAL_URL = BASE_URL + "/1";
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("", false);
         when(categoryService.update(categoryResponseDto, categoria.getUuid())).thenReturn(categoria);
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -232,7 +288,7 @@ class CategoryRestControllerTest {
     @Test
     void putNotFound() throws Exception {
         var LOCAL_URL = BASE_URL + "/" + categoria.getUuid().toString();
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("Category 1", false);
         when(categoryService.update(categoryResponseDto, categoria.getUuid())).thenThrow(new CategoryNotFound("Category not found"));
 
         MockHttpServletResponse response = mockMvc.perform(

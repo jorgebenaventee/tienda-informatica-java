@@ -42,4 +42,8 @@ public class Category {
     @Column(updatable = true, nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean isDeleted = false;
 }

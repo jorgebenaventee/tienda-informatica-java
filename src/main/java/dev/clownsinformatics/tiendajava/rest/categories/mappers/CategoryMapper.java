@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Component
 public class CategoryMapper {
     public Category toCategory(CategoryResponseDto categoryDto) {
-        return new Category(null, categoryDto.name(), LocalDateTime.now(), LocalDateTime.now());
+        return new Category(null, categoryDto.name(), LocalDateTime.now(), LocalDateTime.now(), false);
     }
 
     public Category toCategory(CategoryResponseDto categoryDto, Category category) {
@@ -17,7 +17,8 @@ public class CategoryMapper {
                 category.getUuid(),
                 categoryDto.name() != null ? categoryDto.name() : category.getName(),
                 category.getCreatedAt(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                category.isDeleted()
         );
     }
 }

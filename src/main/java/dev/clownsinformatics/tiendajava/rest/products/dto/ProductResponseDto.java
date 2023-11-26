@@ -15,6 +15,7 @@ public record ProductResponseDto(
         String description,
         Category category,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        Boolean isDeleted
 ) {
 }

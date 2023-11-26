@@ -31,7 +31,7 @@ class CategoryServiceImplTest {
     private final Category category = Category.builder().name("DISNEY").build();
     private final Category category2 = Category.builder().name("MARVEL").build();
 
-    private final CategoryResponseDto categoryResponseDto1 = new CategoryResponseDto("DISNEY");
+    private final CategoryResponseDto categoryResponseDto1 = new CategoryResponseDto("DISNEY", false);
 
     WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
     @Mock
@@ -51,13 +51,14 @@ class CategoryServiceImplTest {
     @Test
     void findAll() {
         Optional<String> name = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.empty();
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
         Page<Category> expectedPage = new PageImpl<>(List.of(category, category2));
 
         when(categoryRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
 
-        var res = categoryService.findAll(name, pageable);
+        var res = categoryService.findAll(name,isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(res),
@@ -70,13 +71,14 @@ class CategoryServiceImplTest {
     @Test
     void findAllByName() {
         Optional<String> name = Optional.of("DISNEY");
+        Optional<Boolean> isDeleted = Optional.empty();
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
         Page<Category> expectedPage = new PageImpl<>(List.of(category, category2));
 
         when(categoryRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
 
-        var res = categoryService.findAll(name, pageable);
+        var res = categoryService.findAll(name,isDeleted, pageable);
 
         assertAll(
                 () -> assertNotNull(res),
@@ -107,7 +109,7 @@ class CategoryServiceImplTest {
 
     @Test
     void save() throws IOException {
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY2");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY2", false);
         Category expectedCategory = Category.builder().name("DISNEY2").build();
 
         when(categoryRepository.findByName("DISNEY2")).thenReturn(Optional.empty());
@@ -123,7 +125,7 @@ class CategoryServiceImplTest {
 
     @Test
     void saveAlreadyExist() {
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY", false);
 
         when(categoryRepository.findByName("DISNEY")).thenReturn(Optional.of(category));
 
@@ -137,7 +139,7 @@ class CategoryServiceImplTest {
     void update() {
         Category expectedCategory = Category.builder().name("DISNEY3").build();
         Category categoryToUpdate = Category.builder().name("DISNEY3").build();
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY3");
+        CategoryResponseDto categoryResponseDto = new CategoryResponseDto("DISNEY3", false);
 
         when(categoryRepository.findByUuid(categoryToUpdate.getUuid())).thenReturn(Optional.of(categoryToUpdate));
         when(categoryRepository.save(any(Category.class))).thenReturn(expectedCategory);

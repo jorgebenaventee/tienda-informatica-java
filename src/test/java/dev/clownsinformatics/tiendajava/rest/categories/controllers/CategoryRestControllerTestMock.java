@@ -42,15 +42,15 @@ class CategoryRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
         Page<Category> expectedPage = new PageImpl<>(expectedCategory);
 
-        when(categoryService.findAll(name, pageable)).thenReturn(expectedPage);
+        when(categoryService.findAll(name, Optional.empty(), pageable)).thenReturn(expectedPage);
 
-        PageResponse<Category> response = categoryRestController.getAll(name, 0, 10, "uuid", "asc", request).getBody();
+        PageResponse<Category> response = categoryRestController.getAll(name, Optional.empty(), 0, 10, "uuid", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(expectedPage),
                 () -> assertEquals(response.content(), expectedPage.getContent())
         );
-        verify(categoryService, times(1)).findAll(name, pageable);
+        verify(categoryService, times(1)).findAll(name, Optional.empty(), pageable);
     }
 
     @Test
@@ -63,15 +63,58 @@ class CategoryRestControllerTestMock {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
         Page<Category> expectedPage = new PageImpl<>(expectedCategory);
 
-        when(categoryService.findAll(name, pageable)).thenReturn(expectedPage);
+        when(categoryService.findAll(name, Optional.empty(), pageable)).thenReturn(expectedPage);
 
-        PageResponse<Category> response = categoryRestController.getAll(name, 0, 10, "uuid", "asc", request).getBody();
+        PageResponse<Category> response = categoryRestController.getAll(name, Optional.empty(), 0, 10, "uuid", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(expectedPage),
                 () -> assertEquals(response.content(), expectedPage.getContent())
         );
-        verify(categoryService, times(1)).findAll(name, pageable);
+        verify(categoryService, times(1)).findAll(name, Optional.empty(), pageable);
+    }
+
+    @Test
+    void getAllByIsDeleted(){
+        Optional<Boolean> isDeleted = Optional.of(true);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/categories"));
+
+        List<Category> expectedCategory = List.of(category);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
+        Page<Category> expectedPage = new PageImpl<>(expectedCategory);
+
+        when(categoryService.findAll(Optional.empty(), isDeleted, pageable)).thenReturn(expectedPage);
+
+        PageResponse<Category> response = categoryRestController.getAll(Optional.empty(), isDeleted, 0, 10, "uuid", "asc", request).getBody();
+
+        assertAll(
+                () -> assertNotNull(expectedPage),
+                () -> assertEquals(response.content(), expectedPage.getContent())
+        );
+        verify(categoryService, times(1)).findAll(Optional.empty(), isDeleted, pageable);
+    }
+
+    @Test
+    void getAllByNameAndIsDeleted(){
+        Optional<String> name = Optional.of("DISNEY");
+        Optional<Boolean> isDeleted = Optional.of(true);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/categories"));
+
+        List<Category> expectedCategory = List.of(category);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("uuid").ascending());
+        Page<Category> expectedPage = new PageImpl<>(expectedCategory);
+
+        when(categoryService.findAll(name, isDeleted, pageable)).thenReturn(expectedPage);
+
+        PageResponse<Category> response = categoryRestController.getAll(name, isDeleted, 0, 10, "uuid", "asc", request).getBody();
+
+        assertAll(
+                () -> assertNotNull(expectedPage),
+                () -> assertEquals(response.content(), expectedPage.getContent())
+        );
+        verify(categoryService, times(1)).findAll(name, isDeleted, pageable);
     }
 
     @Test
@@ -89,7 +132,7 @@ class CategoryRestControllerTestMock {
     @Test
     void save() {
         CategoryResponseDto categoryResponseDto = new CategoryResponseDto(
-                category.getName()
+                category.getName(), category.isDeleted()
         );
         when(categoryService.save(categoryResponseDto)).thenReturn(category);
         ResponseEntity<Category> response = categoryRestController.save(categoryResponseDto);
@@ -103,7 +146,7 @@ class CategoryRestControllerTestMock {
     @Test
     void update() {
         CategoryResponseDto categoryResponseDto = new CategoryResponseDto(
-                category.getName()
+                category.getName(), category.isDeleted()
         );
         when(categoryService.update(categoryResponseDto, category.getUuid())).thenReturn(category);
         ResponseEntity<Category> response = categoryRestController.update(categoryResponseDto, category.getUuid());

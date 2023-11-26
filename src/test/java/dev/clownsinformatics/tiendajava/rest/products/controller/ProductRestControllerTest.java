@@ -89,7 +89,8 @@ class ProductRestControllerTest {
             "Descripcion del producto 1",
             category1,
             LocalDateTime.now(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            false
     );
 
     private final ProductResponseDto productResponseDto2 = new ProductResponseDto(
@@ -102,7 +103,8 @@ class ProductRestControllerTest {
             "Descripcion del producto 2",
             category2,
             LocalDateTime.now(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            false
     );
 
     private final ObjectMapper mapper = new ObjectMapper();

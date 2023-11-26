@@ -41,6 +41,7 @@ public class CategoryRestController {
 
     @GetMapping
     public ResponseEntity<PageResponse<Category>> getAll(@RequestParam(required = false) Optional<String> name,
+                                                         @RequestParam(required = false) Optional<Boolean> isDeleted,
                                                          @RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "10") int size,
                                                          @RequestParam(defaultValue = "uuid") String sortBy,
@@ -49,7 +50,7 @@ public class CategoryRestController {
     ) {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<Category> categoriaPage = categoryService.findAll(name, PageRequest.of(page, size, sort));
+        Page<Category> categoriaPage = categoryService.findAll(name, isDeleted, PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(categoriaPage, uriBuilder))
                 .body(PageResponse.of(categoriaPage, sortBy, direction));
