@@ -1,5 +1,10 @@
 package dev.clownsinformatics.tiendajava.rest.users.controllers;
 
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
+import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
+import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserInfoResponse;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserRequest;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserResponse;
@@ -10,9 +15,11 @@ import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +42,13 @@ import java.util.Optional;
 public class UsersRestController {
     private final UsersService usersService;
     private final PaginationLinksUtils paginationLinksUtils;
+    private final OrderService orderService;
 
     @Autowired
-    public UsersRestController(UsersService usersService, PaginationLinksUtils paginationLinksUtils) {
+    public UsersRestController(UsersService usersService, PaginationLinksUtils paginationLinksUtils, OrderService orderService) {
         this.usersService = usersService;
         this.paginationLinksUtils = paginationLinksUtils;
+        this.orderService = orderService;
     }
 
     /**
@@ -192,11 +201,10 @@ public class UsersRestController {
      * @param direction dirección de ordenación
      * @return Respuesta con la página de pedidos
      */
-    // TODO: Poner esto cuando haya pedidos
-/*
+
     @GetMapping("/me/pedidos")
     @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
-    public ResponseEntity<PageResponse<Pedido>> getPedidosByUsuario(
+    public ResponseEntity<PageResponse<OrderResponseDto>> getPedidosByUsuario(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -206,36 +214,31 @@ public class UsersRestController {
         log.info("Obteniendo pedidos del usuario con id: " + user.getId());
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok(PageResponse.of(pedidosService.findByIdUsuario(user.getId(), pageable), sortBy, direction));
+        return ResponseEntity.ok(PageResponse.of(orderService.findByUserId(user.getId(), pageable), sortBy, direction));
     }
-*/
 
-/*
-    */
-    // TODO: Poner esto cuando haya pedidos
+
+
 /**
      * Obtiene un pedido del usuario actual
      *
      * @param user     usuario autenticado
      * @param idPedido id del pedido
      * @return Pedido
-     * @throws UserNotFound si no existe el pedido
-     *//*
+     */
 
     @GetMapping("/me/pedidos/{id}")
     @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
-    public ResponseEntity<Pedido> getPedido(
+    public ResponseEntity<OrderResponseDto> getPedido(
             @AuthenticationPrincipal User user,
             @PathVariable("id") ObjectId idPedido
     ) {
         log.info("Obteniendo pedido con id: " + idPedido);
-        return ResponseEntity.ok(pedidosService.findById(idPedido));
+        return ResponseEntity.ok(orderService.findById(idPedido));
     }
-*/
 
-/*
-    */
-    // TODO: Poner esto cuando haya pedidos
+
+
 /**
      * Crea un pedido para el usuario actual
      *
@@ -243,24 +246,19 @@ public class UsersRestController {
      * @param pedido pedido a crear
      * @return Pedido creado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
-     * @throws PedidoNotItems                      si no hay items en el pedido (400)
-     * @throws ProductoBadPrice                    si el precio del producto no es correcto (400)
-     * @throws ProductoNotFound                    si no existe el producto (404)
-     * @throws ProductoNotStock                    si no hay stock del producto (400)
-     *//*
+     */
 
     @PostMapping("/me/pedidos")
     @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
-    public ResponseEntity<Pedido> savePedido(
+    public ResponseEntity<OrderResponseDto> savePedido(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody Pedido pedido
+            @Valid @RequestBody OrderCreateDto pedido
     ) {
         log.info("Creando pedido: " + pedido);
-        pedido.setIdUsuario(user.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidosService.save(pedido));
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(pedido));
     }
 
-    */
+
 /**
      * Actualiza un pedido del usuario actual
      *
@@ -269,34 +267,27 @@ public class UsersRestController {
      * @param pedido   pedido a actualizar
      * @return Pedido actualizado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
-     * @throws PedidoNotFound                      si no existe el pedido (404)
-     * @throws PedidoNotItems                      si no hay items en el pedido (400)
-     * @throws ProductoBadPrice                    si el precio del producto no es correcto (400)
-     * @throws ProductoNotFound                    si no existe el producto (404)
-     * @throws ProductoNotStock                    si no hay stock del producto (400)
-     *//*
+     */
 
     @PutMapping("/me/pedidos/{id}")
     @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
-    public ResponseEntity<Pedido> updatePedido(
+    public ResponseEntity<OrderResponseDto> updatePedido(
             @AuthenticationPrincipal User user,
             @PathVariable("id") ObjectId idPedido,
-            @Valid @RequestBody Pedido pedido) {
+            @Valid @RequestBody OrderUpdateDto pedido) {
         log.info("Actualizando pedido con id: " + idPedido);
-        pedido.setIdUsuario(user.getId());
-        return ResponseEntity.ok(pedidosService.update(idPedido, pedido));
+        return ResponseEntity.ok(orderService.update(idPedido, pedido));
     }
 
-    */
+
 /**
      * Borra un pedido del usuario actual
      *
      * @param user     usuario autenticado
      * @param idPedido id del pedido
      * @return Pedido borrado
-     * @throws PedidoNotFound                      si no existe el pedido (404)
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
-     *//*
+     */
 
     @DeleteMapping("/me/pedidos/{id}")
     @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
@@ -305,10 +296,10 @@ public class UsersRestController {
             @PathVariable("id") ObjectId idPedido
     ) {
         log.info("Borrando pedido con id: " + idPedido);
-        pedidosService.delete(idPedido);
+        orderService.delete(idPedido);
         return ResponseEntity.noContent().build();
     }
-*/
+
 
 
     /**
