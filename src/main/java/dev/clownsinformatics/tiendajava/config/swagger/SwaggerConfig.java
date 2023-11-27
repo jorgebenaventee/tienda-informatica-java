@@ -47,7 +47,7 @@ class SwaggerConfig {
     GroupedOpenApi httpApi() {
         return GroupedOpenApi.builder()
                 .group("http")
-                .pathsToMatch("/api/products/**", "/api/categories/**", "/api/clients/**", "/api/employee/**", "/api/suppliers/**")
+                .pathsToMatch("/api/products/**", "/api/categories/**", "/api/clients/**", "/api/employee/**", "/api/suppliers/**", "/api/auth/**")
                 .displayName("Informatic components store")
                 .build();
     }

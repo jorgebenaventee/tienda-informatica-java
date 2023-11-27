@@ -425,7 +425,8 @@ class ProductServiceImplTest {
                 supplier1.getContact(),
                 supplier1.getAddress(),
                 supplier1.getDateOfHire(),
-                supplier1.getCategory()
+                supplier1.getCategory(),
+                supplier1.getIsDeleted()
         );
 
         when(categoryService.findByName(productCreateDto.category().getName())).thenReturn(category1);
@@ -500,7 +501,8 @@ class ProductServiceImplTest {
                 supplier1.getContact(),
                 supplier1.getAddress(),
                 supplier1.getDateOfHire(),
-                supplier1.getCategory()
+                supplier1.getCategory(),
+                supplier1.getIsDeleted()
         );
 
         when(repository.findById(id)).thenReturn(Optional.of(productExpected));

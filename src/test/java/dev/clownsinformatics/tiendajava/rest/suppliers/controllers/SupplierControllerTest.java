@@ -101,7 +101,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(myEndpoint)
@@ -116,7 +116,7 @@ class SupplierControllerTest {
                 () -> assertEquals(2, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false), pageable);
     }
 
     @Test
@@ -127,7 +127,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), name, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), name, Optional.empty(), Optional.of(false), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -142,7 +142,7 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), name, Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), name, Optional.empty(), Optional.of(false), pageable);
     }
 
     @Test
@@ -153,7 +153,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(categoryName, Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(categoryName, Optional.empty(), Optional.empty(), Optional.of(false), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -168,7 +168,7 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), Optional.of(false), pageable);
     }
 
     @Test
@@ -179,7 +179,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.of(false), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -194,7 +194,7 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.of(false), pageable);
     }
 
     @Test

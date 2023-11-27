@@ -34,6 +34,7 @@ class SupplierControllerTestMock {
             .name("Category 1")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
+            .isDeleted(false)
             .build();
 
     private final Category category2 = Category.builder()
@@ -41,6 +42,7 @@ class SupplierControllerTestMock {
             .name("Category 2")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
+            .isDeleted(false)
             .build();
 
     private final Supplier supplier1 = Supplier.builder()
@@ -96,9 +98,9 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
@@ -121,7 +123,7 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.of("Category 1");
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
@@ -145,7 +147,7 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.of("Supplier 1");
         Optional<Integer> contact = Optional.empty();
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
@@ -169,7 +171,7 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.of(1);
-        Optional<Boolean> isDeleted = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);

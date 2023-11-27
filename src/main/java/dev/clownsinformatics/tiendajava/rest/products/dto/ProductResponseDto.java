@@ -24,12 +24,13 @@ public record ProductResponseDto(
         String description,
         @Schema(description = "Product category", example = "PORTATILES")
         Category category,
+        @Schema(description = "Product supplier", example = "PC GAMER")
         Supplier supplier,
         @Schema(description = "Product created at", example = "2021-10-10T10:10:10")
         LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        Boolean isDeleted
         @Schema(description = "Product updated at", example = "2021-10-10T10:10:10")
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        @Schema(description = "Product deleted at", example = "2021-10-10T10:10:10")
+        Boolean isDeleted
 ) {
 }
