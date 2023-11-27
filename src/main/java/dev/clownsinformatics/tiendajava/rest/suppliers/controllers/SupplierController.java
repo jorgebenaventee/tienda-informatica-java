@@ -7,6 +7,8 @@ import dev.clownsinformatics.tiendajava.rest.suppliers.services.SupplierService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +50,16 @@ public class SupplierController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Suppliers not found")
     })
+    @Parameters({
+            @Parameter(name = "category", description = "Category of the supplier", example = "PORTATILES"),
+            @Parameter(name = "name", description = "Name of the supplier", example = "HP"),
+            @Parameter(name = "contact", description = "Contact of the supplier", example = "123456789"),
+            @Parameter(name = "isDeleted", description = "Supplier deleted", example = "false"),
+            @Parameter(name = "page", description = "Page number", example = "0"),
+            @Parameter(name = "size", description = "Number of elements per page", example = "10"),
+            @Parameter(name = "sortBy", description = "Sort by field", example = "id"),
+            @Parameter(name = "direction", description = "Sort direction", example = "asc")
+    })
     @GetMapping()
     public ResponseEntity<PageResponse<SupplierResponseDto>> getAll(@RequestParam(required = false) Optional<String> category,
                                                                     @RequestParam(required = false) Optional<String> name,
@@ -73,6 +85,9 @@ public class SupplierController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Supplier not found")
     })
+    @Parameters({
+            @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true)
+    })
     @GetMapping("/{id}")
     public SupplierResponseDto getSupplierByUUID(@PathVariable String id) {
         log.info("Searching suppliers with ID: " + id);
@@ -84,6 +99,9 @@ public class SupplierController {
             @ApiResponse(responseCode = "201", description = "Supplier created"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Supplier not found")
+    })
+    @Parameters({
+            @Parameter(name = "supplierCreateDto", description = "Supplier to create", required = true)
     })
     @NonNull
     @PostMapping()
@@ -98,6 +116,10 @@ public class SupplierController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Supplier not found")
     })
+    @Parameters({
+            @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true),
+            @Parameter(name = "supplierUpdateDto", description = "Supplier to update", required = true)
+    })
     @NonNull
     @PutMapping("/{id}")
     public ResponseEntity<SupplierResponseDto> updateSupplier(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto supplierUpdateDto) {
@@ -111,6 +133,10 @@ public class SupplierController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Supplier not found")
     })
+    @Parameters({
+            @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true),
+            @Parameter(name = "supplierUpdateDto", description = "Supplier to update", required = true)
+    })
     @NonNull
     @PatchMapping("/{id}")
     public ResponseEntity<SupplierResponseDto> updateSupplierPatch(@PathVariable String id, @Valid @RequestBody SupplierUpdateDto supplierUpdateDto) {
@@ -123,6 +149,9 @@ public class SupplierController {
             @ApiResponse(responseCode = "204", description = "Supplier deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Supplier not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true)
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSupplier(@PathVariable String id) {

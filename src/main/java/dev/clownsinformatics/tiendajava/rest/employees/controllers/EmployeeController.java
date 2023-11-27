@@ -7,6 +7,8 @@ import dev.clownsinformatics.tiendajava.rest.employees.services.EmployeeService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +43,16 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "Found all employees"),
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
+    @Parameters({
+            @Parameter(name = "name", description = "Employee name"),
+            @Parameter(name = "minSalary", description = "Minimum salary"),
+            @Parameter(name = "maxSalary", description = "Maximum salary"),
+            @Parameter(name = "position", description = "Employee position"),
+            @Parameter(name = "page", description = "Page number"),
+            @Parameter(name = "size", description = "Page size"),
+            @Parameter(name = "sortBy", description = "Sort by"),
+            @Parameter(name = "direction", description = "Sort direction")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<EmployeeResponseDto>> getAllEmployees(
             @RequestParam(required = false) Optional<String> name,
@@ -71,6 +83,9 @@ public class EmployeeController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Employee not found")
     })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true)
+    })
     @GetMapping("{id}")
     public ResponseEntity<EmployeeResponseDto> getEmployeeById(@PathVariable Integer id) {
         log.info("Getting employee with id: {}", id);
@@ -81,6 +96,9 @@ public class EmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    @Parameters({
+            @Parameter(name = "employee", description = "Employee to create", required = true)
     })
     @PostMapping
     public ResponseEntity<EmployeeResponseDto> createEmployee(@Valid @RequestBody CreateEmployeeRequestDto employee) {
@@ -93,6 +111,10 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "Updated employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true),
+            @Parameter(name = "employee", description = "Employee to update", required = true)
     })
     @PutMapping("{id}")
     public ResponseEntity<EmployeeResponseDto> updateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
@@ -107,6 +129,10 @@ public class EmployeeController {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Employee not found")
     })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true),
+            @Parameter(name = "employeeUpdate", description = "Employee to partially update",required = true)
+    })
     @PatchMapping("{id}")
     public ResponseEntity<EmployeeResponseDto> partialUpdateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
         log.info("Partially updating employee with id: {}", id);
@@ -119,6 +145,9 @@ public class EmployeeController {
             @ApiResponse(responseCode = "204", description = "Deleted employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true)
     })
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {

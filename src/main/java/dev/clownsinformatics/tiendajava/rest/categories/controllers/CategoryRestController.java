@@ -6,6 +6,8 @@ import dev.clownsinformatics.tiendajava.rest.categories.services.CategoryService
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +48,13 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Categories not found")
         })
+    @Parameters ({
+            @Parameter(name = "name", description = "Category name"),
+            @Parameter(name = "page", description = "Page number"),
+            @Parameter(name = "size", description = "Page size"),
+            @Parameter(name = "sortBy", description = "Sort by"),
+            @Parameter(name = "direction", description = "Sort direction")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<Category>> getAll(@RequestParam(required = false) Optional<String> name,
                                                          @RequestParam(defaultValue = "0") int page,
@@ -68,6 +77,9 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found")
         })
+    @Parameters ({
+            @Parameter(name = "id", description = "Category id", required = true)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Category> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(categoryService.findById(id));
@@ -79,6 +91,9 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "409", description = "Category already exists")
         })
+    @Parameters ({
+            @Parameter(name = "category", description = "Category to create", required = true)
+    })
     @PostMapping()
     public ResponseEntity<Category> save(@Valid @RequestBody CategoryResponseDto category) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
@@ -90,6 +105,10 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found")
         })
+    @Parameters ({
+            @Parameter(name = "category", description = "Category to update", required = true),
+            @Parameter(name = "id", description = "Category id", required = true)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Category> update(@Valid @RequestBody CategoryResponseDto category, @PathVariable UUID id) {
         return ResponseEntity.ok(categoryService.update(category, id));
@@ -101,18 +120,16 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found")
         })
+    @Parameters ({
+            @Parameter(name = "id", description = "Category id", required = true)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         categoryService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Operation(summary = "Get all products from a category")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the products"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Products not found")
-        })
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(

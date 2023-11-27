@@ -8,6 +8,8 @@ import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +53,9 @@ public class ClientRestController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "409", description = "Client already exists")
     })
+    @Parameters({
+            @Parameter(name = "clientCreateRequest", required = true, description = "Client to create")
+    })
     @PostMapping("/")
     public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientCreateRequest clientCreateRequest) {
         log.info("Creating client");
@@ -64,6 +69,10 @@ public class ClientRestController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id"),
+            @Parameter(name = "clientUpdateRequest", required = true, description = "Client to update")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest clientUpdateRequest) {
         log.info("Updating client");
@@ -75,6 +84,9 @@ public class ClientRestController {
             @ApiResponse(responseCode = "200", description = "Client found"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClient(@PathVariable Long id) {
         log.info("Getting client");
@@ -84,6 +96,14 @@ public class ClientRestController {
     @Operation(summary = "Get all clients")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Clients found")
+    })
+    @Parameters({
+            @Parameter(name = "username", description = "Client username"),
+            @Parameter(name = "isDeleted", description = "Client is deleted"),
+            @Parameter(name = "page", description = "Page number"),
+            @Parameter(name = "size", description = "Page size"),
+            @Parameter(name = "sortBy", description = "Sort by"),
+            @Parameter(name = "direction", description = "Sort direction")
     })
     @GetMapping("/")
     public ResponseEntity<PageResponse<ClientResponse>> getAllClients(@RequestParam(required = false) Optional<String> username, @RequestParam(defaultValue = "false") String isDeleted,
@@ -106,6 +126,9 @@ public class ClientRestController {
             @ApiResponse(responseCode = "204", description = "Client deleted"),
             @ApiResponse(responseCode = "404", description = "Client not found")
     })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         log.info("Deleting client");
@@ -118,6 +141,10 @@ public class ClientRestController {
             @ApiResponse(responseCode = "200", description = "Client image updated"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id"),
+            @Parameter(name = "file", required = true, description = "Client image")
     })
     @PatchMapping("/{id}/image")
     public ResponseEntity<ClientResponse> updateImage(@PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestParam("withUrl") Optional<Boolean> withUrl) {
