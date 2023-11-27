@@ -59,7 +59,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable) {
+    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact,  Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Supplier> specSupplierCategory = (root, query, criteriaBuilder) ->
                 category.map(c -> {
                     Join<Supplier, Category> categoriaJoin = root.join("category");
@@ -69,11 +69,14 @@ public class SupplierServiceImpl implements SupplierService {
         Specification<Supplier> specSupplierName = (root, query, criteriaBuilder) ->
                 name.map(n -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + n.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+        Specification<Supplier> specIsDeleted = (root, query, criteriaBuilder) ->
+                isDeleted.map(d -> criteriaBuilder.equal(root.get("isDeleted"), d))
+                        .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
         Specification<Supplier> specSupplierContact = (root, query, criteriaBuilder) ->
                 contact.map(c -> criteriaBuilder.equal(root.get("contact"), c))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
 
-        Specification<Supplier> spec = Specification.where(specSupplierCategory).and(specSupplierName).and(specSupplierContact);
+        Specification<Supplier> spec = Specification.where(specSupplierCategory).and(specSupplierName).and(specIsDeleted).and(specSupplierContact);
         return supplierRepository.findAll(spec, pageable).map(supplierMapper::toSupplierDto);
     }
 

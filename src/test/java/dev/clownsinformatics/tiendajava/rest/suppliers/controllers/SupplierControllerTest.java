@@ -67,7 +67,8 @@ class SupplierControllerTest {
             1,
             "Calle 1",
             LocalDateTime.now(),
-            category1
+            category1,
+            false
     );
 
     private final SupplierResponseDto supplierResponseDto2 = new SupplierResponseDto(
@@ -76,7 +77,8 @@ class SupplierControllerTest {
             2,
             "Calle 2",
             LocalDateTime.now(),
-            category2
+            category2,
+            false
     );
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -99,7 +101,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(myEndpoint)
@@ -114,7 +116,7 @@ class SupplierControllerTest {
                 () -> assertEquals(2, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
@@ -125,7 +127,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), name, Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), name, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -140,7 +142,7 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), name, Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), name, Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
@@ -151,7 +153,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(categoryName, Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
+        when(supplierService.findAll(categoryName, Optional.empty(), Optional.empty(), Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -166,7 +168,7 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), pageable);
+        verify(supplierService, times(1)).findAll(categoryName, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
     }
 
     @Test
@@ -177,7 +179,7 @@ class SupplierControllerTest {
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         var page = new PageImpl<>(supplierList);
 
-        when(supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, pageable)).thenReturn(page);
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.empty(), pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                 get(localEndpoint)
@@ -192,7 +194,33 @@ class SupplierControllerTest {
                 () -> assertEquals(1, supplier.content().size())
         );
 
-        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, pageable);
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.empty(), pageable);
+    }
+
+    @Test
+    void getAllByIsDeleted() throws Exception {
+        var supplierList = List.of(supplierResponseDto);
+        var localEndpoint = myEndpoint + "?isDeleted=true";
+        Optional<Boolean> isDeleted = Optional.of(true);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        var page = new PageImpl<>(supplierList);
+
+        when(supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), isDeleted, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                get(localEndpoint)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        PageResponse<SupplierResponseDto> supplier = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(1, supplier.content().size())
+        );
+
+        verify(supplierService, times(1)).findAll(Optional.empty(), Optional.empty(), Optional.empty(), isDeleted, pageable);
     }
 
     @Test
@@ -250,7 +278,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
         when(supplierService.save(any(SupplierCreateDto.class))).thenReturn(supplierResponseDto);
 
@@ -279,7 +308,8 @@ class SupplierControllerTest {
                 "",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
         when(supplierService.save(supplierCreateDto)).thenThrow(new SupplierBadRequest(""));
 
@@ -302,7 +332,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 -1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
         when(supplierService.save(supplierCreateDto)).thenThrow(new SupplierBadRequest(""));
 
@@ -325,7 +356,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "",
-                category1
+                category1,
+                false
         );
         when(supplierService.save(supplierCreateDto)).thenThrow(new SupplierBadRequest(""));
 
@@ -348,7 +380,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                null
+                null,
+                false
         );
         when(supplierService.save(supplierCreateDto)).thenThrow(new SupplierBadRequest(""));
 
@@ -373,7 +406,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
 
         when(supplierService.update(supplierUpdateDto, uuid)).thenReturn(supplierResponseDto);
@@ -407,7 +441,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
 
         when(supplierService.update(supplierUpdateDto, uuid)).thenThrow(new SupplierNotFound(UUID.fromString(uuid)));
@@ -433,7 +468,8 @@ class SupplierControllerTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
         when(supplierService.update(supplierUpdateDto, uuid)).thenReturn(supplierResponseDto);
 
