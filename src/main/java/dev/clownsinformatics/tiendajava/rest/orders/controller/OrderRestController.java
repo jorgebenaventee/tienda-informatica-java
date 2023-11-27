@@ -6,6 +6,11 @@ import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +44,18 @@ public class OrderRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    @Operation(summary = "Get all orders")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Found all orders"),
+            @ApiResponse(responseCode = "400", description = "Invalid page size supplied"),
+            @ApiResponse(responseCode = "404", description = "Orders not found")
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "Page number", example = "0"),
+            @Parameter(name = "size", description = "Number of elements per page", example = "10"),
+            @Parameter(name = "sortBy", description = "Default sort order is ascending.", example = "id"),
+            @Parameter(name = "direction", description = "Sorting order in the format: ASC|DESC. Default sort order is ascending.", example = "asc")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<OrderResponseDto>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -56,12 +73,34 @@ public class OrderRestController {
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
+    @Operation(summary = "Get order by id")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Found the order"),
+            @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
+            @ApiResponse(responseCode = "404", description = "Order not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Order id", example = "60f0a9b9e4b0e3a6f0f3f0a1", required = true)
+    })
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("id") ObjectId id) {
         log.info("Getting order with id {}", id);
         return ResponseEntity.ok(orderService.findById(id));
     }
 
+    @Operation(summary = "Get orders by user id")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "400", description = "Invalid user id supplied"),
+            @ApiResponse(responseCode = "404", description = "Orders not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "User id", example = "60f0a9b9e4b0e3a6f0f3f0a1", required = true),
+            @Parameter(name = "page", description = "Page number", example = "0"),
+            @Parameter(name = "size", description = "Number of elements per page", example = "10"),
+            @Parameter(name = "sortBy", description = "Default sort order is ascending.", example = "id"),
+            @Parameter(name = "direction", description = "Default sort order is ascending.", example = "asc")
+    })
     @GetMapping("/user/{id}")
     public ResponseEntity<PageResponse<OrderResponseDto>> getOrdersByUserId(
             @PathVariable("id") Long id,
@@ -77,18 +116,49 @@ public class OrderRestController {
         return ResponseEntity.ok(PageResponse.of(orderService.findByUserId(id, pageable), sortBy, direction));
     }
 
+    @Operation(summary = "Get orders by status")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Found the orders"),
+            @ApiResponse(responseCode = "400", description = "Invalid status supplied"),
+            @ApiResponse(responseCode = "404", description = "Orders not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
+    @Parameters({
+            @Parameter(name = "order create body", description = "Order create body", required = true)
+    })
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@Valid @RequestBody OrderCreateDto order) {
         log.info("Creating order {}", order);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(order));
     }
 
+    @Operation(summary = "Update order by id")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Updated the order"),
+            @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Order id", example = "60f0a9b9e4b0e3a6f0f3f0a1", required = true),
+            @Parameter(name = "order update body", description = "Order update body", required = true)
+    })
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable("id") ObjectId id, @Valid @RequestBody OrderUpdateDto order) {
         log.info("Updating order with id {}", id);
         return ResponseEntity.ok(orderService.update(id, order));
     }
 
+    @Operation(summary = "Delete order by id")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "204", description = "Deleted the order"),
+            @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Order id", example = "60f0a9b9e4b0e3a6f0f3f0a1", required = true)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable("id") ObjectId id) {
         log.info("Deleting order with id {}", id);

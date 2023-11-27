@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.users.controllers;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
-import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserInfoResponse;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserRequest;
@@ -12,6 +11,11 @@ import dev.clownsinformatics.tiendajava.rest.users.models.User;
 import dev.clownsinformatics.tiendajava.rest.users.services.UsersService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +68,22 @@ public class UsersRestController {
      * @param request   petición
      * @return Respuesta con la página de usuarios
      */
+
+    @Operation(summary = "Find all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "username", required = false, description = "Username"),
+            @Parameter(name = "email", required = false, description = "Email"),
+            @Parameter(name = "isDeleted", required = false, description = "Is deleted"),
+            @Parameter(name = "page", required = false, description = "Page"),
+            @Parameter(name = "size", required = false, description = "Size"),
+            @Parameter(name = "sortBy", required = false, description = "Sort by"),
+            @Parameter(name = "direction", required = false, description = "Direction"),
+            @Parameter(name = "request", required = true, description = "Request")
+    })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PageResponse<UserResponse>> findAll(
@@ -78,9 +98,7 @@ public class UsersRestController {
     ) {
         log.info("findAll: username: {}, email: {}, isDeleted: {}, page: {}, size: {}, sortBy: {}, direction: {}",
                 username, email, isDeleted, page, size, sortBy, direction);
-        // Creamos el objeto de ordenación
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        // Creamos cómo va a ser la paginación
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
         Page<UserResponse> pageResult = usersService.findAll(username, email, isDeleted, PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
@@ -95,8 +113,16 @@ public class UsersRestController {
      * @return Usuario si existe
      * @throws dev.clownsinformatics.tiendajava.rest.users.exceptions.UserNotFound si no existe el usuario (404)
      */
+    @Operation(summary = "Find user by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "User id")
+    })
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserInfoResponse> findById(@PathVariable Long id) {
         log.info("findById: id: {}", id);
         return ResponseEntity.ok(usersService.findById(id));
@@ -107,11 +133,20 @@ public class UsersRestController {
      *
      * @param userRequest usuario a crear
      * @return Usuario creado
-     * @throws dev.clownsinformatics.tiendajava.rest.users.exceptions.UserNameOrEmailExists               si el nombre de usuario o el email ya existen
-     * @throws HttpClientErrorException.BadRequest si hay algún error de validación
+     * @throws dev.clownsinformatics.tiendajava.rest.users.exceptions.UserNameOrEmailExists si el nombre de usuario o el email ya existen
+     * @throws HttpClientErrorException.BadRequest                                          si hay algún error de validación
      */
+    @Operation(summary = "Create user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "userRequest", required = true, description = "User data")
+    })
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
         log.info("save: userRequest: {}", userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(usersService.save(userRequest));
@@ -127,8 +162,19 @@ public class UsersRestController {
      * @throws HttpClientErrorException.BadRequest                                          si hay algún error de validación (400)
      * @throws dev.clownsinformatics.tiendajava.rest.users.exceptions.UserNameOrEmailExists si el nombre de usuario o el email ya existen (400)
      */
+    @Operation(summary = "Update user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "User id"),
+            @Parameter(name = "userRequest", required = true, description = "User data")
+    })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
         log.info("update: id: {}, userRequest: {}", id, userRequest);
         return ResponseEntity.ok(usersService.update(id, userRequest));
@@ -141,8 +187,18 @@ public class UsersRestController {
      * @return Respuesta vacía
      * @throws dev.clownsinformatics.tiendajava.rest.users.exceptions.UserNotFound si no existe el usuario (404)
      */
+    @Operation(summary = "Delete user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "User id")
+    })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         log.info("delete: id: {}", id);
         usersService.deleteById(id);
@@ -155,8 +211,16 @@ public class UsersRestController {
      * @param user usuario autenticado
      * @return Datos del usuario
      */
+    @Operation(summary = "Get current user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data")
+    })
     @GetMapping("/me/profile")
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserInfoResponse> me(@AuthenticationPrincipal User user) {
         log.info("Obteniendo usuario");
         return ResponseEntity.ok(usersService.findById(user.getId()));
@@ -170,8 +234,17 @@ public class UsersRestController {
      * @return Usuario actualizado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
      */
+    @Operation(summary = "Update current user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "userRequest", required = true, description = "User data")
+    })
     @PutMapping("/me/profile")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponse> updateMe(@AuthenticationPrincipal User user, @Valid @RequestBody UserRequest userRequest) {
         log.info("updateMe: user: {}, userRequest: {}", user, userRequest);
         return ResponseEntity.ok(usersService.update(user.getId(), userRequest));
@@ -183,8 +256,16 @@ public class UsersRestController {
      * @param user usuario autenticado
      * @return Respuesta vacía
      */
+    @Operation(summary = "Delete current user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data")
+    })
     @DeleteMapping("/me/profile")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteMe(@AuthenticationPrincipal User user) {
         log.info("deleteMe: user: {}", user);
         usersService.deleteById(user.getId());
@@ -201,9 +282,20 @@ public class UsersRestController {
      * @param direction dirección de ordenación
      * @return Respuesta con la página de pedidos
      */
-
+    @Operation(summary = "Get current user orders")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "page", required = false, description = "Page"),
+            @Parameter(name = "size", required = false, description = "Size"),
+            @Parameter(name = "sortBy", required = false, description = "Sort by"),
+            @Parameter(name = "direction", required = false, description = "Direction")
+    })
     @GetMapping("/me/pedidos")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PageResponse<OrderResponseDto>> getPedidosByUsuario(
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
@@ -218,17 +310,24 @@ public class UsersRestController {
     }
 
 
-
-/**
+    /**
      * Obtiene un pedido del usuario actual
      *
      * @param user     usuario autenticado
      * @param idPedido id del pedido
      * @return Pedido
      */
-
+    @Operation(summary = "Get current user order")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "idPedido", required = true, description = "Order id")
+    })
     @GetMapping("/me/pedidos/{id}")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<OrderResponseDto> getPedido(
             @AuthenticationPrincipal User user,
             @PathVariable("id") ObjectId idPedido
@@ -238,8 +337,7 @@ public class UsersRestController {
     }
 
 
-
-/**
+    /**
      * Crea un pedido para el usuario actual
      *
      * @param user   usuario autenticado
@@ -247,9 +345,18 @@ public class UsersRestController {
      * @return Pedido creado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
      */
-
+    @Operation(summary = "Create current user order")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "pedido", required = true, description = "Order data")
+    })
     @PostMapping("/me/pedidos")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<OrderResponseDto> savePedido(
             @AuthenticationPrincipal User user,
             @Valid @RequestBody OrderCreateDto pedido
@@ -259,7 +366,7 @@ public class UsersRestController {
     }
 
 
-/**
+    /**
      * Actualiza un pedido del usuario actual
      *
      * @param user     usuario autenticado
@@ -268,9 +375,19 @@ public class UsersRestController {
      * @return Pedido actualizado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
      */
-
+    @Operation(summary = "Update current user order")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "idPedido", required = true, description = "Order id"),
+            @Parameter(name = "pedido", required = true, description = "Order data")
+    })
     @PutMapping("/me/pedidos/{id}")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<OrderResponseDto> updatePedido(
             @AuthenticationPrincipal User user,
             @PathVariable("id") ObjectId idPedido,
@@ -280,7 +397,7 @@ public class UsersRestController {
     }
 
 
-/**
+    /**
      * Borra un pedido del usuario actual
      *
      * @param user     usuario autenticado
@@ -288,9 +405,19 @@ public class UsersRestController {
      * @return Pedido borrado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
      */
-
+    @Operation(summary = "Delete current user order")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "user", required = true, description = "User data"),
+            @Parameter(name = "idPedido", required = true, description = "Order id")
+    })
     @DeleteMapping("/me/pedidos/{id}")
-    @PreAuthorize("hasRole('USER')") // Solo los usuarios pueden acceder
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deletePedido(
             @AuthenticationPrincipal User user,
             @PathVariable("id") ObjectId idPedido
@@ -299,7 +426,6 @@ public class UsersRestController {
         orderService.delete(idPedido);
         return ResponseEntity.noContent().build();
     }
-
 
 
     /**

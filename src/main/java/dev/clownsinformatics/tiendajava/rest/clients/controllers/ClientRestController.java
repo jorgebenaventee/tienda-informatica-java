@@ -53,7 +53,7 @@ public class ClientRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client created"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "409", description = "Client already exists")
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "clientCreateRequest", required = true, description = "Client to create")
@@ -70,7 +70,8 @@ public class ClientRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client updated"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "404", description = "Client not found")
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", required = true, description = "Client id"),
@@ -128,7 +129,8 @@ public class ClientRestController {
     @Operation(summary = "Delete a client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Client deleted"),
-            @ApiResponse(responseCode = "404", description = "Client not found")
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", required = true, description = "Client id")
@@ -145,7 +147,8 @@ public class ClientRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client image updated"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "404", description = "Client not found")
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", required = true, description = "Client id"),

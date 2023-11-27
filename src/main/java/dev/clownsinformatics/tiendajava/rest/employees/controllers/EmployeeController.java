@@ -97,7 +97,8 @@ public class EmployeeController {
     @Operation(summary = "Create employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created employee"),
-            @ApiResponse(responseCode = "400", description = "Invalid request")
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "employee", description = "Employee to create", required = true)
@@ -113,7 +114,8 @@ public class EmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Employee not found")
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "Employee id", required = true),
@@ -131,7 +133,8 @@ public class EmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Partially updated employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Employee not found")
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "Employee id", required = true),
@@ -149,7 +152,8 @@ public class EmployeeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted employee"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Employee not found")
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "Employee id", required = true)

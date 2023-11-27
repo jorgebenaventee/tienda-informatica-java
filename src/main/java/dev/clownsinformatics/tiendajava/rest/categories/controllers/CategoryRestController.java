@@ -92,7 +92,8 @@ public class CategoryRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "409", description = "Category already exists")
+            @ApiResponse(responseCode = "409", description = "Category already exists"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
         })
     @Parameters ({
             @Parameter(name = "category", description = "Category to create", required = true)
@@ -107,7 +108,8 @@ public class CategoryRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category updated"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Category not found")
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
         })
     @Parameters ({
             @Parameter(name = "category", description = "Category to update", required = true),
@@ -123,7 +125,8 @@ public class CategoryRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Category deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Category not found")
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
         })
     @Parameters ({
             @Parameter(name = "id", description = "Category id", required = true)

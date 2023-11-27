@@ -108,7 +108,8 @@ public class ProductRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the product"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "product", description = "Product body", required = true)
@@ -124,7 +125,8 @@ public class ProductRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the product"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "productUpdate", description = "Product update body", required = true)
@@ -140,7 +142,8 @@ public class ProductRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the product"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "productUpdate", description = "Product update body", required = true)
@@ -156,7 +159,8 @@ public class ProductRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the product"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "file", description = "Product image", required = true)
@@ -175,7 +179,8 @@ public class ProductRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the product"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "Product id", required = true)

@@ -98,7 +98,8 @@ public class SupplierController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Supplier created"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Supplier not found")
+            @ApiResponse(responseCode = "404", description = "Supplier not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "supplierCreateDto", description = "Supplier to create", required = true)
@@ -114,7 +115,8 @@ public class SupplierController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Supplier updated"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Supplier not found")
+            @ApiResponse(responseCode = "404", description = "Supplier not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true),
@@ -131,7 +133,8 @@ public class SupplierController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Supplier updated"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Supplier not found")
+            @ApiResponse(responseCode = "404", description = "Supplier not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true),
@@ -148,7 +151,8 @@ public class SupplierController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Supplier deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Supplier not found")
+            @ApiResponse(responseCode = "404", description = "Supplier not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @Parameters({
             @Parameter(name = "id", description = "UUID of the supplier", example = "123e4567-e89b-12d3-a456-426614174000", required = true)
