@@ -6,6 +6,9 @@ import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +43,12 @@ public class ProductRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    @Operation(summary = "Get all products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the products"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Products not found")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<ProductResponseDto>> getAllProducts(
             @RequestParam(required = false) Optional<String> name,
@@ -63,30 +72,60 @@ public class ProductRestController {
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
+    @Operation(summary = "Get a product by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable String id) {
         log.info("Searching product with id: {}", id);
         return ResponseEntity.ok(productService.findById(id));
     }
 
+    @Operation(summary = "Get a product by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @PostMapping()
     public ResponseEntity<ProductResponseDto> postProduct(@Valid @RequestBody ProductCreateDto product) {
         log.info("Creating product: {}", product);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(product));
     }
 
+    @Operation(summary = "Get a product by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> putProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Updating product with id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
+    @Operation(summary = "Get a product by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponseDto> patchProduct(@PathVariable String id, @Valid @RequestBody ProductUpdateDto product) {
         log.info("Updating partial product with id: {}", id);
         return ResponseEntity.ok(productService.update(id, product));
     }
 
+    @Operation(summary = "Get a product by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponseDto> patchProductImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         log.info("Updating product image with id: {}", id);
@@ -96,6 +135,12 @@ public class ProductRestController {
         return ResponseEntity.ok(productService.updateImage(id, file));
     }
 
+    @Operation(summary = "Get a product by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the product"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.info("Deleting product with id: {}", id);

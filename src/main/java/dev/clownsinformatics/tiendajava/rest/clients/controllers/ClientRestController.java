@@ -7,27 +7,23 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
-import jakarta.servlet.ServletException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +45,12 @@ public class ClientRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    @Operation(summary = "Create a new client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "409", description = "Client already exists")
+    })
     @PostMapping("/")
     public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientCreateRequest clientCreateRequest) {
         log.info("Creating client");
@@ -56,18 +58,33 @@ public class ClientRestController {
         return ResponseEntity.ok(clientResponse);
     }
 
+    @Operation(summary = "Update a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest clientUpdateRequest) {
         log.info("Updating client");
         return ResponseEntity.ok(clientService.update(id, clientUpdateRequest));
     }
 
+    @Operation(summary = "Get a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client found"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClient(@PathVariable Long id) {
         log.info("Getting client");
         return ResponseEntity.ok(clientService.findById(id));
     }
 
+    @Operation(summary = "Get all clients")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clients found")
+    })
     @GetMapping("/")
     public ResponseEntity<PageResponse<ClientResponse>> getAllClients(@RequestParam(required = false) Optional<String> username, @RequestParam(defaultValue = "false") String isDeleted,
                                                                       @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
@@ -84,6 +101,11 @@ public class ClientRestController {
 
     }
 
+    @Operation(summary = "Delete a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Client deleted"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         log.info("Deleting client");
@@ -91,6 +113,12 @@ public class ClientRestController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Update a client image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client image updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
     @PatchMapping("/{id}/image")
     public ResponseEntity<ClientResponse> updateImage(@PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestParam("withUrl") Optional<Boolean> withUrl) {
         log.info("Updating image");
