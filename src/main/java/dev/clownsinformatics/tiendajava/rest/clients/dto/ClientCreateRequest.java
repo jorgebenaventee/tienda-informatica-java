@@ -7,7 +7,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 
-
+/**
+ * DTO para crear un cliente
+ * @param username
+ * @param name
+ * @param balance
+ * @param email
+ * @param address
+ * @param phone
+ * @param birthdate
+ * @param image
+ * @param isDeleted
+ */
 public record ClientCreateRequest(
         @NotBlank(message = "User can not be empty.")
         @Schema(description = "Username of the client.", example = "username")

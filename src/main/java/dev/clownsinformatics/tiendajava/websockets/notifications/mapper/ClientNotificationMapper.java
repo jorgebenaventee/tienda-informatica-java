@@ -4,7 +4,9 @@ import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import dev.clownsinformatics.tiendajava.websockets.notifications.dto.ClientNotificationDto;
 import org.springframework.stereotype.Component;
 
-
+/**
+ * Mapper de la entidad Client
+ */
 @Component
 public class ClientNotificationMapper {
     public ClientNotificationDto toClientNotificationDto(Client client) {

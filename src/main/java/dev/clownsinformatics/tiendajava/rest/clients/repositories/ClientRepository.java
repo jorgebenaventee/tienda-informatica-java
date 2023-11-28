@@ -11,6 +11,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 
+/**
+ * Repositorio de la entidad Client
+ * Se usa para implementar ciertas consultas personalizadas
+ */
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long>, JpaSpecificationExecutor<Client> {
 
