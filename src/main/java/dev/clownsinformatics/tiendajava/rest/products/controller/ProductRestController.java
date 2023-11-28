@@ -57,17 +57,17 @@ public class ProductRestController {
     /**
      * Obtiene todos los productos según los parámetros de consulta proporcionados.
      *
-     * @param name       Opcional. Nombre del producto para filtrar.
-     * @param maxWeight  Opcional. Peso máximo del producto para filtrar.
-     * @param maxPrice   Opcional. Precio máximo del producto para filtrar.
-     * @param minStock   Opcional. Cantidad mínima de stock para filtrar.
-     * @param category   Opcional. Nombre de la categoría del producto para filtrar.
-     * @param isDeleted  Opcional. Indica si el producto está marcado como eliminado.
-     * @param page       Número de página.
-     * @param size       Tamaño de la página.
-     * @param sortBy     Campo por el cual se debe ordenar la respuesta.
-     * @param direction  Dirección de ordenamiento (ascendente o descendente).
-     * @param request    Objeto HttpServletRequest para construir enlaces de paginación.
+     * @param name      Opcional. Nombre del producto para filtrar.
+     * @param maxWeight Opcional. Peso máximo del producto para filtrar.
+     * @param maxPrice  Opcional. Precio máximo del producto para filtrar.
+     * @param minStock  Opcional. Cantidad mínima de stock para filtrar.
+     * @param category  Opcional. Nombre de la categoría del producto para filtrar.
+     * @param isDeleted Opcional. Indica si el producto está marcado como eliminado.
+     * @param page      Número de página.
+     * @param size      Tamaño de la página.
+     * @param sortBy    Campo por el cual se debe ordenar la respuesta.
+     * @param direction Dirección de ordenamiento (ascendente o descendente).
+     * @param request   Objeto HttpServletRequest para construir enlaces de paginación.
      * @return Respuesta con una página paginada de productos y enlaces de paginación.
      */
     @Operation(summary = "Get all products")

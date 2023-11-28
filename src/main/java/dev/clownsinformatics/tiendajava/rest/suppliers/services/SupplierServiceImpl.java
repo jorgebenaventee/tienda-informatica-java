@@ -59,7 +59,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact,  Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Supplier> specSupplierCategory = (root, query, criteriaBuilder) ->
                 category.map(c -> {
                     Join<Supplier, Category> categoriaJoin = root.join("category");

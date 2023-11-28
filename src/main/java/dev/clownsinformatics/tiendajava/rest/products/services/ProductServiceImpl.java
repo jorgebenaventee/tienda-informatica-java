@@ -104,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
      * @return Página de objetos {@link ProductResponseDto} que cumplen con los criterios de búsqueda.
      */
     @Override
-    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category,Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Product> specName = (root, query, criteriaBuilder) ->
                 name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
@@ -201,7 +201,7 @@ public class ProductServiceImpl implements ProductService {
      * @param id   Identificador del producto a actualizar.
      * @param file Archivo de imagen.
      * @return Objeto {@link ProductResponseDto} del producto actualizado.
-     * @throws ProductNotFound Si no se encuentra el producto con el identificador especificado.
+     * @throws ProductNotFound   Si no se encuentra el producto con el identificador especificado.
      * @throws ProductBadRequest Si el archivo de imagen está vacío.
      */
     @Override

@@ -138,7 +138,7 @@ public class EmployeeController {
     })
     @Parameters({
             @Parameter(name = "id", description = "Employee id", required = true),
-            @Parameter(name = "employeeUpdate", description = "Employee to partially update",required = true)
+            @Parameter(name = "employeeUpdate", description = "Employee to partially update", required = true)
     })
     @PatchMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")

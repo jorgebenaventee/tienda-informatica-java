@@ -68,8 +68,8 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "200", description = "Found the categories"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Categories not found")
-        })
-    @Parameters ({
+    })
+    @Parameters({
             @Parameter(name = "name", description = "Category name"),
             @Parameter(name = "page", description = "Page number"),
             @Parameter(name = "size", description = "Page size"),
@@ -104,8 +104,8 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "200", description = "Found the category"),
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found")
-        })
-    @Parameters ({
+    })
+    @Parameters({
             @Parameter(name = "id", description = "Category id", required = true)
     })
     @GetMapping("/{id}")
@@ -125,8 +125,8 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "409", description = "Category already exists"),
             @ApiResponse(responseCode = "403", description = "Access denied")
-        })
-    @Parameters ({
+    })
+    @Parameters({
             @Parameter(name = "category", description = "Category to create", required = true)
     })
     @PostMapping()
@@ -148,8 +148,8 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "403", description = "Access denied")
-        })
-    @Parameters ({
+    })
+    @Parameters({
             @Parameter(name = "category", description = "Category to update", required = true),
             @Parameter(name = "id", description = "Category id", required = true)
     })
@@ -171,8 +171,8 @@ public class CategoryRestController {
             @ApiResponse(responseCode = "400", description = "Invalid parameters"),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "403", description = "Access denied")
-        })
-    @Parameters ({
+    })
+    @Parameters({
             @Parameter(name = "id", description = "Category id", required = true)
     })
     @DeleteMapping("/{id}")

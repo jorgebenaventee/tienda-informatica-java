@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.orders.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
 import dev.clownsinformatics.tiendajava.rest.orders.models.OrderLine;
-import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
 import java.util.List;

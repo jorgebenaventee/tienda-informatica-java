@@ -1,6 +1,5 @@
 package dev.clownsinformatics.tiendajava.rest.suppliers.repositories;
 
-import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

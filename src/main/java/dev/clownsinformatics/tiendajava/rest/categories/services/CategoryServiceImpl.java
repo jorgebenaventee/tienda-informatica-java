@@ -60,9 +60,9 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Obtiene todas las categorías disponibles con opciones de filtrado y paginación.
      *
-     * @param name     Opcional. Nombre de la categoría para filtrar.
+     * @param name      Opcional. Nombre de la categoría para filtrar.
      * @param isDeleted Opcional. Indica si se deben incluir categorías eliminadas.
-     * @param pageable Información de paginación.
+     * @param pageable  Información de paginación.
      * @return Página de categorías que cumplen con los criterios de búsqueda y paginación.
      */
     @Override
@@ -133,7 +133,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @param category DTO con la información de la categoría actualizada.
      * @param id       Identificador único de la categoría a actualizar.
      * @return La categoría actualizada.
-     * @throws CategoryNotFound  Excepción lanzada si la categoría no se encuentra.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
      * @throws CategoryConflict Excepción lanzada si ya existe otra categoría con el mismo nombre.
      */
     @Override
@@ -155,7 +155,7 @@ public class CategoryServiceImpl implements CategoryService {
      * Elimina una categoría del sistema por su identificador único.
      *
      * @param id Identificador único de la categoría a eliminar.
-     * @throws CategoryNotFound  Excepción lanzada si la categoría no se encuentra.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
      * @throws CategoryConflict Excepción lanzada si la categoría tiene productos o proveedores asociados.
      */
     @Override

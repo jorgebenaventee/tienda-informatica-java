@@ -2,10 +2,8 @@ package dev.clownsinformatics.tiendajava.rest.clients.dto;
 
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,5 +29,5 @@ public record ClientResponse(
         Boolean isDeleted,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
-){
+) {
 }

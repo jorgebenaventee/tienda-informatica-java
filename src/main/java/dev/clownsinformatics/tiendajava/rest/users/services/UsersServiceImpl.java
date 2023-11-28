@@ -21,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -110,6 +109,6 @@ public class UsersServiceImpl implements UsersService {
             // Si hay pedidos, lo borramos físicamente
             log.info("Borrado físico de usuario por id: " + id);
             usersRepository.delete(user);
-       }
+        }
     }
 }
