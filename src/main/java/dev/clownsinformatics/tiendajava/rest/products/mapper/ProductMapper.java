@@ -10,8 +10,23 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * Clase encargada de realizar la conversión entre objetos DTO y modelos de productos.
+ * Utiliza el patrón de diseño Mapper para facilitar la transformación de datos.
+ *
+ * @version 1.0
+ * @since 2023-11-28
+ */
 @Component
 public class ProductMapper {
+    /**
+     * Convierte un objeto {@link ProductCreateDto} a un objeto {@link Product}.
+     *
+     * @param productCreateDto DTO con la información del nuevo producto.
+     * @param category         Categoría del producto.
+     * @param supplier         Proveedor del producto.
+     * @return Objeto {@link Product} creado a partir del DTO.
+     */
     public Product toProduct(ProductCreateDto productCreateDto, Category category, Supplier supplier) {
         return Product.builder()
                 .name(productCreateDto.name())
@@ -27,6 +42,15 @@ public class ProductMapper {
                 .build();
     }
 
+    /**
+     * Convierte un objeto {@link ProductUpdateDto} a un objeto {@link Product} actualizado.
+     *
+     * @param productUpdateDto DTO con la información de actualización del producto.
+     * @param product          Producto existente que se actualizará.
+     * @param category         Nueva categoría del producto.
+     * @param supplier         Nuevo proveedor del producto.
+     * @return Objeto {@link Product} actualizado a partir del DTO y el producto existente.
+     */
     public Product toProduct(ProductUpdateDto productUpdateDto, Product product, Category category, Supplier supplier) {
         return Product.builder()
                 .id(product.getId())
@@ -43,6 +67,12 @@ public class ProductMapper {
                 .build();
     }
 
+    /**
+     * Convierte un objeto {@link Product} a un objeto {@link ProductResponseDto}.
+     *
+     * @param product Producto a convertir en DTO de respuesta.
+     * @return Objeto {@link ProductResponseDto} creado a partir del producto.
+     */
     public ProductResponseDto toProductResponseDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
