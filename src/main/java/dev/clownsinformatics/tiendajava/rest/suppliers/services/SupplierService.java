@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.suppliers.services;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierCreateDto;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierResponseDto;
 import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierUpdateDto;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

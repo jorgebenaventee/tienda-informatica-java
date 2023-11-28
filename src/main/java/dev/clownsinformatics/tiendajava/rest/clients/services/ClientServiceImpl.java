@@ -40,10 +40,10 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final FileSystemStorageService fileSystemStorageService;
-    private WebSocketHandler webSocketService;
     private final ClientNotificationMapper clientNotificationMapper;
     private final WebSocketConfig webSocketConfig;
     private final ObjectMapper mapper = new ObjectMapper();
+    private WebSocketHandler webSocketService;
 
 
     @Autowired

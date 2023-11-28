@@ -3,7 +3,6 @@ package dev.clownsinformatics.tiendajava.rest.clients.mappers;
 
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
-import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import org.springframework.stereotype.Component;
 

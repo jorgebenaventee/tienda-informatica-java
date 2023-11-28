@@ -28,6 +28,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementación de {@link CategoryService} que gestiona las operaciones relacionadas con las categorías de productos.
+ * Esta clase proporciona métodos para buscar, crear, actualizar y eliminar categorías, así como notificar cambios mediante WebSocket.
+ *
+ * @version 1.0
+ * @since 2023-11-28
+ */
 @Slf4j
 @Service
 @CacheConfig(cacheNames = "categories")
@@ -50,6 +57,14 @@ public class CategoryServiceImpl implements CategoryService {
         webSocketHandler = webSocketConfig.webSocketCategoryHandler();
     }
 
+    /**
+     * Obtiene todas las categorías disponibles con opciones de filtrado y paginación.
+     *
+     * @param name      Opcional. Nombre de la categoría para filtrar.
+     * @param isDeleted Opcional. Indica si se deben incluir categorías eliminadas.
+     * @param pageable  Información de paginación.
+     * @return Página de categorías que cumplen con los criterios de búsqueda y paginación.
+     */
     @Override
     public Page<Category> findAll(Optional<String> name, Optional<Boolean> isDeleted, Pageable pageable) {
         log.info("Getting all categories with name: {}", name);
@@ -66,6 +81,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findAll(spec, pageable);
     }
 
+    /**
+     * Obtiene una categoría por su identificador único.
+     *
+     * @param id Identificador único de la categoría.
+     * @return La categoría encontrada.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
+     */
     @Override
     @Cacheable
     public Category findById(UUID id) {
@@ -73,6 +95,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByUuid(id).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
     }
 
+    /**
+     * Obtiene una categoría por su nombre, ignorando mayúsculas y minúsculas.
+     *
+     * @param name Nombre de la categoría.
+     * @return La categoría encontrada.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
+     */
     @Override
     @Cacheable
     public Category findByName(String name) {
@@ -80,6 +109,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByNameEqualsIgnoreCase(name).orElseThrow(() -> new CategoryNotFound(CATEGORY_NOT_FOUND));
     }
 
+    /**
+     * Guarda una nueva categoría en el sistema.
+     *
+     * @param category DTO con la información de la nueva categoría.
+     * @return La categoría guardada.
+     * @throws CategoryConflict Excepción lanzada si ya existe una categoría con el mismo nombre.
+     */
     @Override
     @Cacheable
     public Category save(CategoryResponseDto category) {
@@ -91,6 +127,15 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(categoryMapper.toCategory(category));
     }
 
+    /**
+     * Actualiza una categoría existente en el sistema.
+     *
+     * @param category DTO con la información de la categoría actualizada.
+     * @param id       Identificador único de la categoría a actualizar.
+     * @return La categoría actualizada.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
+     * @throws CategoryConflict Excepción lanzada si ya existe otra categoría con el mismo nombre.
+     */
     @Override
     @Cacheable
     public Category update(CategoryResponseDto category, UUID id) {
@@ -106,6 +151,13 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(categoryMapper.toCategory(category, categoryToUpdate));
     }
 
+    /**
+     * Elimina una categoría del sistema por su identificador único.
+     *
+     * @param id Identificador único de la categoría a eliminar.
+     * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
+     * @throws CategoryConflict Excepción lanzada si la categoría tiene productos o proveedores asociados.
+     */
     @Override
     @CacheEvict
     @Transactional
@@ -126,6 +178,12 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
+    /**
+     * Notifica cambios en las categorías mediante WebSocket.
+     *
+     * @param tipo Tipo de notificación.
+     * @param data Datos de la categoría afectada por el cambio.
+     */
     public void onChange(Notification.Tipo tipo, Category data) {
         if (webSocketHandler == null) {
             log.warn("Not sending notification to clients because the webSocketHandler is null");

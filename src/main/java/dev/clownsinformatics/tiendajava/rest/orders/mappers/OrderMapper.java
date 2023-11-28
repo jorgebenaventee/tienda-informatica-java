@@ -7,8 +7,18 @@ import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * Componente encargado de mapear entre diferentes representaciones de la entidad Order.
+ */
 @Component
 public class OrderMapper {
+    /**
+     * Convierte un OrderCreateDto y un ClientResponse en una entidad Order.
+     *
+     * @param orderCreateDto Datos para la creación del pedido.
+     * @param client         Cliente asociado al pedido.
+     * @return Entidad Order creada.
+     */
     public Order toOrder(OrderCreateDto orderCreateDto, ClientResponse client) {
         return Order.builder()
                 .idUser(orderCreateDto.idUser())
@@ -17,6 +27,14 @@ public class OrderMapper {
                 .build();
     }
 
+    /**
+     * Convierte un OrderUpdateDto, un Order existente y un ClientResponse en una entidad Order actualizada.
+     *
+     * @param orderUpdateDto Datos actualizados para el pedido.
+     * @param order          Pedido existente que se va a actualizar.
+     * @param client         Cliente asociado al pedido.
+     * @return Entidad Order actualizada.
+     */
     public Order toOrder(OrderUpdateDto orderUpdateDto, Order order, ClientResponse client) {
         return Order.builder()
                 .id(order.getId())
@@ -26,6 +44,12 @@ public class OrderMapper {
                 .build();
     }
 
+    /**
+     * Convierte una entidad Order en un OrderResponseDto para enviar como respuesta.
+     *
+     * @param order Entidad Order.
+     * @return DTO de respuesta para la entidad Order.
+     */
     public OrderResponseDto toOrderResponseDto(Order order) {
         return new OrderResponseDto(
                 order.getId().toHexString(),
