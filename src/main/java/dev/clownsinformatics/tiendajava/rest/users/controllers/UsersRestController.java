@@ -3,10 +3,12 @@ package dev.clownsinformatics.tiendajava.rest.users.controllers;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderCreateDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderResponseDto;
 import dev.clownsinformatics.tiendajava.rest.orders.dto.OrderUpdateDto;
+import dev.clownsinformatics.tiendajava.rest.orders.models.Order;
 import dev.clownsinformatics.tiendajava.rest.orders.service.OrderService;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserInfoResponse;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserRequest;
 import dev.clownsinformatics.tiendajava.rest.users.dto.UserResponse;
+import dev.clownsinformatics.tiendajava.rest.users.exceptions.UnauthorizedUser;
 import dev.clownsinformatics.tiendajava.rest.users.models.User;
 import dev.clownsinformatics.tiendajava.rest.users.services.UsersService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
@@ -333,6 +335,9 @@ public class UsersRestController {
             @PathVariable("id") ObjectId idPedido
     ) {
         log.info("Obteniendo pedido con id: " + idPedido);
+        if (!orderService.findById(idPedido).idUser().equals(user.getId())) {
+            throw new UnauthorizedUser("The user is not authorized to get this order");
+        }
         return ResponseEntity.ok(orderService.findById(idPedido));
     }
 
@@ -344,6 +349,7 @@ public class UsersRestController {
      * @param pedido pedido a crear
      * @return Pedido creado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
+     * @throws HttpClientErrorException.Unauthorized si el usuario no está autorizado (403)
      */
     @Operation(summary = "Create current user order")
     @ApiResponses(value = {
@@ -374,6 +380,7 @@ public class UsersRestController {
      * @param pedido   pedido a actualizar
      * @return Pedido actualizado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
+     * @throws HttpClientErrorException.Unauthorized si el usuario no está autorizado (403)
      */
     @Operation(summary = "Update current user order")
     @ApiResponses(value = {
@@ -393,6 +400,10 @@ public class UsersRestController {
             @PathVariable("id") ObjectId idPedido,
             @Valid @RequestBody OrderUpdateDto pedido) {
         log.info("Actualizando pedido con id: " + idPedido);
+        OrderResponseDto order = orderService.findById(idPedido);
+        if (!order.idUser().equals(user.getId())) {
+            throw new UnauthorizedUser("The user is not authorized to update this order");
+        }
         return ResponseEntity.ok(orderService.update(idPedido, pedido));
     }
 
@@ -404,6 +415,7 @@ public class UsersRestController {
      * @param idPedido id del pedido
      * @return Pedido borrado
      * @throws HttpClientErrorException.BadRequest si hay algún error de validación (400)
+     * @throws HttpClientErrorException.Unauthorized si el usuario no está autorizado (403)
      */
     @Operation(summary = "Delete current user order")
     @ApiResponses(value = {
@@ -423,6 +435,10 @@ public class UsersRestController {
             @PathVariable("id") ObjectId idPedido
     ) {
         log.info("Borrando pedido con id: " + idPedido);
+        OrderResponseDto order = orderService.findById(idPedido);
+        if (!order.idUser().equals(user.getId())) {
+            throw new UnauthorizedUser("The user is not authorized to delete this order");
+        }
         orderService.delete(idPedido);
         return ResponseEntity.noContent().build();
     }
