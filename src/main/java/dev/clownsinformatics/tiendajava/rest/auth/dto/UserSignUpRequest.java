@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+//esta clase se u
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
