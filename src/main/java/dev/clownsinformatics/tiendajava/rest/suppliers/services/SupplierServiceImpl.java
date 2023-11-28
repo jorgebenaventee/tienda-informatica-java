@@ -34,19 +34,63 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementación del servicio para gestionar operaciones relacionadas con proveedores.
+ *
+ * @Service Indica que esta clase es un servicio de Spring y puede ser gestionada por el contenedor de Spring.
+ * @Slf4j Habilita el registro de eventos utilizando la anotación SLF4J.
+ * @CacheConfig Configura el nombre de la caché para las operaciones de proveedores.
+ */
 @Service
 @Slf4j
 @CacheConfig(cacheNames = "suppliers")
 public class SupplierServiceImpl implements SupplierService {
 
+    /**
+     * Repositorio para acceder a datos de proveedores.
+     */
     private final SupplierRepository supplierRepository;
+
+    /**
+     * Mapper para convertir entre DTOs y entidades de proveedores.
+     */
     private final SupplierMapper supplierMapper;
+
+    /**
+     * Servicio para operaciones relacionadas con categorías.
+     */
     private final CategoryService categoryService;
+
+    /**
+     * Configuración WebSocket para notificaciones.
+     */
     private final WebSocketConfig webSocketConfig;
+
+    /**
+     * Mapper para convertir entre entidades de proveedores y DTOs de notificaciones de proveedores.
+     */
     private final SuppliersNotificationMapper suppliersNotificationMapper;
+
+    /**
+     * ObjectMapper para la manipulación de objetos JSON.
+     */
     private final ObjectMapper mapper;
+
+    /**
+     * Manejador de WebSocket para enviar notificaciones.
+     */
     private WebSocketHandler webSocketService;
 
+    /**
+     * Constructor que inicializa las dependencias del servicio de proveedores.
+     *
+     * @param supplierRepository          Repositorio de proveedores.
+     * @param supplierMapper              Mapper de proveedores.
+     * @param categoryService             Servicio de categorías.
+     * @param webSocketConfig             Configuración WebSocket.
+     * @param suppliersNotificationMapper Mapper de notificaciones de proveedores.
+     * @param mapper                      ObjectMapper para JSON.
+     */
     @Autowired
     public SupplierServiceImpl(SupplierRepository supplierRepository, SupplierMapper supplierMapper, CategoryService categoryService, WebSocketConfig webSocketConfig, SuppliersNotificationMapper suppliersNotificationMapper, ObjectMapper mapper) {
         this.supplierRepository = supplierRepository;
@@ -58,8 +102,18 @@ public class SupplierServiceImpl implements SupplierService {
         this.mapper = new ObjectMapper();
     }
 
+    /**
+     * Obtiene todos los proveedores con opciones de filtrado y paginación.
+     *
+     * @param category  Categoría del proveedor (opcional).
+     * @param name      Nombre del proveedor (opcional).
+     * @param contact   Contacto del proveedor (opcional).
+     * @param isDeleted Indica si el proveedor está eliminado (opcional).
+     * @param pageable  Información de paginación.
+     * @return Página de DTOs de proveedores.
+     */
     @Override
-    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact,  Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Supplier> specSupplierCategory = (root, query, criteriaBuilder) ->
                 category.map(c -> {
                     Join<Supplier, Category> categoriaJoin = root.join("category");
@@ -81,6 +135,12 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
 
+    /**
+     * Obtiene un proveedor por su UUID, utilizando la caché.
+     *
+     * @param id UUID del proveedor.
+     * @return DTO del proveedor encontrado.
+     */
     @Override
     @Cacheable(key = "#id")
     public SupplierResponseDto findByUUID(String id) {
@@ -90,6 +150,12 @@ public class SupplierServiceImpl implements SupplierService {
                 .orElseThrow(() -> new SupplierNotFound(uuid));
     }
 
+    /**
+     * Obtiene un proveedor por su nombre.
+     *
+     * @param name Nombre del proveedor.
+     * @return DTO del proveedor encontrado.
+     */
     @Override
     public SupplierResponseDto findByName(String name) {
         return supplierRepository.findByNameEqualsIgnoreCase(name)
@@ -97,6 +163,16 @@ public class SupplierServiceImpl implements SupplierService {
                 .orElseThrow(() -> new SupplierNotFound(name));
     }
 
+    /**
+     * Convierte una cadena UUID en un objeto UUID para comprobar si la cadena tiene
+     * un formato válido de UUID, de lo contrario, se lanza una excepción
+     * IllegalArgumentException indicando que la cadena no es una UUID válida.
+     *
+     * @param uuid Cadena que representa la UUID a convertir.
+     * @return Objeto UUID generado a partir de la cadena.
+     * @throws SupplierBadRequest Si la cadena no tiene un formato válido de UUID,
+     *                            se lanza esta excepción con un mensaje detallado.
+     */
     public UUID getUUID(String uuid) {
         try {
             return UUID.fromString(uuid);
@@ -105,7 +181,12 @@ public class SupplierServiceImpl implements SupplierService {
         }
     }
 
-
+    /**
+     * Guarda un nuevo proveedor y envía una notificación de creación.
+     *
+     * @param supplierCreateDto DTO con la información del proveedor a crear.
+     * @return DTO del proveedor creado.
+     */
     @Transactional
     @Override
     @CachePut(key = "#result.id")
@@ -116,7 +197,14 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierMapper.toSupplierDto(supplierRepository.save(supplierToSave));
     }
 
-
+    /**
+     * Actualiza un proveedor existente y envía una notificación de actualización.
+     *
+     * @param supplierUpdateDto DTO con la información de actualización del proveedor.
+     * @param idSupplier UUID del proveedor a actualizar.
+     * @return DTO del proveedor actualizado.
+     * @throws SupplierNotFound Si el proveedor no existe.
+     */
     @Override
     @CachePut(key = "#idSupplier")
     public SupplierResponseDto update(SupplierUpdateDto supplierUpdateDto, String idSupplier) {
@@ -128,6 +216,12 @@ public class SupplierServiceImpl implements SupplierService {
         return supplierMapper.toSupplierDto(supplierRepository.save(supplier));
     }
 
+    /**
+     * Elimina un proveedor por su UUID y envía una notificación de eliminación.
+     *
+     * @param idSupplier UUID del proveedor a eliminar.
+     * @throws SupplierNotFound Si el proveedor no existe.
+     */
     @Transactional
     @Override
     @CacheEvict(key = "#idSupplier")
@@ -139,6 +233,12 @@ public class SupplierServiceImpl implements SupplierService {
         supplierRepository.deleteById(uuid);
     }
 
+    /**
+     * Envía una notificación a través de WebSocket sobre la operación realizada en el proveedor.
+     *
+     * @param tipo Tipo de notificación (CREATE, UPDATE, DELETE).
+     * @param data Datos del proveedor para la notificación.
+     */
     void sendNotification(Notification.Tipo tipo, Supplier data) {
         if (webSocketService == null) {
             log.warn("WebSocket service is not configured");
@@ -168,6 +268,11 @@ public class SupplierServiceImpl implements SupplierService {
         }
     }
 
+    /**
+     * Configura el servicio WebSocket para pruebas unitarias.
+     *
+     * @param webSocketHandlerMock Implementación de WebSocketHandler para pruebas unitarias.
+     */
     public void setWebSocketService(WebSocketHandler webSocketHandlerMock) {
         this.webSocketService = webSocketHandlerMock;
     }
