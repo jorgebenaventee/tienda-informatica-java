@@ -30,6 +30,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Controlador que gestiona las operaciones relacionadas con las categorías en la API REST.
+ * Proporciona puntos finales para la consulta, creación, actualización y eliminación de categorías.
+ *
+ * @version 1.0
+ * @since 2023-11-28
+ */
 @RestController
 @RequestMapping("/api/categories")
 @Slf4j
@@ -44,6 +51,18 @@ public class CategoryRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    /**
+     * Obtiene todas las categorías paginadas y opcionalmente filtradas por nombre y estado de eliminación.
+     *
+     * @param name      Nombre opcional para filtrar las categorías.
+     * @param isDeleted Estado de eliminación opcional para filtrar las categorías.
+     * @param page      Número de página solicitada (predeterminado: 0).
+     * @param size      Tamaño de la página solicitada (predeterminado: 10).
+     * @param sortBy    Campo por el cual ordenar las categorías (predeterminado: uuid).
+     * @param direction Dirección de ordenamiento (ascendente o descendente, predeterminado: asc).
+     * @param request   Objeto HttpServletRequest para construir enlaces de paginación.
+     * @return Respuesta que contiene una página de categorías y enlaces de paginación.
+     */
     @Operation(summary = "Get all categories")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the categories"),
@@ -74,6 +93,12 @@ public class CategoryRestController {
                 .body(PageResponse.of(categoriaPage, sortBy, direction));
     }
 
+    /**
+     * Obtiene una categoría por su identificador UUID.
+     *
+     * @param id Identificador UUID de la categoría.
+     * @return Respuesta que contiene la categoría encontrada.
+     */
     @Operation(summary = "Get category by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the category"),
@@ -88,6 +113,12 @@ public class CategoryRestController {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
+    /**
+     * Crea una nueva categoría a partir de los datos proporcionados en el DTO de respuesta de categoría.
+     *
+     * @param category DTO de respuesta de categoría que contiene la información para crear la nueva categoría.
+     * @return Respuesta que contiene la categoría creada.
+     */
     @Operation(summary = "Create a new category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created"),
@@ -104,6 +135,13 @@ public class CategoryRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(category));
     }
 
+    /**
+     * Actualiza una categoría existente con la información proporcionada en el DTO de respuesta de categoría.
+     *
+     * @param category DTO de respuesta de categoría que contiene la información actualizada.
+     * @param id       Identificador UUID de la categoría a actualizar.
+     * @return Respuesta que contiene la categoría actualizada.
+     */
     @Operation(summary = "Update a category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category updated"),
@@ -121,6 +159,12 @@ public class CategoryRestController {
         return ResponseEntity.ok(categoryService.update(category, id));
     }
 
+    /**
+     * Elimina una categoría por su identificador UUID.
+     *
+     * @param id Identificador UUID de la categoría a eliminar.
+     * @return Respuesta sin contenido.
+     */
     @Operation(summary = "Delete a category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Category deleted"),
@@ -138,7 +182,12 @@ public class CategoryRestController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-
+    /**
+     * Maneja las excepciones de validación y devuelve un mapa de errores.
+     *
+     * @param ex Excepción de validación.
+     * @return Mapa que contiene los errores de validación.
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(
