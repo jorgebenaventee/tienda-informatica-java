@@ -28,6 +28,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+/**
+ * Implementación de servicio para gestionar operaciones relacionadas con los pedidos en la tienda.
+ * Proporciona métodos para recuperar, crear, actualizar y eliminar pedidos.
+ *
+ * @version 1.0
+ * @since 2023-11-28
+ */
 @Service
 @Slf4j
 @CacheConfig(cacheNames = {"orders"})
@@ -44,12 +51,25 @@ public class OrderServiceImpl implements OrderService {
         this.clientService = clientService;
     }
 
+    /**
+     * Recupera todos los pedidos paginados.
+     *
+     * @param pageable Configuración de paginación.
+     * @return Página de DTOs de respuesta de pedidos.
+     */
     @Override
     public Page<OrderResponseDto> findAll(Pageable pageable) {
         log.info("Find all orders");
         return orderRepository.findAll(pageable).map(orderMapper::toOrderResponseDto);
     }
 
+    /**
+     * Recupera un pedido por su identificador ObjectId.
+     *
+     * @param id Identificador ObjectId del pedido.
+     * @return DTO de respuesta del pedido encontrada.
+     * @throws OrderNotFound Excepción lanzada si el pedido no se encuentra.
+     */
     @Override
     @Cacheable(key = "#id")
     public OrderResponseDto findById(ObjectId id) {
@@ -58,12 +78,26 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderResponseDto(order);
     }
 
+    /**
+     * Recupera pedidos de un cliente específico paginados.
+     *
+     * @param idUser   Identificador del cliente.
+     * @param pageable Configuración de paginación.
+     * @return Página de DTOs de respuesta de pedidos.
+     */
     @Override
     public Page<OrderResponseDto> findByUserId(Long idUser, Pageable pageable) {
         log.info("Find order by customer id: {}", idUser);
         return orderRepository.findByIdUser(idUser, pageable).map(orderMapper::toOrderResponseDto);
     }
 
+    /**
+     * Crea una nueva orden a partir de los datos proporcionados en el DTO de creación de pedidos.
+     *
+     * @param order DTO de creación de pedidos que contiene la información para crear la nueva orden.
+     * @return DTO de respuesta del pedido creada.
+     * @throws OrderNotItems Excepción lanzada si el pedido no contiene elementos.
+     */
     @Override
     @Transactional
     @CachePut(key = "#result.id")
@@ -80,6 +114,12 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderResponseDto(orderRepository.save(orderToSave));
     }
 
+    /**
+     * Elimina un pedido por su identificador ObjectId.
+     *
+     * @param objectId Identificador ObjectId del pedido a eliminar.
+     * @throws OrderNotFound Excepción lanzada si el pedido no se encuentra.
+     */
     @Override
     @Transactional
     @CacheEvict
@@ -91,6 +131,18 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(orderToDelete);
     }
 
+    /**
+     * Actualiza un pedido existente con la información proporcionada en el DTO de actualización de pedidos.
+     *
+     * @param objectId Identificador ObjectId del pedido a actualizar.
+     * @param order    DTO de actualización de pedidos que contiene la información actualizada.
+     * @return DTO de respuesta del pedido actualizado.
+     * @throws OrderNotFound   Excepción lanzada si el pedido no se encuentra.
+     * @throws OrderNotItems   Excepción lanzada si el pedido no contiene elementos.
+     * @throws ProductNotFound Excepción lanzada si un producto asociado al pedido no se encuentra.
+     * @throws ProductNotStock Excepción lanzada si un producto no tiene suficiente stock para el pedido.
+     * @throws ProductBadPrice Excepción lanzada si el precio de un producto en el pedido no coincide con el precio del producto.
+     */
     @Override
     @Transactional
     @CachePut(key = "#objectId")
@@ -109,6 +161,15 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderResponseDto(orderRepository.save(orderToSave));
     }
 
+    /**
+     * Reserva el stock de productos asociados a un pedido y actualiza los totales del pedido.
+     *
+     * @param order Pedido para el cual se reserva el stock.
+     * @return Pedido actualizado con el stock reservado y los totales actualizados.
+     * @throws OrderNotItems   Excepción lanzada si el pedido no contiene elementos.
+     * @throws ProductNotFound Excepción lanzada si un producto asociado el pedido no se encuentra.
+     * @throws ProductNotStock Excepción lanzada si un producto no tiene suficiente stock para el pedido.
+     */
     Order reserveStockOrder(Order order) {
         log.info("Reserve stock for order: {}", order);
 
@@ -137,6 +198,16 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    /**
+     * Verifica si un pedido es válido, asegurándose de que contenga elementos y de que los productos asociados
+     * tengan suficiente stock y precios coincidentes.
+     *
+     * @param order Pedido a verificar.
+     * @throws OrderNotItems   Excepción lanzada si un pedido no contiene elementos.
+     * @throws ProductNotFound Excepción lanzada si un producto asociado al pedido no se encuentra.
+     * @throws ProductNotStock Excepción lanzada si un producto no tiene suficiente stock para el pedido.
+     * @throws ProductBadPrice Excepción lanzada si el precio de un producto en el pedido no coincide con el precio del producto.
+     */
     void checkOrder(Order order) {
         log.info("Check order: {}", order);
 
@@ -155,6 +226,12 @@ public class OrderServiceImpl implements OrderService {
         });
     }
 
+    /**
+     * Devuelve el stock de productos asociados a un pedido.
+     *
+     * @param order Pedido para el cual se devuelve el stock.
+     * @return Pedido actualizado con el stock devuelto.
+     */
     Order returnStockOrders(Order order) {
         log.info("Return stock for order: {}", order);
         if (order.getOrderLines() != null) {

@@ -51,7 +51,7 @@ public class AuthenticationRestController {
      * @return Token de autenticación
      */
     @Operation(summary = "Sign in")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })

@@ -30,10 +30,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Controlador REST para gestionar operaciones relacionadas con pedidos.
+ */
 @RestController
 @RequestMapping("/api/pedidos")
 @Slf4j
-
 public class OrderRestController {
     private final OrderService orderService;
     private final PaginationLinksUtils paginationLinksUtils;
@@ -44,8 +46,18 @@ public class OrderRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    /**
+     * Obtiene todos los pedidos paginados y proporciona enlaces de paginación.
+     *
+     * @param page      Número de página.
+     * @param size      Número de elementos por página.
+     * @param sortBy    Campo por el cual se ordenan los resultados.
+     * @param direction Dirección de ordenamiento (ASC o DESC).
+     * @param request   Objeto HttpServletRequest para construir enlaces de paginación.
+     * @return ResponseEntity con la lista de pedidos paginada y enlaces de paginación.
+     */
     @Operation(summary = "Get all orders")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found all orders"),
             @ApiResponse(responseCode = "400", description = "Invalid page size supplied"),
             @ApiResponse(responseCode = "404", description = "Orders not found")
@@ -73,8 +85,14 @@ public class OrderRestController {
                 .body(PageResponse.of(pageResult, sortBy, direction));
     }
 
+    /**
+     * Obtiene un pedido por su identificador.
+     *
+     * @param id Identificador del pedido.
+     * @return ResponseEntity con el pedido encontrado.
+     */
     @Operation(summary = "Get order by id")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the order"),
             @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
             @ApiResponse(responseCode = "404", description = "Order not found")
@@ -88,8 +106,19 @@ public class OrderRestController {
         return ResponseEntity.ok(orderService.findById(id));
     }
 
+    /**
+     * Obtiene pedidos de un usuario paginados y proporciona enlaces de paginación.
+     *
+     * @param id        Identificador del usuario.
+     * @param page      Número de página.
+     * @param size      Número de elementos por página.
+     * @param sortBy    Campo por el cual se ordenan los resultados.
+     * @param direction Dirección de ordenamiento (ASC o DESC).
+     * @param request   Objeto HttpServletRequest para construir enlaces de paginación.
+     * @return ResponseEntity con la lista de pedidos del usuario paginada y enlaces de paginación.
+     */
     @Operation(summary = "Get orders by user id")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the orders"),
             @ApiResponse(responseCode = "400", description = "Invalid user id supplied"),
             @ApiResponse(responseCode = "404", description = "Orders not found")
@@ -116,8 +145,14 @@ public class OrderRestController {
         return ResponseEntity.ok(PageResponse.of(orderService.findByUserId(id, pageable), sortBy, direction));
     }
 
+    /**
+     * Crea un nuevo pedido.
+     *
+     * @param order Datos del nuevo pedido.
+     * @return ResponseEntity con el pedido creado.
+     */
     @Operation(summary = "Get orders by status")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the orders"),
             @ApiResponse(responseCode = "400", description = "Invalid status supplied"),
             @ApiResponse(responseCode = "404", description = "Orders not found"),
@@ -132,8 +167,15 @@ public class OrderRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(order));
     }
 
+    /**
+     * Actualiza un pedido existente por su identificador.
+     *
+     * @param id    Identificador del pedido a actualizar.
+     * @param order Datos actualizados del pedido.
+     * @return ResponseEntity con el pedido actualizado.
+     */
     @Operation(summary = "Update order by id")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated the order"),
             @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
             @ApiResponse(responseCode = "404", description = "Order not found"),
@@ -149,8 +191,14 @@ public class OrderRestController {
         return ResponseEntity.ok(orderService.update(id, order));
     }
 
+    /**
+     * Elimina un pedido por su identificador.
+     *
+     * @param id Identificador del pedido a eliminar.
+     * @return ResponseEntity sin contenido.
+     */
     @Operation(summary = "Delete order by id")
-    @ApiResponses( value = {
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted the order"),
             @ApiResponse(responseCode = "400", description = "Invalid order id supplied"),
             @ApiResponse(responseCode = "404", description = "Order not found"),
@@ -166,6 +214,12 @@ public class OrderRestController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Maneja excepciones de validación para devolver mensajes de error estructurados.
+     *
+     * @param ex Excepción de validación.
+     * @return Mapa de errores con nombres de campo y mensajes asociados.
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(

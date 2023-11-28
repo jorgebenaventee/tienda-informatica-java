@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryService {
-    Page<Category> findAll(Optional<String> name,Optional<Boolean> isDeleted, Pageable pageable);
+    Page<Category> findAll(Optional<String> name, Optional<Boolean> isDeleted, Pageable pageable);
 
     Category findById(UUID id);
 

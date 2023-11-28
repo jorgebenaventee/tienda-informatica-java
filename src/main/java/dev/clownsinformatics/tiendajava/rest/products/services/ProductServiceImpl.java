@@ -39,6 +39,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implementación de la interfaz {@link ProductService} que gestiona las operaciones relacionadas con los productos.
+ *
+ * @version 1.0
+ * @since 2023-11-28
+ */
 @Service
 @CacheConfig(cacheNames = {"products"})
 @Slf4j
@@ -69,6 +75,13 @@ public class ProductServiceImpl implements ProductService {
         webSocketHandler = webSocketConfig.webSocketProductHandler();
     }
 
+    /**
+     * Convierte una cadena de texto en formato UUID a un objeto UUID. En caso de formato inválido, lanza una excepción {@link ProductBadRequest}.
+     *
+     * @param id Cadena que representa el UUID.
+     * @return Objeto UUID.
+     * @throws ProductBadRequest Si la cadena no es un UUID válido.
+     */
     @Override
     public UUID getUUID(String id) {
         try {
@@ -78,8 +91,20 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    /**
+     * Busca y devuelve una página de productos según los filtros proporcionados.
+     *
+     * @param name      Opcional. Nombre del producto para filtrar.
+     * @param maxWeight Opcional. Peso máximo del producto para filtrar.
+     * @param maxPrice  Opcional. Precio máximo del producto para filtrar.
+     * @param minStock  Opcional. Cantidad mínima de stock para filtrar.
+     * @param category  Opcional. Nombre de la categoría del producto para filtrar.
+     * @param isDeleted Opcional. Indica si el producto está marcado como eliminado.
+     * @param pageable  Información de paginación.
+     * @return Página de objetos {@link ProductResponseDto} que cumplen con los criterios de búsqueda.
+     */
     @Override
-    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category,Optional<Boolean> isDeleted, Pageable pageable) {
+    public Page<ProductResponseDto> findAll(Optional<String> name, Optional<Double> maxWeight, Optional<Double> maxPrice, Optional<Double> minStock, Optional<String> category, Optional<Boolean> isDeleted, Pageable pageable) {
         Specification<Product> specName = (root, query, criteriaBuilder) ->
                 name.map(value -> criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + value.toLowerCase() + "%"))
                         .orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
@@ -110,6 +135,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll(spec, pageable).map(productMapper::toProductResponseDto);
     }
 
+    /**
+     * Busca y devuelve un producto por su identificador.
+     *
+     * @param id Identificador del producto.
+     * @return Objeto {@link ProductResponseDto} correspondiente al identificador proporcionado.
+     * @throws ProductNotFound Si no se encuentra el producto con el identificador especificado.
+     */
     @Override
     @Cacheable
     public ProductResponseDto findById(String id) {
@@ -118,6 +150,12 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseDto(product);
     }
 
+    /**
+     * Guarda un nuevo producto utilizando la información proporcionada en el DTO de creación.
+     *
+     * @param productCreateDto DTO con la información del nuevo producto.
+     * @return Objeto {@link ProductResponseDto} del producto recién creado.
+     */
     @Override
     @Cacheable
     public ProductResponseDto save(ProductCreateDto productCreateDto) {
@@ -130,6 +168,14 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseDto(productSaved);
     }
 
+    /**
+     * Actualiza un producto utilizando la información proporcionada en el DTO de actualización.
+     *
+     * @param id               Identificador del producto a actualizar.
+     * @param productUpdateDto DTO con la información del producto a actualizar.
+     * @return Objeto {@link ProductResponseDto} del producto actualizado.
+     * @throws ProductNotFound Si no se encuentra el producto con el identificador especificado.
+     */
     @Override
     @Cacheable
     @Transactional
@@ -149,6 +195,15 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseDto(productUpdated);
     }
 
+    /**
+     * Actualiza la imagen de un producto.
+     *
+     * @param id   Identificador del producto a actualizar.
+     * @param file Archivo de imagen.
+     * @return Objeto {@link ProductResponseDto} del producto actualizado.
+     * @throws ProductNotFound   Si no se encuentra el producto con el identificador especificado.
+     * @throws ProductBadRequest Si el archivo de imagen está vacío.
+     */
     @Override
     @CachePut(key = "#id")
     @Transactional
@@ -168,6 +223,12 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    /**
+     * Elimina un producto por su identificador.
+     *
+     * @param id Identificador del producto.
+     * @throws ProductNotFound Si no se encuentra el producto con el identificador especificado.
+     */
     @Override
     @CacheEvict
     @Transactional
@@ -181,6 +242,12 @@ public class ProductServiceImpl implements ProductService {
         onChange(Notification.Tipo.DELETE, product);
     }
 
+    /**
+     * Realiza acciones específicas cuando cambia un producto y notifica a través del WebSocket.
+     *
+     * @param tipo Tipo de notificación (CREATE, UPDATE, DELETE).
+     * @param data Datos del producto afectado.
+     */
     public void onChange(Notification.Tipo tipo, Product data) {
         if (webSocketHandler == null) {
             log.warn("Not sending notification to clients because the webSocketHandler is null");
