@@ -23,8 +23,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class Supplier {
-    @Schema(description = "The status of the supplier", example = "true")
-    Boolean isDeleted;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Schema(description = "The id of the supplier", example = "123e4567-e89b-12d3-a456-426614174000")
@@ -50,4 +48,8 @@ public class Supplier {
     @NotNull
     @Schema(description = "The category that the supplier have", example = "PORTATILES")
     private Category category;
+    @Schema(description = "The status of the supplier", example = "true")
+    @Column(columnDefinition = "boolean default false")
+    @Builder.Default
+    Boolean isDeleted = false;
 }

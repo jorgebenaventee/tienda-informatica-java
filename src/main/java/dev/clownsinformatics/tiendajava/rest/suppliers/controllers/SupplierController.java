@@ -97,7 +97,7 @@ public class SupplierController {
     public ResponseEntity<PageResponse<SupplierResponseDto>> getAll(@RequestParam(required = false) Optional<String> category,
                                                                     @RequestParam(required = false) Optional<String> name,
                                                                     @RequestParam(required = false) Optional<Integer> contact,
-                                                                    @RequestParam(defaultValue = "false") String isDeleted,
+                                                                    @RequestParam(defaultValue = "false") Optional<Boolean> isDeleted,
                                                                     @RequestParam(defaultValue = "0") int page,
                                                                     @RequestParam(defaultValue = "10") int size,
                                                                     @RequestParam(defaultValue = "id") String sortBy,
@@ -106,7 +106,7 @@ public class SupplierController {
         log.info("Searching suppliers...");
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
-        Page<SupplierResponseDto> result = supplierService.findAll(category, name, contact, Optional.of(Boolean.valueOf(isDeleted)), PageRequest.of(page, size, sort));
+        Page<SupplierResponseDto> result = supplierService.findAll(category, name, contact, isDeleted, PageRequest.of(page, size, sort));
         return ResponseEntity.ok()
                 .header("link", paginationLinksUtils.createLinkHeader(result, uriBuilder))
                 .body(PageResponse.of(result, sortBy, direction));
