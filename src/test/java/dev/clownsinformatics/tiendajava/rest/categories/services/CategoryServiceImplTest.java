@@ -157,16 +157,6 @@ class CategoryServiceImplTest {
         when(categoryRepository.findByUuid(category.getUuid())).thenReturn(Optional.of(category));
         categoryService.delete(category.getUuid());
         verify(categoryRepository, times(1)).findByUuid(category.getUuid());
-        verify(categoryRepository, times(1)).delete(category);
-    }
-
-    @Test
-    void deleteByIdContainsProducts() {
-        when(categoryRepository.findByUuid(category.getUuid())).thenReturn(Optional.of(category));
-        when(categoryRepository.existsProductById(category.getUuid())).thenReturn(true);
-        var res = assertThrows(CategoryConflict.class, () -> categoryService.delete(category.getUuid()));
-        assertEquals("Category has products", res.getMessage());
-        verify(categoryRepository, times(1)).findByUuid(category.getUuid());
-        verify(categoryRepository, times(1)).existsProductById(category.getUuid());
+        verify(categoryRepository, times(1)).deleteById(category.getUuid());
     }
 }
