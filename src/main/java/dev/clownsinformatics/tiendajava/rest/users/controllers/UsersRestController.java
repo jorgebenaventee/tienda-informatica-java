@@ -156,7 +156,6 @@ public class UsersRestController {
      * @return Datos del usuario
      */
     @GetMapping("/me/profile")
-    @PreAuthorize("hasRole('ADMIN')") // Solo los admin pueden acceder
     public ResponseEntity<UserInfoResponse> me(@AuthenticationPrincipal User user) {
         log.info("Obteniendo usuario");
         return ResponseEntity.ok(usersService.findById(user.getId()));

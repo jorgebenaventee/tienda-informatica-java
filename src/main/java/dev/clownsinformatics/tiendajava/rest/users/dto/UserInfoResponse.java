@@ -25,5 +25,5 @@ public class UserInfoResponse {
     @Builder.Default
     private Boolean isDeleted = false;
     @Builder.Default
-    private List<String> pedidos = new ArrayList<>();
+    private List<String> orders = new ArrayList<>();
 }
