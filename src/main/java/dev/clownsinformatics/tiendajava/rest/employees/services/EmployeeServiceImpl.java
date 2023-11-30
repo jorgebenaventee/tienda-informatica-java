@@ -30,10 +30,10 @@ import java.util.Optional;
 @CacheConfig(cacheNames = "employees")
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper employeeMapper;
-    private WebSocketHandler webSocketHandler;
     private final WebSocketConfig webSocketConfig;
     private final EmployeeRepository employeeRepository;
     private final ObjectMapper objectMapper;
+    private WebSocketHandler webSocketHandler;
 
     public EmployeeServiceImpl(EmployeeMapper employeeMapper, WebSocketConfig webSocketConfig, EmployeeRepository employeeRepository) {
         this.employeeMapper = employeeMapper;

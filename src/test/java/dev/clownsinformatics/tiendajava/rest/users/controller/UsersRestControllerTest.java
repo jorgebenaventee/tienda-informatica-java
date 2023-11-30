@@ -727,7 +727,7 @@ class UsersRestControllerTest {
 
         assertEquals(200, response.getStatus());
 
-        verify(orderService, times(1)).findById(any(ObjectId.class));
+        verify(orderService, times(2)).findById(any(ObjectId.class));
     }
 
     @Test
@@ -755,6 +755,7 @@ class UsersRestControllerTest {
         var LOCAL_URL = BASE_URL + "/me/pedidos/" + order.getId();
 
         when(orderService.update(any(ObjectId.class), any(OrderUpdateDto.class))).thenReturn(orderResponseDto);
+        when(orderService.findById(any(ObjectId.class))).thenReturn(orderResponseDto);
 
         MockHttpServletResponse response = mockMvc.perform(
                         put(LOCAL_URL)

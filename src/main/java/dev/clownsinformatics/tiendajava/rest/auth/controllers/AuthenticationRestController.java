@@ -4,6 +4,11 @@ import dev.clownsinformatics.tiendajava.rest.auth.dto.JwtAuthResponse;
 import dev.clownsinformatics.tiendajava.rest.auth.dto.UserSignInRequest;
 import dev.clownsinformatics.tiendajava.rest.auth.dto.UserSignUpRequest;
 import dev.clownsinformatics.tiendajava.rest.auth.services.authentication.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +50,14 @@ public class AuthenticationRestController {
      * @param request datos del usuario
      * @return Token de autenticación
      */
+    @Operation(summary = "Sign in")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @Parameters({
+            @Parameter(name = "request", required = true, description = "User data")
+    })
     @PostMapping("/signin")
     public ResponseEntity<JwtAuthResponse> signIn(@Valid @RequestBody UserSignInRequest request) {
         log.info("Iniciando sesión de usuario: {}", request);

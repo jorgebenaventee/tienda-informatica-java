@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface SupplierService {
-    Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Pageable pageable);
+    Page<SupplierResponseDto> findAll(Optional<String> category, Optional<String> name, Optional<Integer> contact, Optional<Boolean> isDeleted, Pageable pageable);
 
     SupplierResponseDto findByUUID(String id);
+
+    SupplierResponseDto findByName(String name);
 
     SupplierResponseDto save(SupplierCreateDto supplierCreateDto);
 

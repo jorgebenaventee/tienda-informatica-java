@@ -1,5 +1,6 @@
 package dev.clownsinformatics.tiendajava.rest.users.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -30,39 +31,57 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "User's id", example = "1")
     private Long id;
+
     @NotBlank(message = "Name cannot be empty")
     @Column(nullable = false)
+    @Schema(description = "User's name", example = "David")
     private String name;
+
     @Column(nullable = false)
     @NotBlank(message = "Last name cannot be empty")
+    @Schema(description = "User's last name", example = "Jaraba")
     private String lastName;
+
     @Column(unique = true, nullable = false)
     @NotBlank(message = "Username cannot be empty")
+    @Schema(description = "User's username", example = "davidjaraba")
     private String username;
+
     @Column(unique = true, nullable = false)
     @Email(regexp = ".*@.*\\..*", message = "Email must be valid")
     @NotBlank(message = "Email cannot be empty")
+    @Schema(description = "User's email", example = "david@gmail.com")
     private String email;
+
     @NotBlank(message = "Password cannot be empty")
     @Length(min = 5, message = "Password must be at least 5 characters long")
     @Column(nullable = false)
+    @Schema(description = "User's password", example = "123456")
     private String password;
+
     @CreationTimestamp
     @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
+    @Schema(description = "User's creation date", example = "2021-10-10T10:10:10")
     private LocalDateTime createdAt = LocalDateTime.now();
+
     @UpdateTimestamp
     @Column(updatable = true, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Builder.Default
+    @Schema(description = "User's last update date", example = "2021-10-10T10:10:10")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
     @Column(columnDefinition = "boolean default false")
     @Builder.Default
+    @Schema(description = "User's deleted status", example = "false")
     private Boolean isDeleted = false;
 
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @Schema(description = "User's roles", example = "USER")
     private Set<Role> roles;
 
     @Override

@@ -14,6 +14,10 @@ import dev.clownsinformatics.tiendajava.rest.products.mapper.ProductMapper;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.repositories.ProductRepository;
 import dev.clownsinformatics.tiendajava.rest.storage.services.StorageService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.dto.SupplierResponseDto;
+import dev.clownsinformatics.tiendajava.rest.suppliers.mapper.SupplierMapper;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
+import dev.clownsinformatics.tiendajava.rest.suppliers.services.SupplierService;
 import dev.clownsinformatics.tiendajava.websockets.notifications.mapper.ProductNotificationMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +49,25 @@ class ProductServiceImplTest {
             .name("Category 2")
             .build();
 
+    private final Supplier supplier1 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 1")
+            .contact(1)
+            .address("Calle 1")
+            .dateOfHire(LocalDateTime.now())
+            .category(category1)
+            .build();
+
+
+    private final Supplier supplier2 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 2")
+            .contact(2)
+            .address("Calle 2")
+            .dateOfHire(LocalDateTime.now())
+            .category(category2)
+            .build();
+
     private final Product product1 = Product.builder()
             .id(idProduct1)
             .name("Product 1")
@@ -67,8 +90,8 @@ class ProductServiceImplTest {
             .category(category2)
             .build();
 
-    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, LocalDateTime.now(), LocalDateTime.now(), false);
-    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, LocalDateTime.now(), LocalDateTime.now(), false);
+    private final ProductResponseDto productResponseDto1 = new ProductResponseDto(idProduct1, "Product 1", 2.5, 50.0, "imagen1.jpg", 10, "Descripcion del producto 1", category1, supplier1, LocalDateTime.now(), LocalDateTime.now(), false);
+    private final ProductResponseDto productResponseDto2 = new ProductResponseDto(idProduct2, "Product 2", 3.2, 50.0, "imagen2.jpg", 10, "Descripcion del producto 2", category2, supplier2, LocalDateTime.now(), LocalDateTime.now(), false);
 
     WebSocketHandler webSocketHandlerMock = mock(WebSocketHandler.class);
     @Mock
@@ -85,6 +108,10 @@ class ProductServiceImplTest {
     private ProductNotificationMapper productNotificationMapper;
     @Mock
     private ObjectMapper objectMapper;
+    @Mock
+    private SupplierMapper supplierMapper;
+    @Mock
+    private SupplierService supplierService;
     @InjectMocks
     private ProductServiceImpl service;
 
@@ -361,7 +388,8 @@ class ProductServiceImplTest {
                 "imagen3.jpg",
                 10,
                 "Descripción del producto 3",
-                category1
+                category1,
+                supplier1
         );
 
         UUID id = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785460");
@@ -374,6 +402,7 @@ class ProductServiceImplTest {
                 .stock(10)
                 .description("Descripción del producto 3")
                 .category(category1)
+                .supplier(supplier1)
                 .build();
         ProductResponseDto productResponseDto = new ProductResponseDto(
                 id,
@@ -384,13 +413,26 @@ class ProductServiceImplTest {
                 10,
                 "Descripción del producto 3",
                 category1,
+                supplier1,
                 productExpected.getCreatedAt(),
                 productExpected.getUpdatedAt(),
                 false
         );
 
-        when(categoryService.findById(productCreateDto.category().getUuid())).thenReturn(category1);
-        when(mapper.toProduct(productCreateDto, category1)).thenReturn(productExpected);
+        SupplierResponseDto supplierResponseDto = new SupplierResponseDto(
+                supplier1.getId(),
+                supplier1.getName(),
+                supplier1.getContact(),
+                supplier1.getAddress(),
+                supplier1.getDateOfHire(),
+                supplier1.getCategory(),
+                supplier1.getIsDeleted()
+        );
+
+        when(categoryService.findByName(productCreateDto.category().getName())).thenReturn(category1);
+        when(mapper.toProduct(productCreateDto, category1, supplier1)).thenReturn(productExpected);
+        when(supplierMapper.toSupplier(supplierResponseDto)).thenReturn(supplier1);
+        when(supplierService.findByName(anyString())).thenReturn(supplierResponseDto);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
         doNothing().when(webSocketHandlerMock).sendMessage(any());
@@ -408,9 +450,9 @@ class ProductServiceImplTest {
                 () -> assertNotNull(actualProduct.updatedAt()),
                 () -> assertEquals(category1, actualProduct.category())
         );
-        verify(categoryService, times(1)).findById(productCreateDto.category().getUuid());
+        verify(categoryService, times(1)).findByName(productCreateDto.category().getName());
         verify(repository, times(1)).save(productExpected);
-        verify(mapper, times(1)).toProduct(productCreateDto, category1);
+        verify(mapper, times(1)).toProduct(productCreateDto, category1, supplier1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }
 
@@ -424,7 +466,8 @@ class ProductServiceImplTest {
                 "imagen3.jpg",
                 10,
                 "Descripción del producto 3",
-                category1
+                category1,
+                supplier1
         );
         Product productExpected = Product.builder()
                 .id(id)
@@ -435,6 +478,7 @@ class ProductServiceImplTest {
                 .stock(10)
                 .description("Descripción del producto 3")
                 .category(category1)
+                .supplier(supplier1)
                 .build();
         ProductResponseDto productResponseDto = new ProductResponseDto(
                 id,
@@ -445,13 +489,26 @@ class ProductServiceImplTest {
                 10,
                 "Descripción del producto 3",
                 category1,
+                supplier1,
                 productExpected.getCreatedAt(),
                 productExpected.getUpdatedAt(),
                 false
         );
 
+        SupplierResponseDto supplierResponseDto = new SupplierResponseDto(
+                supplier1.getId(),
+                supplier1.getName(),
+                supplier1.getContact(),
+                supplier1.getAddress(),
+                supplier1.getDateOfHire(),
+                supplier1.getCategory(),
+                supplier1.getIsDeleted()
+        );
+
         when(repository.findById(id)).thenReturn(Optional.of(productExpected));
-        when(mapper.toProduct(productUpdateDto, productExpected, category1)).thenReturn(productExpected);
+        when(mapper.toProduct(productUpdateDto, productExpected, category1, supplier1)).thenReturn(productExpected);
+        when(supplierMapper.toSupplier(supplierResponseDto)).thenReturn(supplier1);
+        when(supplierService.findByName(anyString())).thenReturn(supplierResponseDto);
         when(repository.save(productExpected)).thenReturn(productExpected);
         when(mapper.toProductResponseDto(productExpected)).thenReturn(productResponseDto);
         doNothing().when(webSocketHandlerMock).sendMessage(any());
@@ -471,7 +528,7 @@ class ProductServiceImplTest {
         );
         verify(repository, times(1)).findById(id);
         verify(repository, times(1)).save(productExpected);
-        verify(mapper, times(1)).toProduct(productUpdateDto, productExpected, category1);
+        verify(mapper, times(1)).toProduct(productUpdateDto, productExpected, category1, supplier1);
         verify(mapper, times(1)).toProductResponseDto(productExpected);
     }
 
