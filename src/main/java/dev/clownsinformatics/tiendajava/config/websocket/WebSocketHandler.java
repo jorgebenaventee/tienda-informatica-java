@@ -53,11 +53,11 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("Conexión establecida con el servidor");
-        log.info("Sesión: " + session);
+        log.info("Open connection with the server");
+        log.info("Session: " + session);
         sessions.add(session);
-        TextMessage message = new TextMessage("Actualizaciones WebSocket: " + entity + " - Tienda informática API de Spring Boot");
-        log.info("Servidor envía: {}", message);
+        TextMessage message = new TextMessage("WebSocket updates: " + entity + " - Tienda informática API de Spring Boot");
+        log.info("Server sends: {}", message);
         session.sendMessage(message);
     }
 
@@ -71,7 +71,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info("Conexión cerrada con el servidor: " + status);
+        log.info("Close connection with the server" + status);
         sessions.remove(session);
     }
 
@@ -83,10 +83,10 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
      */
     @Override
     public void sendMessage(String message) throws IOException {
-        log.info("Enviar mensaje de cambios en la entidad: " + entity + " : " + message);
+        log.info("Send messages into de entity: " + entity + " - " + message);
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
-                log.info("Servidor WS envía: " + message);
+                log.info("WS server sends: " + message);
                 session.sendMessage(new TextMessage(message));
             }
         }
@@ -103,8 +103,8 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
     public void sendPeriodicMessages() throws IOException {
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
-                String broadcast = "mensaje periódico del servidor " + LocalTime.now();
-                log.info("El servidor envía: " + broadcast);
+                String broadcast = "server periodic broadcast: " + LocalTime.now();
+                log.info("Server sends: " + broadcast);
                 session.sendMessage(new TextMessage(broadcast));
             }
         }
@@ -121,7 +121,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
      */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("Mensaje recibido: " + message);
+        log.info("Message received: " + message);
         session.sendMessage(message);
     }
 
@@ -135,7 +135,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements SubProtoco
      */
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        log.info("Error de transporte con el servidor: " + exception.getMessage());
+        log.info("Error with de server: " + exception.getMessage());
     }
 
     /**
