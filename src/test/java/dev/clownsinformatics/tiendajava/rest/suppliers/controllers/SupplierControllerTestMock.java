@@ -106,7 +106,7 @@ class SupplierControllerTestMock {
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
         when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted.toString(), 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
                 ;
 
         assertAll(
@@ -125,13 +125,13 @@ class SupplierControllerTestMock {
         Optional<Integer> contact = Optional.empty();
         Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
         when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted.toString(), 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
@@ -149,13 +149,13 @@ class SupplierControllerTestMock {
         Optional<Integer> contact = Optional.empty();
         Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
         when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted.toString(),0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted,0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
@@ -173,13 +173,13 @@ class SupplierControllerTestMock {
         Optional<Integer> contact = Optional.of(1);
         Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
         when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted.toString(), 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
