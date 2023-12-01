@@ -31,6 +31,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Controlador REST para el recurso {@link dev.clownsinformatics.tiendajava.rest.employees.models.Employee}
+ *
+ * Proporciona los métodos para realizar las operaciones CRUD sobre el recurso {@link dev.clownsinformatics.tiendajava.rest.employees.models.Employee}
+ */
 @RestController
 @RequestMapping("/api/employee")
 @Slf4j
@@ -40,6 +45,19 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final PaginationLinksUtils paginationLinksUtils;
 
+    /**
+     * Obtiene todos los empleados
+     * @param name Filtro por nombre
+     * @param minSalary Filtro por salario mínimo
+     * @param maxSalary Filtro por salario máximo
+     * @param position Filtro por posición
+     * @param page Número de página
+     * @param size Tamaño de página
+     * @param sortBy Campo por el que ordenar
+     * @param direction Dirección de ordenación
+     * @param request Petición HTTP
+     * @return Lista paginada de empleados
+     */
     @Operation(summary = "Get all employees")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found all employees"),
@@ -79,6 +97,12 @@ public class EmployeeController {
                 .body(response);
     }
 
+    /**
+     * Obtiene un empleado por su id
+     * @param id Id del empleado
+     * @return El empleado que coincide con el id
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Operation(summary = "Get employee by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found employee"),
@@ -94,6 +118,11 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.findById(id));
     }
 
+    /**
+     * Crea un empleado
+     * @param employee Empleado a crear
+     * @return El empleado creado
+     */
     @Operation(summary = "Create employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created employee"),
@@ -110,6 +139,13 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.save(employee));
     }
 
+    /**
+     * Actualiza un empleado
+     * @param id Id del empleado que se quiere actualizar
+     * @param employee Empleado a actualizar
+     * @return El empleado actualizado
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Operation(summary = "Update employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated employee"),
@@ -129,6 +165,13 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeDto);
     }
 
+    /**
+     * Actualiza parcialmente un empleado
+     * @param id Id del empleado que se quiere actualizar
+     * @param employee Empleado a actualizar
+     * @return El empleado actualizado
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Operation(summary = "Partially update employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Partially updated employee"),
@@ -148,6 +191,12 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeDto);
     }
 
+    /**
+     * Elimina un empleado
+     * @param id Id del empleado que se quiere eliminar
+     * @return Respuesta vacía
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Operation(summary = "Delete employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted employee"),

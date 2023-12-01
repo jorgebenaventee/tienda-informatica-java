@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * Implementación de la interfaz {@link EmployeeService} para el manejo de empleados
+ */
 @Service
 @Slf4j
 @CacheConfig(cacheNames = "employees")
@@ -43,6 +46,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Obtiene todos los empleados. Puede filtrar por nombre, salario mínimo, salario máximo y posición
+     *
+     * @param name      Filtro por nombre
+     * @param minSalary Filtro por salario mínimo
+     * @param maxSalary Filtro por salario máximo
+     * @param position  Filtro por posición
+     * @param pageable  Opciones de paginación
+     * @return Página de empleados
+     */
     @Override
     public Page<EmployeeResponseDto> findAll(Optional<String> name, Optional<Double> minSalary, Optional<Double> maxSalary, Optional<String> position, Pageable pageable) {
         Specification<Employee> specification = getSpecification(name, minSalary, maxSalary, position);
@@ -50,6 +63,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employees.map(employeeMapper::toResponseDto);
     }
 
+    /**
+     * Obtiene un empleado por su id
+     *
+     * @param id Id del empleado
+     * @return Empleado
+     * @throws EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Override
     @CachePut(key = "#id")
     public EmployeeResponseDto findById(Integer id) {
@@ -57,6 +77,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.toResponseDto(employee);
     }
 
+    /**
+     * Crea un empleado
+     *
+     * @param createEmployeeRequestDto Datos del empleado a crear
+     * @return Empleado creado
+     */
     @Override
     @CachePut(key = "#result.id")
     public EmployeeResponseDto save(CreateEmployeeRequestDto createEmployeeRequestDto) {
@@ -67,6 +93,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return responseDto;
     }
 
+    /**
+     * Actualiza un empleado
+     *
+     * @param id                       Id del empleado a actualizar
+     * @param updateEmployeeRequestDto Datos del empleado a actualizar
+     * @return Empleado actualizado
+     * @throws EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Override
     @CachePut(key = "#id")
     public EmployeeResponseDto update(Integer id, UpdateEmployeeRequestDto updateEmployeeRequestDto) {
@@ -79,6 +113,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
+    /**
+     * Elimina un empleado
+     *
+     * @param id Id del empleado a eliminar
+     * @throws EmployeeNotFoundException Si no se encuentra el empleado
+     */
     @Override
     @CacheEvict(key = "#id")
     public void delete(Integer id) {

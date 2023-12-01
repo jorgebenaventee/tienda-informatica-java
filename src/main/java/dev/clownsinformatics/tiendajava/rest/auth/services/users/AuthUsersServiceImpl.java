@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementación de la interfaz {@link AuthUsersService}. Es el servicio que utiliza Spring Security para obtener los detalles de un usuario
+ */
 @Service("userDetailsService")
 public class AuthUsersServiceImpl implements AuthUsersService {
 

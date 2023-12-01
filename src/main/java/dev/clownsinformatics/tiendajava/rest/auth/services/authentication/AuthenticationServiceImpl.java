@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Implementación de {@link AuthenticationService} que se encarga de la autenticación de usuarios
+ */
 @Service
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {

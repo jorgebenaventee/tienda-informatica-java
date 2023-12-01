@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Servicio de JWT
+ * Servicio de JWT para generar y validar tokens. Implementa la interfaz {@link JwtService}
  */
 @Service
 @Slf4j

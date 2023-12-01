@@ -6,8 +6,16 @@ import dev.clownsinformatics.tiendajava.rest.employees.dto.UpdateEmployeeRequest
 import dev.clownsinformatics.tiendajava.rest.employees.models.Employee;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper para convertir entre objetos de tipo {@link Employee} y {@link CreateEmployeeRequestDto}
+ */
 @Component
 public class EmployeeMapper {
+    /**
+     * Convierte un objeto de tipo {@link CreateEmployeeRequestDto} a {@link Employee}
+     * @param requestDto Objeto de tipo {@link CreateEmployeeRequestDto} a convertir
+     * @return Objeto de tipo {@link Employee} convertido
+     */
     public Employee toEmployee(CreateEmployeeRequestDto requestDto) {
         return Employee.builder()
                 .name(requestDto.name())
@@ -16,6 +24,12 @@ public class EmployeeMapper {
                 .build();
     }
 
+    /**
+     * Convierte un objeto de tipo {@link UpdateEmployeeRequestDto} a {@link Employee}
+     * @param requestDto Objeto de tipo {@link UpdateEmployeeRequestDto} a convertir
+     * @param employee Objeto de tipo {@link Employee} a actualizar
+     * @return Objeto de tipo {@link Employee} convertido
+     */
     public Employee toEmployee(UpdateEmployeeRequestDto requestDto, Employee employee) {
         return Employee.builder()
                 .id(employee.getId())
@@ -25,6 +39,11 @@ public class EmployeeMapper {
                 .build();
     }
 
+    /**
+     * Convierte un objeto de tipo {@link Employee} a {@link EmployeeResponseDto}
+     * @param employee Objeto de tipo {@link Employee} a convertir
+     * @return Objeto de tipo {@link EmployeeResponseDto} convertido
+     */
     public EmployeeResponseDto toResponseDto(Employee employee) {
         return new EmployeeResponseDto(
                 employee.getId(),
