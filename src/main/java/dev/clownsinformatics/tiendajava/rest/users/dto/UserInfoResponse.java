@@ -34,5 +34,5 @@ public class UserInfoResponse {
     private Boolean isDeleted = false;
     @Builder.Default
     @Schema(description = "User´s orders", example = "[]")
-    private List<String> pedidos = new ArrayList<>();
+    private List<String> orders = new ArrayList<>();
 }

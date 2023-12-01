@@ -56,7 +56,7 @@ public class UsersMapper {
                 .email(user.getEmail())
                 .roles(user.getRoles())
                 .isDeleted(user.getIsDeleted())
-                .pedidos(pedidos)
+                .orders(pedidos)
                 .build();
     }
 }
