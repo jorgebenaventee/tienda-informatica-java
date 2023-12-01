@@ -26,6 +26,5 @@ public interface SupplierRepository extends JpaRepository<Supplier, UUID>, JpaSp
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE Supplier s SET s.isDeleted = true WHERE s.id = :id")
     void deleteById(@Param("id") UUID id);
-
 }
 

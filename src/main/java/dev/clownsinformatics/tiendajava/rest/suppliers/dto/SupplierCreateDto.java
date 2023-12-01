@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-//estos atributos son los que se van a recibir en el body de la peticion,tienen validaciones
 public record SupplierCreateDto(
         @NotBlank(message = "The name cannot be blank")
         @Schema(description = "The name of the supplier", example = "Eva")
