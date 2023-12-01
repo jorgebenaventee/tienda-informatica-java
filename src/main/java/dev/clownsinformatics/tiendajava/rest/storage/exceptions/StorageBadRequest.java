@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 
+/**
+ * Excepción de solicitud incorrecta de almacenamiento.
+ */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class StorageBadRequest extends StorageException {
 

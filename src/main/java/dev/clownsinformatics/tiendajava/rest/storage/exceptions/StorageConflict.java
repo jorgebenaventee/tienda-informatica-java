@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 
+/**
+ * Excepción de conflicto de almacenamiento.
+ */
 @ResponseStatus(HttpStatus.CONFLICT)
 public class StorageConflict extends StorageException {
 

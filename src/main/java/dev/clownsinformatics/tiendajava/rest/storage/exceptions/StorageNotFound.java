@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 
+/**
+ * Excepción de no encontrado de almacenamiento.
+ */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class StorageNotFound extends StorageException {
 

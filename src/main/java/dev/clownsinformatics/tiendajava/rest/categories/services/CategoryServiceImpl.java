@@ -156,7 +156,6 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @param id Identificador único de la categoría a eliminar.
      * @throws CategoryNotFound Excepción lanzada si la categoría no se encuentra.
-     * @throws CategoryConflict Excepción lanzada si la categoría tiene productos o proveedores asociados.
      */
     @Override
     @CacheEvict
@@ -167,14 +166,14 @@ public class CategoryServiceImpl implements CategoryService {
         boolean hasProducts = categoryRepository.existsProductById(id);
         boolean hasSuppliers = categoryRepository.existsSupplierById(id);
         if (hasProducts) {
-            log.warn("Not deleting category with id: {} because it has products", id);
-            throw new CategoryConflict("Category has products");
+            log.warn("Category with id: {} has products", id);
+            categoryRepository.deleteById(id);
         } else if (hasSuppliers) {
-            log.warn("Not deleting category with id: {} because it has suppliers", id);
-            throw new CategoryConflict("Category has suppliers");
+            log.warn("Category with id: {} has suppliers", id);
+            categoryRepository.deleteById(id);
         } else {
             onChange(Notification.Tipo.DELETE, categoryToUpdate);
-            categoryRepository.delete(categoryToUpdate);
+            categoryRepository.deleteById(id);
         }
     }
 

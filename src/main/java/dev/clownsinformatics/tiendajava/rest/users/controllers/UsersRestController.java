@@ -222,7 +222,6 @@ public class UsersRestController {
             @Parameter(name = "user", required = true, description = "User data")
     })
     @GetMapping("/me/profile")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserInfoResponse> me(@AuthenticationPrincipal User user) {
         log.info("Obteniendo usuario");
         return ResponseEntity.ok(usersService.findById(user.getId()));
