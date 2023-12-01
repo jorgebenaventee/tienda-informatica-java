@@ -22,16 +22,26 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
+/**
+ * Servicio de almacenamiento de archivos en el sistema de archivos del servidor.
+ */
 @Service
 @Slf4j
 public class FileSystemStorageService implements StorageService {
 
     private final Path rootLocation;
 
+    /**
+     * Constructor del servicio de almacenamiento de archivos en el sistema de archivos del servidor.
+     * @param path Ruta del directorio raíz de almacenamiento de archivos.
+     */
     public FileSystemStorageService(@Value("${upload.root-location}") String path) {
         this.rootLocation = Paths.get(path);
     }
 
+    /**
+     * Inicializa el servicio de almacenamiento de archivos en el sistema de archivos del servidor.
+     */
     @Override
     public void init() {
         log.info("Initializing storage service");
@@ -42,6 +52,11 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    /**
+     * Almacena un archivo en el sistema de archivos del servidor.
+     * @param file Archivo a almacenar.
+     * @return Nombre del archivo almacenado.
+     */
     @Override
     public String store(MultipartFile file) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
@@ -68,6 +83,10 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    /**
+     * Carga todos los archivos almacenados en el sistema de archivos del servidor.
+     * @return Lista de archivos almacenados.
+     */
     @Override
     public Stream<Path> loadAll() {
         log.info("Loading all files");
@@ -80,12 +99,22 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    /**
+     * Carga un archivo almacenado en el sistema de archivos del servidor.
+     * @param filename Nombre del archivo a cargar.
+     * @return Ruta del archivo cargado.
+     */
     @Override
     public Path load(String filename) {
         log.info("Loading file " + filename);
         return rootLocation.resolve(filename);
     }
 
+    /**
+     * Carga un archivo almacenado en el sistema de archivos del servidor como recurso.
+     * @param filename Nombre del archivo a cargar.
+     * @return Recurso del archivo cargado.
+     */
     @Override
     public Resource loadAsResource(String filename) {
         log.info("Loading file " + filename + " as resource");
@@ -102,6 +131,10 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    /**
+     * Elimina un archivo almacenado en el sistema de archivos del servidor.
+     * @param filename Nombre del archivo a eliminar.
+     */
     @Override
     public void delete(String filename) {
         String justFilename = StringUtils.getFilename(filename);
@@ -114,12 +147,20 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    /**
+     * Elimina todos los archivos almacenados en el sistema de archivos del servidor.
+     */
     @Override
     public void deleteAll() {
         log.info("Deleting all files");
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
     }
 
+    /**
+     * Obtiene la URL de un archivo almacenado en el sistema de archivos del servidor.
+     * @param filename Nombre del archivo.
+     * @return URL del archivo.
+     */
     @Override
     public String getUrl(String filename) {
         log.info("Getting url for file " + filename);
