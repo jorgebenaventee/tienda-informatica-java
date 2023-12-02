@@ -14,7 +14,6 @@ public interface CategoryService {
 
     Category findById(UUID id);
 
-    @Cacheable
     Category findByName(String name);
 
     Category save(CategoryResponseDto category);

@@ -1,6 +1,5 @@
 version: '3.8'
 
-
 services:
   postgresql-database:
     image: postgres:16-alpine
@@ -23,4 +22,4 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: orders
     volumes:
-      - ./database/orders.js:/docker-entrypoint-initdb.d/orders.js:ro
+      - ./app/orders.js:/docker-entrypoint-initdb.d/orders.js:ro
