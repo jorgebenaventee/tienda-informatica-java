@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -33,6 +34,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+
+/*
+ * Controlador REST para clientes
+ * Aqui fijamos la ruta base para los endpoints de clientes
+ * Tambien se indica que solo los usuarios con rol USER pueden acceder a estos endpoints
+ */
 @RestController
 @RequestMapping("api/clients")
 @Slf4j
@@ -49,6 +56,14 @@ public class ClientRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    /**
+    * Endpoint para crear un nuevo cliente
+    *
+    * @param clientCreateRequest Cliente a crear
+    * @return ClientResponse cliente creado
+    * @throws HttpClientErrorException.BadRequest Si el cliente no es valido
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar el cliente
+     */
     @Operation(summary = "Create a new client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client created"),
@@ -66,6 +81,15 @@ public class ClientRestController {
         return ResponseEntity.ok(clientResponse);
     }
 
+    /**
+     *
+     * @param id
+     * @param clientUpdateRequest
+     * @return ClientResponse cliente actualizado
+     * @throws HttpClientErrorException.BadRequest Si el cliente no es valido
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar el cliente
+     */
     @Operation(summary = "Update a client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client updated"),
@@ -84,6 +108,14 @@ public class ClientRestController {
         return ResponseEntity.ok(clientService.update(id, clientUpdateRequest));
     }
 
+    /**
+     * Endpoint para obtener un cliente
+     * @param id Id del cliente
+     * @return ClientResponse cliente encontrado
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para obtener el cliente
+     * @throws HttpClientErrorException.BadRequest Si el id no es valido
+     */
     @Operation(summary = "Get a client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client found"),
@@ -98,6 +130,17 @@ public class ClientRestController {
         return ResponseEntity.ok(clientService.findById(id));
     }
 
+    /**
+     * Endpoint para obtener todos los clientes
+     * @param username Nombre de usuario del cliente
+     * @param isDeleted Si el cliente esta eliminado
+     * @param page Numero de pagina
+     * @param size Tamaño de pagina
+     * @param sortBy Campo por el que ordenar
+     * @param direction Direccion de ordenacion
+     * @param request Peticion HTTP
+     * @return PageResponse pagina de clientes
+     */
     @Operation(summary = "Get all clients")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Clients found")
@@ -126,6 +169,14 @@ public class ClientRestController {
 
     }
 
+    /**
+     * Endpoint para eliminar un cliente
+     * @param id Id del cliente
+     * @return Void
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para eliminar el cliente
+     * @throws HttpClientErrorException.BadRequest Si el id no es valido
+     */
     @Operation(summary = "Delete a client")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Client deleted"),
@@ -143,6 +194,16 @@ public class ClientRestController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para actualizar la imagen de un cliente
+     * @param id Id del cliente
+     * @param file Imagen del cliente
+     * @param withUrl Si devolver la url de la imagen
+     * @return ClientResponse cliente actualizado
+     * @throws HttpClientErrorException.BadRequest Si la imagen no es valida
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar la imagen del cliente
+     */
     @Operation(summary = "Update a client image")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Client image updated"),

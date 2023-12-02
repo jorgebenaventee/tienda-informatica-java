@@ -15,7 +15,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
+/**
+ * Entidad Client
+ * Se usa para mapear la tabla CLIENTS de la base de datos
+ */
 @Data
 @Builder
 @Entity
