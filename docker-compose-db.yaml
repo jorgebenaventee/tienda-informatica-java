@@ -24,7 +24,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
     volumes:
-      - ./database/orders.js:/docker-entrypoint-initdb.d/orders.js:ro
+      - ./data/orders.js:/docker-entrypoint-initdb.d/orders.js:ro
     networks:
       - tienda-network
 
