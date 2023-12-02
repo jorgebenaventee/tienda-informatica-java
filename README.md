@@ -357,6 +357,28 @@ han estructurado las siguientes secciones:
     - `partialUpdateEmployee()`: Actualiza parcialmente un empleado existente.
     - `deleteEmployee()`: Elimina un empleado por su DNI.
 
+## Client
+
+`Client` es el endpoint encargado de gestionar las operaciones relacionadas con los clientes en la aplicación. Este controlador proporciona endpoints RESTful para interactuar con esta entidad.
+Se encuentra estructurado en varios paquetes que son:
+
+- **Repositories**: Este hereda de `JpaRepository` y lo usamos para agregar ciertas consultas personalizadas.
+- **Services**: Este es llamado por el controller para que a su vez llame al repositorio y le devuelva un `ClientResponse`, tiene implementada una caché para mejorar el rendimiento.
+- **Client**: Es el modelo de la base de datos que contiene la estructura de las entidades procesadas.
+- **Mapper**: Se usa para convertir el modelo `Client` en DTOs o viceversa.
+- **Excepciones**: Se lanzan para devolver codigos de error HTTP.
+- **Controlador**: Se encarga de recibir las peticiones y mediante el `ClientServiceImpl` devolver un `ClientResponse` o una `PageResponse`. Los parámetros que recibe y devuelve son estos:
+
+
+| No. | Método | Endpoint                      | Descripción                                                   | Roles Requeridos | Parámetros                                    | Respuestas                                                                                    |
+|----|--------|-------------------------------|---------------------------------------------------------------|-------------------|-----------------------------------------------|----------------------------------------------------------------------------------------------|
+| 1  | POST   | `/api/clients/`               | Crea un nuevo cliente con la información proporcionada.       | ADMIN             | `clientCreateRequest` (en el cuerpo de la solicitud) | 200: Cliente creado exitosamente<br>400: Entrada inválida<br>403: Acceso prohibido          |
+| 2  | PUT    | `/api/clients/{id}`           | Actualiza la información de un cliente existente.             | ADMIN             | `id` (en la URL)<br>`clientUpdateRequest` (en el cuerpo de la solicitud) | 200: Cliente actualizado exitosamente<br>400: Entrada inválida<br>404: Cliente no encontrado<br>403: Acceso prohibido |
+| 3  | GET    | `/api/clients/{id}`           | Obtiene la información de un cliente según su ID.             | USER              | `id` (en la URL)                              | 200: Cliente encontrado<br>404: Cliente no encontrado                                        |
+| 4  | GET    | `/api/clients/`               | Obtiene una lista paginada de todos los clientes.             | USER              | `username` (opcional): Nombre de usuario del cliente<br>`isDeleted` (opcional, por defecto: false): Indica si el cliente está eliminado<br>`page` (opcional, por defecto: 0): Número de página<br>`size` (opcional, por defecto: 10): Tamaño de página<br>`sortBy` (opcional, por defecto: id): Campo por el que ordenar<br>`direction` (opcional, por defecto: asc): Dirección de ordenación | 200: Clientes encontrados                                                                   |
+| 5  | DELETE | `/api/clients/{id}`           | Elimina un cliente según su ID.                                | ADMIN             | `id` (en la URL)                              | 204: Cliente eliminado exitosamente<br>404: Cliente no encontrado<br>403: Acceso prohibido   |
+| 6  | PATCH  | `/api/clients/{id}/image`     | Actualiza la imagen de perfil de un cliente.                  | USER              | `id` (en la URL)<br>`file` (en el cuerpo de la solicitud, tipo MultipartFile)<br>`withUrl` (opcional): Indica si devolver la URL de la imagen (en los parámetros de solicitud) | 200: Imagen del cliente actualizada exitosamente<br>400: Entrada inválida (si la imagen no es válida)<br>404: Cliente no encontrado<br>403: Acceso prohibido |
+
 ## Websockets
 
 En la gestión de notificaciones por Websockets, tenemos 2 clases y 1 interfaz:
