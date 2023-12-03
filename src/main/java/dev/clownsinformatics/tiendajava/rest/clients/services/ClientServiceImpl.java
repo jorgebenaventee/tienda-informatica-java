@@ -32,6 +32,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * Implementacion del servicio de clientes
+ * Implementa las funciones para gestionar los clientes
+ * Se cachea para mejorar el rendimiento
+ */
 @Service
 @CacheConfig(cacheNames = "clients")
 @Slf4j
@@ -57,6 +62,13 @@ public class ClientServiceImpl implements ClientService {
     }
 
 
+    /**
+     * Busca todos los clientes
+     * @param username nombre de usuario
+     * @param isDeleted si el cliente esta eliminado
+     * @param pageable paginacion
+     * @return lista de clientes
+     */
     @Override
     public Page<ClientResponse> findAll(Optional<String> username, Optional<Boolean> isDeleted, Pageable pageable) {
 
@@ -76,6 +88,12 @@ public class ClientServiceImpl implements ClientService {
 
     }
 
+    /**
+     * Busca un cliente por su id
+     * @param id id del cliente
+     * @return cliente
+     * @throws ClientNotFound si no se encuentra el cliente
+     */
     @Override
     @Cacheable(key = "#id")
     public ClientResponse findById(Long id) {
@@ -86,6 +104,11 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    /**
+     * Guarda un cliente
+     * @param productoCreateRequest cliente a guardar
+     * @return cliente guardado
+     */
     @Override
     @CachePut(key = "#result.id")
     public ClientResponse save(ClientCreateRequest productoCreateRequest) {
@@ -94,6 +117,13 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    /**
+     * Actualiza un cliente
+     * @param id id del cliente
+     * @param productoUpdateRequest cliente a actualizar
+     * @return cliente actualizado
+     * @throws ClientNotFound si no se encuentra el cliente
+     */
     @Override
     @CachePut(key = "#result.id")
     public ClientResponse update(Long id, ClientUpdateRequest productoUpdateRequest) {
@@ -148,6 +178,11 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    /**
+     * Elimina un cliente
+     * @param id id del cliente
+     * @throws ClientNotFound si no se encuentra el cliente
+     */
     @Override
     @CacheEvict(key = "#id")
     public void deleteById(Long id) {
@@ -159,6 +194,14 @@ public class ClientServiceImpl implements ClientService {
         sendNotification(Notification.Tipo.DELETE, client);
     }
 
+    /**
+     * Actualiza la imagen de un cliente
+     * @param id id del cliente
+     * @param image imagen a actualizar
+     * @param withUrl si se debe guardar la url de la imagen
+     * @return cliente actualizado
+     * @throws ClientNotFound si no se encuentra el cliente
+     */
     @Override
     @CachePut(key = "#result.id")
     @Transactional
@@ -196,6 +239,11 @@ public class ClientServiceImpl implements ClientService {
         return response;
     }
 
+    /**
+     * Envia una notificacion a traves del servicio de websockets
+     * @param tipo tipo de notificacion
+     * @param data datos de la notificacion
+     */
     void sendNotification(Notification.Tipo tipo, Client data) {
         if (webSocketService == null) {
             log.warn("No se ha configurado el servicio de websockets");

@@ -9,6 +9,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
+/**
+ * DTO para obtener un cliente
+ * @param id
+ * @param username
+ * @param name
+ * @param balance
+ * @param email
+ * @param address
+ * @param phone
+ * @param birthdate
+ * @param image
+ * @param isDeleted
+ * @param createdAt
+ * @param updatedAt
+ */
 @Builder
 public record ClientResponse(
         Long id,
