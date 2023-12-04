@@ -3,16 +3,25 @@ package dev.clownsinformatics.tiendajava.rest.clients.mappers;
 
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientCreateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientResponse;
-import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.models.Client;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+
+/**
+ * Mapper de la entidad Client
+ * Se usa para mapear la entidad Client a ClientResponse y viceversa
+ */
 @Component
 public class ClientMapper {
 
 
+    /**
+     * Mapea un ClientCreateRequest a un Client
+     * @param clientCreateRequest ClientCreateRequest
+     * @return Client
+     */
     public Client toClient(ClientCreateRequest clientCreateRequest) {
         return Client.builder()
                 .name(clientCreateRequest.name())
@@ -27,6 +36,11 @@ public class ClientMapper {
                 .build();
     }
 
+    /**
+     * Mapea un ClientResponse a un Client
+     * @param clientResponse ClientResponse
+     * @return Client
+     */
     public Client toClient(ClientResponse clientResponse) {
         return Client.builder()
                 .name(clientResponse.name())
@@ -43,6 +57,11 @@ public class ClientMapper {
                 .build();
     }
 
+    /**
+     * Mapea un Client a un ClientResponse
+     * @param client Client
+     * @return ClientResponse
+     */
     public ClientResponse toClientResponse(Client client) {
         return new ClientResponse(
                 client.getId(),

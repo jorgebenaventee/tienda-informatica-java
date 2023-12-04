@@ -38,7 +38,8 @@ class SupplierMapperTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category
+                category,
+                false
         );
 
         assertAll(
@@ -55,7 +56,8 @@ class SupplierMapperTest {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category
+                category,
+                false
 
         );
 

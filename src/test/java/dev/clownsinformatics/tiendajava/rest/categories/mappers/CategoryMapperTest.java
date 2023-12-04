@@ -15,7 +15,7 @@ class CategoryMapperTest {
 
     @Test
     void toCategory() {
-        CategoryResponseDto categoryCreateDto = new CategoryResponseDto("Disney");
+        CategoryResponseDto categoryCreateDto = new CategoryResponseDto("Disney", false);
 
         var res = categoryMapper.toCategory(categoryCreateDto);
 
@@ -26,7 +26,7 @@ class CategoryMapperTest {
 
     @Test
     void testToCategory() {
-        CategoryResponseDto categoryCreateDto = new CategoryResponseDto("Disney");
+        CategoryResponseDto categoryCreateDto = new CategoryResponseDto("Disney", false);
 
         Category category = Category.builder()
                 .uuid(UUID.randomUUID())

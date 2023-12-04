@@ -1,0 +1,33 @@
+services:
+  postgresql-database:
+    image: postgres:16-alpine
+    restart: always
+    env_file: .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ./database:/var/lib/postgresql/data
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+    networks:
+      - tienda-network
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - ${MONGO_PORT}:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - ./data/orders.js:/docker-entrypoint-initdb.d/orders.js:ro
+    networks:
+      - tienda-network
+
+networks:
+  tienda-network:
+    driver: bridge

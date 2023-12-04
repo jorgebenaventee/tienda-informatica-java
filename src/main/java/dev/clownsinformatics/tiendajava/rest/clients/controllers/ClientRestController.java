@@ -7,36 +7,43 @@ import dev.clownsinformatics.tiendajava.rest.clients.dto.ClientUpdateRequest;
 import dev.clownsinformatics.tiendajava.rest.clients.services.ClientServiceImpl;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
-import jakarta.servlet.ServletException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+
+/*
+ * Controlador REST para clientes
+ * Aqui fijamos la ruta base para los endpoints de clientes
+ * Tambien se indica que solo los usuarios con rol USER pueden acceder a estos endpoints
+ */
 @RestController
 @RequestMapping("api/clients")
 @Slf4j
+@PreAuthorize("hasRole('USER')")
 public class ClientRestController {
 
 
@@ -49,25 +56,103 @@ public class ClientRestController {
         this.paginationLinksUtils = paginationLinksUtils;
     }
 
+    /**
+    * Endpoint para crear un nuevo cliente
+    *
+    * @param clientCreateRequest Cliente a crear
+    * @return ClientResponse cliente creado
+    * @throws HttpClientErrorException.BadRequest Si el cliente no es valido
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar el cliente
+     */
+    @Operation(summary = "Create a new client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "clientCreateRequest", required = true, description = "Client to create")
+    })
     @PostMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientCreateRequest clientCreateRequest) {
         log.info("Creating client");
         ClientResponse clientResponse = clientService.save(clientCreateRequest);
         return ResponseEntity.ok(clientResponse);
     }
 
+    /**
+     *
+     * @param id
+     * @param clientUpdateRequest
+     * @return ClientResponse cliente actualizado
+     * @throws HttpClientErrorException.BadRequest Si el cliente no es valido
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar el cliente
+     */
+    @Operation(summary = "Update a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id"),
+            @Parameter(name = "clientUpdateRequest", required = true, description = "Client to update")
+    })
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientResponse> updateClient(@PathVariable Long id, @Valid @RequestBody ClientUpdateRequest clientUpdateRequest) {
         log.info("Updating client");
         return ResponseEntity.ok(clientService.update(id, clientUpdateRequest));
     }
 
+    /**
+     * Endpoint para obtener un cliente
+     * @param id Id del cliente
+     * @return ClientResponse cliente encontrado
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para obtener el cliente
+     * @throws HttpClientErrorException.BadRequest Si el id no es valido
+     */
+    @Operation(summary = "Get a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client found"),
+            @ApiResponse(responseCode = "404", description = "Client not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClient(@PathVariable Long id) {
         log.info("Getting client");
         return ResponseEntity.ok(clientService.findById(id));
     }
 
+    /**
+     * Endpoint para obtener todos los clientes
+     * @param username Nombre de usuario del cliente
+     * @param isDeleted Si el cliente esta eliminado
+     * @param page Numero de pagina
+     * @param size Tamaño de pagina
+     * @param sortBy Campo por el que ordenar
+     * @param direction Direccion de ordenacion
+     * @param request Peticion HTTP
+     * @return PageResponse pagina de clientes
+     */
+    @Operation(summary = "Get all clients")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clients found")
+    })
+    @Parameters({
+            @Parameter(name = "username", description = "Client username"),
+            @Parameter(name = "isDeleted", description = "Client is deleted"),
+            @Parameter(name = "page", description = "Page number"),
+            @Parameter(name = "size", description = "Page size"),
+            @Parameter(name = "sortBy", description = "Sort by"),
+            @Parameter(name = "direction", description = "Sort direction")
+    })
     @GetMapping("/")
     public ResponseEntity<PageResponse<ClientResponse>> getAllClients(@RequestParam(required = false) Optional<String> username, @RequestParam(defaultValue = "false") String isDeleted,
                                                                       @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size, @RequestParam(defaultValue = "id") String sortBy,
@@ -84,13 +169,52 @@ public class ClientRestController {
 
     }
 
+    /**
+     * Endpoint para eliminar un cliente
+     * @param id Id del cliente
+     * @return Void
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para eliminar el cliente
+     * @throws HttpClientErrorException.BadRequest Si el id no es valido
+     */
+    @Operation(summary = "Delete a client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Client deleted"),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id")
+    })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
         log.info("Deleting client");
         clientService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Endpoint para actualizar la imagen de un cliente
+     * @param id Id del cliente
+     * @param file Imagen del cliente
+     * @param withUrl Si devolver la url de la imagen
+     * @return ClientResponse cliente actualizado
+     * @throws HttpClientErrorException.BadRequest Si la imagen no es valida
+     * @throws HttpClientErrorException.NotFound Si el cliente no existe
+     * @throws HttpClientErrorException.Forbidden Si el usuario no tiene permisos para actualizar la imagen del cliente
+     */
+    @Operation(summary = "Update a client image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client image updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Client not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", required = true, description = "Client id"),
+            @Parameter(name = "file", required = true, description = "Client image")
+    })
     @PatchMapping("/{id}/image")
     public ResponseEntity<ClientResponse> updateImage(@PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestParam("withUrl") Optional<Boolean> withUrl) {
         log.info("Updating image");

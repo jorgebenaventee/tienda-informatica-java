@@ -56,6 +56,7 @@ class SupplierServiceImplTest {
             .address("Calle 1")
             .dateOfHire(now)
             .category(category1)
+            .isDeleted(false)
             .build();
 
 
@@ -66,6 +67,7 @@ class SupplierServiceImplTest {
             .address("Calle 2")
             .dateOfHire(now)
             .category(category2)
+            .isDeleted(false)
             .build();
 
     private final SupplierResponseDto supplierResponseDto = new SupplierResponseDto(
@@ -74,7 +76,8 @@ class SupplierServiceImplTest {
             1,
             "Calle 1",
             now,
-            category1
+            category1,
+            false
     );
 
     private final SupplierResponseDto supplierResponseDto2 = new SupplierResponseDto(
@@ -83,7 +86,8 @@ class SupplierServiceImplTest {
             2,
             "Calle 2",
             now,
-            category2
+            category2,
+            false
     );
 
 
@@ -114,7 +118,7 @@ class SupplierServiceImplTest {
         when(supplierRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(supplierMapper.toSupplierDto(any(Supplier.class))).thenReturn(supplierResponseDto);
 
-        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), pageable);
+        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), pageable);
         System.out.println(actualSupplierResponseDto.getTotalElements());
 
         assertAll(
@@ -138,7 +142,7 @@ class SupplierServiceImplTest {
         when(supplierRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(supplierMapper.toSupplierDto(any(Supplier.class))).thenReturn(supplierResponseDto);
 
-        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(name, Optional.empty(), Optional.empty(), pageable);
+        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(name, Optional.empty(), Optional.empty(), Optional.empty(), pageable);
         assertAll(
                 () -> assertEquals(supplierResponseDtos, actualSupplierResponseDto.getContent()),
                 () -> assertEquals(1, actualSupplierResponseDto.getTotalPages()),
@@ -161,7 +165,7 @@ class SupplierServiceImplTest {
         when(supplierRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(supplierMapper.toSupplierDto(any(Supplier.class))).thenReturn(supplierResponseDto2);
 
-        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), categoryName, Optional.empty(), pageable);
+        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), categoryName, Optional.empty(), Optional.empty(), pageable);
         assertAll(
                 () -> assertNotNull(actualSupplierResponseDto),
                 () -> assertEquals(expectedSupplierResponse, actualSupplierResponseDto.getContent()),
@@ -184,7 +188,7 @@ class SupplierServiceImplTest {
         when(supplierRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(expectedPage);
         when(supplierMapper.toSupplierDto(any(Supplier.class))).thenReturn(supplierResponseDto2);
 
-        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, pageable);
+        Page<SupplierResponseDto> actualSupplierResponseDto = supplierService.findAll(Optional.empty(), Optional.empty(), contactNumber, Optional.empty(), pageable);
         assertAll(
                 () -> assertNotNull(actualSupplierResponseDto),
                 () -> assertEquals(expectedSupplierResponse, actualSupplierResponseDto.getContent()),
@@ -230,7 +234,8 @@ class SupplierServiceImplTest {
                 "Supplier Creado",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
 
         Supplier expectedSupplier = Supplier.builder()
@@ -248,7 +253,8 @@ class SupplierServiceImplTest {
                 supplierCreateDto.contact(),
                 supplierCreateDto.address(),
                 now,
-                supplierCreateDto.category()
+                supplierCreateDto.category(),
+                supplierCreateDto.isDeleted()
         );
 
         when(categoryService.findById(category1.getUuid())).thenReturn(category1);
@@ -282,7 +288,8 @@ class SupplierServiceImplTest {
                 "Supplier Actualizado",
                 2,
                 "Calle 2",
-                category2
+                category2,
+                false
         );
         Supplier supplier1 = supplier;
 

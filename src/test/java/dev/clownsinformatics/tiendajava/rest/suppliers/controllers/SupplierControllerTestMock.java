@@ -34,6 +34,7 @@ class SupplierControllerTestMock {
             .name("Category 1")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
+            .isDeleted(false)
             .build();
 
     private final Category category2 = Category.builder()
@@ -41,6 +42,7 @@ class SupplierControllerTestMock {
             .name("Category 2")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
+            .isDeleted(false)
             .build();
 
     private final Supplier supplier1 = Supplier.builder()
@@ -50,6 +52,7 @@ class SupplierControllerTestMock {
             .address("Calle 1")
             .dateOfHire(LocalDateTime.now())
             .category(category1)
+            .isDeleted(false)
             .build();
 
 
@@ -60,6 +63,7 @@ class SupplierControllerTestMock {
             .address("Calle 2")
             .dateOfHire(LocalDateTime.now())
             .category(category2)
+            .isDeleted(false)
             .build();
 
     private final SupplierResponseDto supplierResponseDto1 = new SupplierResponseDto(
@@ -68,7 +72,8 @@ class SupplierControllerTestMock {
             1,
             "Calle 1",
             LocalDateTime.now(),
-            category1
+            category1,
+            false
     );
 
     private final SupplierResponseDto supplierResponseDto2 = new SupplierResponseDto(
@@ -77,7 +82,8 @@ class SupplierControllerTestMock {
             2,
             "Calle 2",
             LocalDateTime.now(),
-            category2
+            category2,
+            false
     );
 
     @Mock
@@ -92,21 +98,23 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
-        when(supplierService.findAll(category, name, contact, pageable)).thenReturn(expectedPage);
+        when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
+                ;
 
         assertAll(
                 () -> assertNotNull(pageResponse),
                 () -> assertEquals(expectedPage.getContent(), pageResponse.content())
         );
 
-        verify(supplierService, times(1)).findAll(category, name, contact, pageable);
+        verify(supplierService, times(1)).findAll(category, name, contact, isDeleted, pageable);
 
     }
 
@@ -115,21 +123,22 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.of("Category 1");
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
-        when(supplierService.findAll(category, name, contact, pageable)).thenReturn(expectedPage);
+        when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
                 () -> assertEquals(expectedPage.getContent(), pageResponse.content())
         );
 
-        verify(supplierService, times(1)).findAll(category, name, contact, pageable);
+        verify(supplierService, times(1)).findAll(category, name, contact, isDeleted, pageable);
 
     }
 
@@ -138,21 +147,22 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.of("Supplier 1");
         Optional<Integer> contact = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
-        when(supplierService.findAll(category, name, contact, pageable)).thenReturn(expectedPage);
+        when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted,0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
                 () -> assertEquals(expectedPage.getContent(), pageResponse.content())
         );
 
-        verify(supplierService, times(1)).findAll(category, name, contact, pageable);
+        verify(supplierService, times(1)).findAll(category, name, contact, isDeleted, pageable);
 
     }
 
@@ -161,22 +171,22 @@ class SupplierControllerTestMock {
         Optional<String> category = Optional.empty();
         Optional<String> name = Optional.empty();
         Optional<Integer> contact = Optional.of(1);
+        Optional<Boolean> isDeleted = Optional.of(false);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/api/suppliers"));
+        when(request.getRequestURL()).thenReturn(new StringBuffer("https://localhost:3000/api/suppliers"));
         List<SupplierResponseDto> supplierResponseDtoList = List.of(supplierResponseDto1, supplierResponseDto2);
         Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
         Page<SupplierResponseDto> expectedPage = new PageImpl<>(supplierResponseDtoList);
-        when(supplierService.findAll(category, name, contact, pageable)).thenReturn(expectedPage);
+        when(supplierService.findAll(category, name, contact, isDeleted, pageable)).thenReturn(expectedPage);
 
-        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, 0, 10, "id", "asc", request).getBody();
+        PageResponse<SupplierResponseDto> pageResponse = supplierController.getAll(category, name, contact, isDeleted, 0, 10, "id", "asc", request).getBody();
 
         assertAll(
                 () -> assertNotNull(pageResponse),
                 () -> assertEquals(expectedPage.getContent(), pageResponse.content())
         );
 
-        verify(supplierService, times(1)).findAll(category, name, contact, pageable);
-
+        verify(supplierService, times(1)).findAll(category, name, contact, isDeleted, pageable);
     }
 
     @Test
@@ -197,7 +207,8 @@ class SupplierControllerTestMock {
                 "Supplier 1",
                 1,
                 "Calle 1",
-                category1
+                category1,
+                false
         );
         when(supplierService.save(supplierCreateDto)).thenReturn(supplierResponseDto1);
         ResponseEntity<SupplierResponseDto> responseEntity = supplierController.createSupplier(supplierCreateDto);
@@ -216,7 +227,8 @@ class SupplierControllerTestMock {
                 "Supplier 2",
                 2,
                 "Calle 2",
-                category2
+                category2,
+                false
         );
         when(supplierService.update(supplierUpdateDto, uuid.toString())).thenReturn(supplierResponseDto2);
         ResponseEntity<SupplierResponseDto> responseEntity = supplierController.updateSupplier(uuid.toString(), supplierUpdateDto);
@@ -234,7 +246,8 @@ class SupplierControllerTestMock {
                 "Supplier 2",
                 2,
                 "Calle 2",
-                category2
+                category2,
+                false
         );
         when(supplierService.update(supplierUpdateDto, supplier1.getId().toString())).thenReturn(supplierResponseDto2);
         ResponseEntity<SupplierResponseDto> response = supplierController.updateSupplierPatch(supplier1.getId().toString(), supplierUpdateDto);
@@ -243,7 +256,8 @@ class SupplierControllerTestMock {
                 () -> assertEquals(supplierUpdateDto.name(), response.getBody().name()),
                 () -> assertEquals(supplierUpdateDto.contact(), response.getBody().contact()),
                 () -> assertEquals(supplierUpdateDto.address(), response.getBody().address()),
-                () -> assertEquals(supplierUpdateDto.category(), response.getBody().category())
+                () -> assertEquals(supplierUpdateDto.category(), response.getBody().category()),
+                () -> assertEquals(supplierUpdateDto.isDeleted(), response.getBody().isDeleted())
         );
         verify(supplierService, times(1)).update(supplierUpdateDto, supplier1.getId().toString());
     }

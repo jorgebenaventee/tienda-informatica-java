@@ -4,8 +4,10 @@ import dev.clownsinformatics.tiendajava.rest.categories.models.Category;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductCreateDto;
 import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -18,6 +20,16 @@ class ProductMapperTest {
             .name("Category 1")
             .build();
 
+    private final Supplier supplier1 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 1")
+            .contact(1)
+            .address("Calle 1")
+            .dateOfHire(LocalDateTime.now())
+            .category(category1)
+            .build();
+
+
     @Test
     void toProduct() {
         ProductCreateDto productCreateDto = new ProductCreateDto(
@@ -27,10 +39,11 @@ class ProductMapperTest {
                 "imagen3.jpg",
                 10,
                 "Descripción del producto 3",
-                category1
+                category1,
+                supplier1
 
         );
-        var res = mapper.toProduct(productCreateDto, category1);
+        var res = mapper.toProduct(productCreateDto, category1, supplier1);
         assertAll(
                 () -> assertEquals(productCreateDto.name(), res.getName()),
                 () -> assertEquals(productCreateDto.price(), res.getPrice()),
@@ -52,7 +65,8 @@ class ProductMapperTest {
                 "imagen3.jpg",
                 10,
                 "Descripción del producto 3",
-                category1
+                category1,
+                supplier1
         );
         Product product = Product.builder()
                 .id(uuid)
@@ -64,7 +78,7 @@ class ProductMapperTest {
                 .description(productUpdateDto.description())
                 .category(category1)
                 .build();
-        var res = mapper.toProduct(productUpdateDto, product, category1);
+        var res = mapper.toProduct(productUpdateDto, product, category1, supplier1);
         assertAll(
                 () -> assertEquals(uuid, res.getId()),
                 () -> assertEquals(productUpdateDto.name(), res.getName()),

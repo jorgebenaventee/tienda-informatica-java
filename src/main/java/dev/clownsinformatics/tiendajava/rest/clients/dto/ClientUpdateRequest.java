@@ -6,6 +6,18 @@ import jakarta.validation.constraints.PositiveOrZero;
 import org.hibernate.validator.constraints.Length;
 
 
+/**
+ * DTO para actualizar un cliente
+ * @param username
+ * @param name
+ * @param balance
+ * @param email
+ * @param address
+ * @param phone
+ * @param birthdate
+ * @param image
+ * @param isDeleted
+ */
 public record ClientUpdateRequest(
         @Length(min = 1, message = "User can not be empty.") String username,
         @Length(min = 1, message = "Name can not be empty.") String name,

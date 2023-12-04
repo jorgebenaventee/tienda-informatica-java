@@ -11,5 +11,4 @@ public class TiendaJavaApplication {
     public static void main(String[] args) {
         SpringApplication.run(TiendaJavaApplication.class, args);
     }
-
 }

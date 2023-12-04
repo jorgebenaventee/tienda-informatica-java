@@ -10,6 +10,7 @@ import dev.clownsinformatics.tiendajava.rest.products.dto.ProductUpdateDto;
 import dev.clownsinformatics.tiendajava.rest.products.exceptions.ProductNotFound;
 import dev.clownsinformatics.tiendajava.rest.products.models.Product;
 import dev.clownsinformatics.tiendajava.rest.products.services.ProductService;
+import dev.clownsinformatics.tiendajava.rest.suppliers.models.Supplier;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
 @ExtendWith(MockitoExtension.class)
+@WithMockUser(username = "admin", password = "admin", roles = {"ADMIN", "USER"})
 class ProductRestControllerTest {
     private final String BASE_URL = "/api/products";
     private final UUID idProduct1 = UUID.fromString("cdf61632-181e-4006-9f4f-694e00785464");
@@ -55,6 +58,26 @@ class ProductRestControllerTest {
             .name("Category 2")
             .build();
 
+    private final Supplier supplier1 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 1")
+            .contact(1)
+            .address("Calle 1")
+            .dateOfHire(LocalDateTime.now())
+            .category(category1)
+            .build();
+
+
+    private final Supplier supplier2 = Supplier.builder()
+            .id(UUID.randomUUID())
+            .name("Supplier 2")
+            .contact(2)
+            .address("Calle 2")
+            .dateOfHire(LocalDateTime.now())
+            .category(category2)
+            .build();
+
+
     private final Product product1 = Product.builder()
             .id(idProduct1)
             .name("Product 1")
@@ -64,6 +87,7 @@ class ProductRestControllerTest {
             .stock(10)
             .description("Descripcion del producto 1")
             .category(category1)
+            .supplier(supplier1)
             .build();
 
     private final Product product2 = Product.builder()
@@ -75,6 +99,7 @@ class ProductRestControllerTest {
             .stock(10)
             .description("Descripcion del producto 2")
             .category(category2)
+            .supplier(supplier2)
             .build();
 
     private final ProductResponseDto productResponseDto1 = new ProductResponseDto(
@@ -86,8 +111,10 @@ class ProductRestControllerTest {
             10,
             "Descripcion del producto 1",
             category1,
+            supplier1,
             LocalDateTime.now(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            false
     );
 
     private final ProductResponseDto productResponseDto2 = new ProductResponseDto(
@@ -99,8 +126,10 @@ class ProductRestControllerTest {
             10,
             "Descripcion del producto 2",
             category2,
+            supplier2,
             LocalDateTime.now(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            false
     );
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -117,8 +146,8 @@ class ProductRestControllerTest {
 
     @Test
     void getAllProducts() throws Exception {
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -126,8 +155,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(BASE_URL)
@@ -142,14 +172,14 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByName() throws Exception {
         var LOCAL_URL = "/api/products?name=Product 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.of("Product 1");
@@ -157,8 +187,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -173,14 +204,14 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByWeight() throws Exception {
         var LOCAL_URL = "/api/products?maxWeight=2";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -188,8 +219,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -204,14 +236,14 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByMaxPrice() throws Exception {
         var LOCAL_URL = "/api/products?maxPrice=50";
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -219,8 +251,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -235,14 +268,14 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByMinStock() throws Exception {
         var LOCAL_URL = "/api/products?minStock=10";
-        var funkolist = List.of(productResponseDto1, productResponseDto2);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -250,8 +283,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -266,14 +300,14 @@ class ProductRestControllerTest {
                 () -> assertEquals(2, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByCategory() throws Exception {
         var LOCAL_URL = "/api/products?category=Category 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.empty();
@@ -281,8 +315,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.empty();
         Optional<Double> minStock = Optional.empty();
         Optional<String> category = Optional.of("Category 1");
+        Optional<Boolean> isDeleted = Optional.of(false);
 
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -297,14 +332,46 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
+    }
+
+    @Test
+    void getAllProductsByIsDeleted() throws Exception {
+        var LOCAL_URL = "/api/products?isDeleted=false";
+        var productlist = List.of(productResponseDto1, productResponseDto2);
+        var page = new PageImpl<>(productlist);
+        var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+
+        Optional<String> name = Optional.empty();
+        Optional<Double> maxWeight = Optional.empty();
+        Optional<Double> maxPrice = Optional.empty();
+        Optional<Double> minStock = Optional.empty();
+        Optional<String> category = Optional.empty();
+        Optional<Boolean> isDeleted = Optional.of(false);
+
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
+
+        MockHttpServletResponse response = mockMvc.perform(
+                        get(LOCAL_URL)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        PageResponse<ProductResponseDto> res = mapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertAll(
+                () -> assertEquals(200, response.getStatus()),
+                () -> assertEquals(2, res.content().size())
+        );
+
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
     void getAllProductsByAllParams() throws Exception {
-        var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1";
-        var funkolist = List.of(productResponseDto1);
-        var page = new PageImpl<>(funkolist);
+        var LOCAL_URL = "/api/products?name=Product 1&maxWeight=2&maxPrice=50&minStock=10&category=Category 1&isDeleted=true";
+        var productlist = List.of(productResponseDto1);
+        var page = new PageImpl<>(productlist);
         var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
 
         Optional<String> name = Optional.of("Product 1");
@@ -312,8 +379,9 @@ class ProductRestControllerTest {
         Optional<Double> maxPrice = Optional.of(50.0);
         Optional<Double> minStock = Optional.of(10.0);
         Optional<String> category = Optional.of("Category 1");
-
-        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, pageable)).thenReturn(page);
+        Optional<Boolean> isDeleted = Optional.of(true);
+        
+        when(productService.findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable)).thenReturn(page);
 
         MockHttpServletResponse response = mockMvc.perform(
                         get(LOCAL_URL)
@@ -328,7 +396,7 @@ class ProductRestControllerTest {
                 () -> assertEquals(1, res.content().size())
         );
 
-        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, pageable);
+        verify(productService, times(1)).findAll(name, maxWeight, maxPrice, minStock, category, isDeleted, pageable);
     }
 
     @Test
@@ -376,7 +444,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.save(any(ProductCreateDto.class))).thenReturn(productResponseDto1);
@@ -406,7 +475,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -431,7 +501,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -456,7 +527,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -481,7 +553,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -506,7 +579,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -531,7 +605,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -556,7 +631,8 @@ class ProductRestControllerTest {
                 "",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -581,7 +657,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 null,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -606,7 +683,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 -10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -631,7 +709,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 null,
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -657,7 +736,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "D",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -685,7 +765,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
@@ -716,7 +797,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         when(productService.update(anyString(), any())).thenThrow(new ProductNotFound(idProduct1.toString()));
@@ -740,7 +822,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
 
         MockHttpServletResponse response = mockMvc.perform(
@@ -767,7 +850,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenReturn(productResponseDto1);
 
@@ -840,7 +924,8 @@ class ProductRestControllerTest {
                 "imagen1.jpg",
                 10,
                 "Descripcion del producto 1",
-                category1
+                category1,
+                supplier1
         );
         when(productService.update(anyString(), any(ProductUpdateDto.class))).thenThrow(new ProductNotFound("Producto no encontrado"));
         assertAll(

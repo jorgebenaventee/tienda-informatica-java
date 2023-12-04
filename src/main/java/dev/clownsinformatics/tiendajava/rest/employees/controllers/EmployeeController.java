@@ -6,6 +6,11 @@ import dev.clownsinformatics.tiendajava.rest.employees.dto.UpdateEmployeeRequest
 import dev.clownsinformatics.tiendajava.rest.employees.services.EmployeeService;
 import dev.clownsinformatics.tiendajava.utils.pagination.PageResponse;
 import dev.clownsinformatics.tiendajava.utils.pagination.PaginationLinksUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -16,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +31,48 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Controlador REST para el recurso {@link dev.clownsinformatics.tiendajava.rest.employees.models.Employee}
+ *
+ * Proporciona los métodos para realizar las operaciones CRUD sobre el recurso {@link dev.clownsinformatics.tiendajava.rest.employees.models.Employee}
+ */
 @RestController
 @RequestMapping("/api/employee")
 @Slf4j
 @AllArgsConstructor(onConstructor = @__(@Autowired))
+@PreAuthorize("hasRole('USER')")
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final PaginationLinksUtils paginationLinksUtils;
 
+    /**
+     * Obtiene todos los empleados
+     * @param name Filtro por nombre
+     * @param minSalary Filtro por salario mínimo
+     * @param maxSalary Filtro por salario máximo
+     * @param position Filtro por posición
+     * @param page Número de página
+     * @param size Tamaño de página
+     * @param sortBy Campo por el que ordenar
+     * @param direction Dirección de ordenación
+     * @param request Petición HTTP
+     * @return Lista paginada de empleados
+     */
+    @Operation(summary = "Get all employees")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found all employees"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    @Parameters({
+            @Parameter(name = "name", description = "Employee name"),
+            @Parameter(name = "minSalary", description = "Minimum salary"),
+            @Parameter(name = "maxSalary", description = "Maximum salary"),
+            @Parameter(name = "position", description = "Employee position"),
+            @Parameter(name = "page", description = "Page number"),
+            @Parameter(name = "size", description = "Page size"),
+            @Parameter(name = "sortBy", description = "Sort by"),
+            @Parameter(name = "direction", description = "Sort direction")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<EmployeeResponseDto>> getAllEmployees(
             @RequestParam(required = false) Optional<String> name,
@@ -57,33 +97,118 @@ public class EmployeeController {
                 .body(response);
     }
 
+    /**
+     * Obtiene un empleado por su id
+     * @param id Id del empleado
+     * @return El empleado que coincide con el id
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
+    @Operation(summary = "Get employee by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found employee"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true)
+    })
     @GetMapping("{id}")
     public ResponseEntity<EmployeeResponseDto> getEmployeeById(@PathVariable Integer id) {
         log.info("Getting employee with id: {}", id);
         return ResponseEntity.ok(employeeService.findById(id));
     }
 
+    /**
+     * Crea un empleado
+     * @param employee Empleado a crear
+     * @return El empleado creado
+     */
+    @Operation(summary = "Create employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created employee"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "employee", description = "Employee to create", required = true)
+    })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> createEmployee(@Valid @RequestBody CreateEmployeeRequestDto employee) {
         log.info("Creating employee: {}", employee);
         return ResponseEntity.ok(employeeService.save(employee));
     }
 
+    /**
+     * Actualiza un empleado
+     * @param id Id del empleado que se quiere actualizar
+     * @param employee Empleado a actualizar
+     * @return El empleado actualizado
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
+    @Operation(summary = "Update employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated employee"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true),
+            @Parameter(name = "employee", description = "Employee to update", required = true)
+    })
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> updateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
         log.info("Updating employee with id: {}", id);
         EmployeeResponseDto employeeDto = employeeService.update(id, employee);
         return ResponseEntity.ok(employeeDto);
     }
 
+    /**
+     * Actualiza parcialmente un empleado
+     * @param id Id del empleado que se quiere actualizar
+     * @param employee Empleado a actualizar
+     * @return El empleado actualizado
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
+    @Operation(summary = "Partially update employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Partially updated employee"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true),
+            @Parameter(name = "employeeUpdate", description = "Employee to partially update", required = true)
+    })
     @PatchMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EmployeeResponseDto> partialUpdateEmployee(@PathVariable Integer id, @Valid @RequestBody UpdateEmployeeRequestDto employee) {
         log.info("Partially updating employee with id: {}", id);
         EmployeeResponseDto employeeDto = employeeService.update(id, employee);
         return ResponseEntity.ok(employeeDto);
     }
 
+    /**
+     * Elimina un empleado
+     * @param id Id del empleado que se quiere eliminar
+     * @return Respuesta vacía
+     * @throws dev.clownsinformatics.tiendajava.rest.employees.exceptions.EmployeeNotFoundException Si no se encuentra el empleado
+     */
+    @Operation(summary = "Delete employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted employee"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Employee not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @Parameters({
+            @Parameter(name = "id", description = "Employee id", required = true)
+    })
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Integer id) {
         log.info("Deleting employee with id: {}", id);
         employeeService.delete(id);

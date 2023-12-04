@@ -15,17 +15,30 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Controlador para el almacenamiento de archivos.
+ */
 @RestController
 @Slf4j
 @RequestMapping("/api/storage")
 public class StorageController {
     private final StorageService storageService;
 
+    /**
+     * Constructor para el controlador de almacenamiento.
+     * @param storageService Servicio de almacenamiento.
+     */
     @Autowired
     public StorageController(StorageService storageService) {
         this.storageService = storageService;
     }
 
+    /**
+     * Obtiene un archivo del almacenamiento.
+     * @param filename Nombre del archivo.
+     * @param request Petición HTTP.
+     * @return Respuesta HTTP.
+     */
     @GetMapping(value = "{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request) {
@@ -47,6 +60,11 @@ public class StorageController {
                 .body(file);
     }
 
+    /**
+     * Sube un archivo al almacenamiento.
+     * @param file Archivo a subir.
+     * @return Respuesta HTTP.
+     */
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> uploadFile(@RequestPart("file") MultipartFile file) {
         String urlImagen = null;
