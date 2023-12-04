@@ -164,7 +164,7 @@ CREATE TABLE public.supplier (
     address character varying(255),
     contact integer,
     date_of_hire timestamp(6) without time zone,
-    is_deleted boolean,
+    is_deleted boolean DEFAULT false,
     name character varying(255),
     category_id uuid NOT NULL,
     CONSTRAINT supplier_contact_check CHECK ((contact >= 1))
@@ -299,10 +299,10 @@ d69cf3db-b77d-4181-b3cd-5ca8107fb6a0	2023-12-02 11:06:32.635943	Descripción del
 --
 
 COPY public.supplier (id, address, contact, date_of_hire, is_deleted, name, category_id) FROM stdin;
-f47a2544-5b87-49c7-8931-1b9d5cfbdf01	Direccion 1	1	2023-12-02 11:06:32.630909	\N	Proveedor 1	d69cf3db-b77d-4181-b3cd-5ca8107fb6a9
-f47a2544-5b87-49c7-8931-1b9d5cfbdf02	Direccion 2	2	2023-12-02 11:06:32.630909	\N	Proveedor 2	8c5c06ba-49d6-46b6-85cc-8246c0f362bc
-f47a2544-5b87-49c7-8931-1b9d5cfbdf03	Direccion 3	3	2023-12-02 11:06:32.630909	\N	Proveedor 3	9def16db-362b-44c4-9fc9-77117758b5b0
-f47a2544-5b87-49c7-8931-1b9d5cfbdf04	Direccion 4	4	2023-12-02 11:06:32.630909	\N	Proveedor 4	6dbcbf5e-8e1c-47cc-8578-7b0a33ebc154
+f47a2544-5b87-49c7-8931-1b9d5cfbdf01	Direccion 1	1	2023-12-02 11:06:32.630909	f	Proveedor 1	d69cf3db-b77d-4181-b3cd-5ca8107fb6a9
+f47a2544-5b87-49c7-8931-1b9d5cfbdf02	Direccion 2	2	2023-12-02 11:06:32.630909	f	Proveedor 2	8c5c06ba-49d6-46b6-85cc-8246c0f362bc
+f47a2544-5b87-49c7-8931-1b9d5cfbdf03	Direccion 3	3	2023-12-02 11:06:32.630909	f	Proveedor 3	9def16db-362b-44c4-9fc9-77117758b5b0
+f47a2544-5b87-49c7-8931-1b9d5cfbdf04	Direccion 4	4	2023-12-02 11:06:32.630909	f	Proveedor 4	6dbcbf5e-8e1c-47cc-8578-7b0a33ebc154
 \.
 
 
