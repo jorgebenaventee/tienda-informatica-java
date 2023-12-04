@@ -283,18 +283,6 @@ COPY public.employee (id, created_at, name, "position", salary, updated_at) FROM
 
 
 --
--- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.products (id, created_at, description, img, is_deleted, name, price, stock, updated_at, weight, category_id, supplier_id) FROM stdin;
-d69cf3db-b77d-4181-b3cd-5ca8107fb6a0	2023-12-02 11:06:32.635943	Descripción del producto A	productA.jpg	f	Producto A	100	10	2023-12-02 11:06:32.635943	1	d69cf3db-b77d-4181-b3cd-5ca8107fb6a9	\N
-76549b87-23a2-4065-8a86-914207290329	2023-12-02 11:06:32.635943	Descripción del producto B	productB.jpg	f	Producto B	150	15	2023-12-02 11:06:32.635943	2	6dbcbf5e-8e1c-47cc-8578-7b0a33ebc154	\N
-3512e012-7028-405c-8397-b39886006212	2023-12-02 11:06:32.635943	Descripción del producto C	productC.jpg	f	Producto C	200	20	2023-12-02 11:06:32.635943	3	9def16db-362b-44c4-9fc9-77117758b5b0	\N
-98765432-1234-5678-90ab-cdef01234567	2023-12-02 11:06:32.635943	Descripción del producto D	productD.jpg	f	Producto D	250	25	2023-12-02 11:06:32.635943	4	8c5c06ba-49d6-46b6-85cc-8246c0f362bc	\N
-\.
-
-
---
 -- Data for Name: supplier; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -306,6 +294,14 @@ f47a2544-5b87-49c7-8931-1b9d5cfbdf04	Direccion 4	4	2023-12-02 11:06:32.630909	f	
 \.
 
 
+--
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.products (id, created_at, description, img, is_deleted, name, price, stock, updated_at, weight, category_id, supplier_id) VALUES ('d69cf3db-b77d-4181-b3cd-5ca8107fb6a0', '2023-12-02 11:06:32.635943', 'Descripción del producto A', 'productA.jpg', false, 'Producto A', 100, 10, '2023-12-02 11:06:32.635943', 1, 'd69cf3db-b77d-4181-b3cd-5ca8107fb6a9', 'f47a2544-5b87-49c7-8931-1b9d5cfbdf01');
+INSERT INTO public.products (id, created_at, description, img, is_deleted, name, price, stock, updated_at, weight, category_id, supplier_id) VALUES ('98765432-1234-5678-90ab-cdef01234567', '2023-12-02 11:06:32.635943', 'Descripción del producto D', 'productD.jpg', false, 'Producto D', 250, 25, '2023-12-02 11:06:32.635943', 4, '8c5c06ba-49d6-46b6-85cc-8246c0f362bc', 'f47a2544-5b87-49c7-8931-1b9d5cfbdf01');
+INSERT INTO public.products (id, created_at, description, img, is_deleted, name, price, stock, updated_at, weight, category_id, supplier_id) VALUES ('3512e012-7028-405c-8397-b39886006212', '2023-12-02 11:06:32.635943', 'Descripción del producto C', 'productC.jpg', false, 'Producto C', 200, 20, '2023-12-02 11:06:32.635943', 3, '9def16db-362b-44c4-9fc9-77117758b5b0', 'f47a2544-5b87-49c7-8931-1b9d5cfbdf01');
+INSERT INTO public.products (id, created_at, description, img, is_deleted, name, price, stock, updated_at, weight, category_id, supplier_id) VALUES ('76549b87-23a2-4065-8a86-914207290329', '2023-12-02 11:06:32.635943', 'Descripción del producto B', 'https://localhost:3000/api/storage/1701700973738_fondo_de_pantalla.jpg', false, 'Producto B', 150, 15, '2023-12-02 11:06:32.635943', 2, '6dbcbf5e-8e1c-47cc-8578-7b0a33ebc154', 'f47a2544-5b87-49c7-8931-1b9d5cfbdf01');
 --
 -- Data for Name: user_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
